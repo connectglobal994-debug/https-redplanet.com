@@ -1,136 +1,52 @@
-# 🔴 RED PLANET
-### Media Infrastructure • Attention Engineering • Cultural Scale
+# RED PLANET
+### A connected ecosystem for music, intelligence, technology and collaboration
 
-Red Planet is not a brand.  
-It is a **system designed to capture attention, build influence, and scale people and content simultaneously.**
+Red Planet is being developed as one branded digital platform with a shared identity and connected service areas. The website is the front door; secure backend services will power member accounts, media, AI workflows, collaboration tools and (in a later phase) cloud-hosted trading.
 
----
+## Vision
+Build a professional, creator-led ecosystem where people can discover music, learn with AI, find opportunities, collaborate with artists and organizations, manage projects and access specialist tools through one Red Planet account.
 
-## ⚙️ WHAT THIS IS
+## Platform areas
+- **Home** — public introduction to Red Planet and its mission.
+- **Music** — artist and release discovery, playlists, and an upload/preview experience. The current upload control previews a selected audio file locally in the browser; persistent uploads, streaming delivery, licensing and royalty accounting require backend services and rights workflows.
+- **AI Studio** — product direction for the AI Teacher, AI Job Finder, research assistant and operations assistant.
+- **AI Anchors** — Win is the main artist/culture host; Deblaq is the core builder/systems host. These are AI presenter concepts inspired by supplied visual references, not claims that the pictured people have endorsed or personally voiced AI content.
+- **Collaborations** — structured pathway for artist, label, organization, brand and technology partnerships.
+- **Trading** — preview of the future MT5 customer area. Live trading is not enabled by this static site.
+- **Community & recruitment** — member onboarding, opportunities and team operations, to be connected to authenticated services.
 
-Red Planet is a **self-growing digital machine** built to:
+## Product principles
+1. One Red Planet identity; access is controlled by role and subscription entitlement.
+2. Keep customer data and credentials on the server, never in browser code or public repositories.
+3. Human approval for consequential actions: job applications, external outreach, publishing, financial activity and account changes.
+4. Respect copyright, artist credits, licensing, privacy and platform terms.
+5. Build in phases, test each integration, and clearly label preview features until connected.
 
-- Attract talent automatically  
-- Distribute content at scale  
-- Create continuous engagement loops  
-- Turn individuals into operators inside a system  
+## Current website implementation
+- Static HTML, CSS and JavaScript hosted through GitHub Pages.
+- `index.html` — main landing page.
+- `music.html` — cinematic music hub and local audio preview.
+- `ai.html` — AI product direction and presenter profiles.
+- `collaborations.html` — partnership hub and collaboration process.
+- `trading.html` — trading interface preview only.
+- `style.css` / `script.js` — shared homepage styling and interactions.
 
-This is not about posting.  
-This is about **building leverage.**
+## Not yet active
+The static website does not currently provide production authentication, subscription billing, persistent music uploads, public streaming, AI model execution, automated job applications, partner CRM, member messaging, or MT5 connectivity. These require backend APIs, database/storage, provider integrations, security controls and operational monitoring.
 
----
+## Suggested delivery sequence
+1. Complete and test the public website experience.
+2. Add secure identity, member profiles and subscription entitlements.
+3. Add music storage, metadata, rights review, streaming delivery and artist administration.
+4. Connect AI services with source-grounded knowledge, user consent, approval flows and audit logs.
+5. Add collaboration CRM, verified partner research and approved outreach workflows.
+6. Build isolated MT5 cloud workers, demo-test them, then assess regulatory and broker requirements before live trading.
 
-## 🧠 CORE PHILOSOPHY
+## Repository safety
+Never commit `.env` files, API keys, passwords, broker credentials, private customer records, database dumps, runtime logs, private audio masters or unlicensed media. Use secret management and environment-specific configuration for deployments.
 
-> “We don’t rely on effort. We build machines.”
-
-Everything inside Red Planet follows one rule:
-
-👉 **Systems > Manual Work**
-
-If something is repeated → it gets automated  
-If something works → it gets scaled  
-If something slows growth → it gets removed  
-
----
-
-## 🧲 SYSTEM COMPONENTS
-
-### 1. Recruitment Funnel
-- Continuous inflow of applicants  
-- Simple form → database pipeline  
-- No manual searching  
-
----
-
-### 2. Automation Layer
-- Trigger-based actions (IF → THEN logic)
-- Instant onboarding  
-- Task distribution without delay  
-
----
-
-### 3. Content Engine
-- High-volume strategic posting  
-- Multi-platform distribution  
-- SEO + viral positioning  
+## Ownership and roles
+Red Planet is the project and platform identity. Win is designated the main artist anchor. Deblaq is designated the core builder anchor. The product owner retains final approval over public releases, partnerships, financial operations and production changes.
 
 ---
-
-### 4. Network Expansion
-- Direct outreach systems  
-- Relationship building loops  
-- Platform domination strategy  
-
----
-
-## 🧑‍🚀 ROLES INSIDE RED PLANET
-
-### Operators
-Execute tasks. Keep system running daily.
-
-### Networkers
-Build connections. Open opportunities.
-
-### Designers
-Create visuals that capture attention instantly.
-
-### System Architects
-Build and improve automation + infrastructure.
-
----
-
-## 🔁 HOW IT WORKS
-
-1. Person enters system (form)
-2. Data gets stored automatically
-3. System assigns tasks
-4. Output gets tracked
-5. Best performers get scaled
-
-Everything loops. Nothing stops.
-
----
-
-## 📈 OBJECTIVE
-
-- Build a **self-sustaining digital ecosystem**
-- Scale content, people, and influence at the same time
-- Turn Red Planet into a **dominant attention network**
-
----
-
-## 🚀 CURRENT BUILD
-
-- Frontend (HTML, CSS, JS)
-- Recruitment funnel
-- Automation concepts (n8n / AI integrations)
-- Content system in development
-
----
-
-## 🔐 MINDSET REQUIRED
-
-This is not casual.
-
-- No excuses
-- No delays
-- Output > talking
-- Speed > perfection
-
----
-
-## 📡 FINAL NOTE
-
-Red Planet is not something you watch.
-
-It is something you **enter**.
-
-And once you're inside...
-
-👉 you either build  
-👉 or get replaced  
-
----
-
-**SYSTEM STATUS:** ACTIVE
+**Status:** Website foundation in active development. Pages indicate where a feature is a preview and where production integrations are still required.
