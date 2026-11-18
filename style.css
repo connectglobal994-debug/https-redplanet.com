@@ -269,6 +269,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 /* Join form */
 .join-section { max-width: 850px; }
+.artist-spotlight { margin-top: 18px; }
 .join-form {
   display: grid;
   gap: 14px;
