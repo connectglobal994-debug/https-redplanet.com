@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Planet | Trading</title>
+  <style>
+    :root { color-scheme: dark; --bg:#090d18; --panel:#121a2b; --line:#26344c; --text:#eef3ff; --muted:#a8b5ca; --accent:#e34b39; --green:#46c58a; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(circle at top right,#202b45 0,transparent 38%),var(--bg); color:var(--text); font:16px/1.6 system-ui, sans-serif; }
+    a { color:inherit; text-decoration:none; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:20px clamp(20px,5vw,72px); border-bottom:1px solid var(--line); }
+    .brand { font-weight:800; letter-spacing:.12em; }
+    nav { display:flex; gap:20px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+    main { width:min(1100px,90%); margin:54px auto; }
+    .eyebrow { color:var(--green); font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    h1 { font-size:clamp(36px,6vw,64px); line-height:1.05; margin:12px 0; }
+    .lead { color:var(--muted); max-width:720px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin:34px 0; }
+    .card { background:rgba(18,26,43,.92); border:1px solid var(--line); border-radius:16px; padding:22px; }
+    .card h2 { margin-top:0; font-size:18px; }
+    .muted { color:var(--muted); font-size:14px; }
+    .status { display:inline-flex; align-items:center; gap:8px; border:1px solid #315b4b; color:#a5edc9; border-radius:999px; padding:6px 12px; font-size:12px; }
+    .dot { width:7px; height:7px; background:var(--green); border-radius:50%; }
+    .notice { border-left:3px solid var(--accent); padding:14px 18px; background:#211b25; border-radius:8px; color:#e7dce0; }
+    .button { display:inline-block; margin-top:12px; background:var(--accent); padding:11px 17px; border-radius:9px; font-weight:700; }
+    footer { color:var(--muted); border-top:1px solid var(--line); padding:24px 5%; text-align:center; font-size:13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="index.html">RED PLANET</a>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="trading.html" aria-current="page">Trading</a>
+    </nav>
+  </header>
+  <main>
+    <p class="eyebrow">Red Planet platform</p>
+    <h1>Trading, inside Red Planet.</h1>
+    <p class="lead">A single Red Planet account will provide access to the services enabled by your subscription. This is the planned customer area for connecting an MT5 account and viewing your trading activity.</p>
+    <p><span class="status"><span class="dot"></span> Platform setup in progress</span></p>
+    <section class="grid" aria-label="Trading platform features">
+      <article class="card"><h2>Connect MT5</h2><p class="muted">Secure broker-account connection will be added through the Red Planet backend. Do not enter trading credentials on this preview page.</p></article>
+      <article class="card"><h2>Account overview</h2><p class="muted">Balance, equity, account status and connection health will appear here once the authenticated API is deployed.</p></article>
+      <article class="card"><h2>Trading activity</h2><p class="muted">Open positions, closed trades and performance reports will be loaded from each customer's isolated trading worker.</p></article>
+      <article class="card"><h2>Risk controls</h2><p class="muted">Customer permissions and approved risk settings will be managed by the backend, not by browser-only code.</p></article>
+    </section>
+    <p class="notice"><strong>Preview only:</strong> this page is a navigation and layout foundation. It does not connect to MT5, submit orders, store credentials or start a trading bot. Demo-mode backend integration and security testing are required before customer use.</p>
+    <a class="button" href="index.html">Back to Red Planet home</a>
+  </main>
+  <footer>Red Planet © 2026 · Trading services are under development.</footer>
+</body>
+</html>
