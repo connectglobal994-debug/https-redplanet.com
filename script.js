@@ -66,8 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      alert("Application submitted successfully.");
-      form.reset();
+      alert("This application form is not connected to the Red Planet server yet. Your details have NOT been submitted.");
     });
   }
 });
