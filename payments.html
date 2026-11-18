@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Red Planet plans, subscriptions and payment options.">
+  <title>Red Planet | Plans & Billing</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .billing-wrap{width:min(1080px,90%);margin:58px auto 90px}
+    .billing-hero{max-width:760px;margin-bottom:36px}
+    .billing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+    .billing-card{padding:26px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:linear-gradient(145deg,#211319,#111116)}
+    .billing-card h2{margin-top:0}
+    .billing-label{display:inline-block;color:#ff6875;font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    .billing-note{margin-top:22px;padding:18px;border-left:3px solid #ed1b2f;background:#1a1116;border-radius:8px;color:#c9c2c6}
+    .bank-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+    .bank-fields span{padding:12px;border:1px dashed rgba(255,255,255,.18);border-radius:8px;color:#9996a0;font-size:.9rem}
+    @media(max-width:560px){.bank-fields{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <a class="logo" href="index.html">RED PLANET</a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a><a href="music.html">Music</a><a href="ai.html">AI Studio</a>
+      <a href="collaborations.html">Collaborate</a><a href="trading.html">Trading</a>
+      <a href="payments.html" aria-current="page">Plans & Billing</a>
+    </nav>
+  </header>
+  <main class="billing-wrap">
+    <section class="billing-hero">
+      <p class="section-tag">ONE RED PLANET ACCOUNT</p>
+      <h1>Plans & Billing</h1>
+      <p class="subtext">Manage access to Red Planet services through one membership. Subscription plans and secure checkout will be activated after the payment provider and backend are connected.</p>
+    </section>
+    <section class="billing-grid" aria-label="Payment methods">
+      <article class="billing-card">
+        <span class="billing-label">Planned online payment</span>
+        <h2>PayPal</h2>
+        <p>Payments are intended to be directed to:</p>
+        <p><strong>anyokazadock03@gmail.com</strong></p>
+        <p class="muted">PayPal checkout is not connected yet. No payment will be taken from this preview page. The account owner will securely authorize the PayPal integration before activation.</p>
+      </article>
+      <article class="billing-card">
+        <span class="billing-label">Coming later</span>
+        <h2>Bank transfer</h2>
+        <p class="muted">We’ll add the official receiving-account details here when they are ready.</p>
+        <div class="bank-fields" aria-label="Bank details placeholders">
+          <span>Bank name — to be added</span>
+          <span>Account name — to be added</span>
+          <span>Account number — to be added</span>
+          <span>Branch / SWIFT — to be added</span>
+        </div>
+      </article>
+    </section>
+    <section class="billing-card" style="margin-top:18px">
+      <span class="billing-label">Subscription access</span>
+      <h2>Choose your Red Planet services</h2>
+      <p class="muted">Membership tiers, prices, billing periods, receipts, renewals, cancellations and access permissions will be configured in the secure backend. We will not display a live checkout button until the provider connection and subscription rules have been tested.</p>
+    </section>
+    <p class="billing-note"><strong>Preview status:</strong> This page is an information and layout section only. It does not accept payments, store card details or activate subscriptions. Never send card numbers, passwords or bank credentials by email or through this page.</p>
+  </main>
+  <footer class="footer"><p>Red Planet © 2026 · Secure membership and payments are being prepared.</p></footer>
+</body>
+</html>
