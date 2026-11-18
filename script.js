@@ -71,18 +71,18 @@ function initNavbarEffect() {
 }
 
 function initRevealOnScroll() {
-  const elements = document.querySelectorAll(".reveal, .section, .card, .feature, .stat, .panel, .workflow-step");
+  const elements = document.querySelectorAll(".reveal, .fade-in, .section, .card, .feature, .stat, .panel, .workflow-step");
   if (!elements.length) return;
 
   if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    elements.forEach((element) => element.classList.add("visible"));
+    elements.forEach((element) => element.classList.add(element.classList.contains("fade-in") ? "show" : "visible"));
     return;
   }
 
   const observer = new IntersectionObserver((entries, activeObserver) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
+        entry.target.classList.add(entry.target.classList.contains("fade-in") ? "show" : "visible");
         activeObserver.unobserve(entry.target);
       }
     });
