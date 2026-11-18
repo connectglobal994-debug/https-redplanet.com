@@ -6,7 +6,9 @@
 
 ## 1. Confirmed product decisions
 
-- One Red Planet platform for original music, independent artists, AI, TV/news, collaborations, membership and (later) trading.
+- One Red Planet platform for original music, independent artists, AI, TV/news, collaborations, membership and a separately permissioned trading area.
+- Display commercial prices in **USD** as the default platform currency; confirm supported settlement currencies, taxes and payment-provider availability before charging customers.
+- Use one member identity where appropriate, but gate trading access with a separate trading entitlement, stronger authentication and isolated broker/MT5 credentials. A Red Planet login must never itself grant access to a broker account or funds.
 - Red Planet will publish its own original music and accept paid independent-artist submissions/services.
 - AI products will use external model providers through a replaceable provider layer; additional providers must be addable without redesigning the product.
 - Pricing should combine a free entry tier, paid creator/artist services, optional AI usage and clearly scoped business plans.
@@ -61,6 +63,9 @@ Use a verified Red Planet-owned sending domain and transactional email provider 
 
 ### Phase 1 — Identity and member foundation
 - Create development and production backend environments.
+- Implement member registration, email verification, login, logout, password reset and session management. Do not use a shared upload password; every uploader must have an individual authenticated account.
+- Add role-gated administrator review tools. New artist uploads remain private and pending until an authorized reviewer approves them.
+- Trading access uses the same identity provider only if the security review approves it, but has a distinct trading entitlement, MFA requirement for privileged actions, customer-isolated MT5 credentials and risk controls.
 - Implement profiles, verified email, role assignments and account recovery.
 - Roles: member, artist, producer, label, collaborator, editor, moderator, finance operator and administrator.
 - Use least-privilege permissions; require MFA for privileged roles.
@@ -68,6 +73,8 @@ Use a verified Red Planet-owned sending domain and transactional email provider 
 
 ### Phase 2 — Music marketplace and release operations
 - Separate Red Planet-owned catalogue from third-party artist submissions.
+- Build a Spotify-style listening experience (not a copy of Spotify): searchable catalogue, artist/release pages, album and playlist views, persistent web audio player, play queue, play/pause/seek/volume, favourites and responsive mobile playback.
+- Serve only Red Planet-owned or properly licensed/approved recordings. Keep uploaded masters private; publish processed streaming renditions through a CDN/media delivery layer after rights and administrator approval.
 - Artist onboarding, identity/contact details, rights declaration, collaborators, writers, producers, sample disclosures and AI-use disclosure.
 - Paid services must state exactly what the fee buys (for example, review, hosting or a defined promotional deliverable); never sell guaranteed streams, playlist placement, signing or commercial success.
 - Submission states: draft, submitted, needs changes, rights review, approved, scheduled, published, rejected, withdrawn and takedown requested.
@@ -106,21 +113,22 @@ Use a verified Red Planet-owned sending domain and transactional email provider 
 
 ### Phase 7 — Trading (separate gated project)
 - Keep trading separate from public music/member services.
+- Add a Trading sign-in/entry point backed by authenticated Red Planet accounts and a separately granted trading entitlement; do not create broker credentials from a public web form or expose them to browser code.
 - Isolate each customer worker, MT5 terminal, credentials, account state and risk settings.
 - Demo-only testing first; no live trading until broker, legal/regulatory, risk, security and operational reviews are complete.
 - AI must never alter live trading risk settings or execute unapproved financial actions.
 
 ## 4. Draft pricing model for validation — not yet live
 
-Use **KES as the initial Kenya-facing display currency**, with USD or other currencies shown only where checkout and tax treatment are supported. These are test hypotheses, not market-validated final prices.
+Use **USD as the default displayed price currency**, as requested. Proposed pilot prices below are starting hypotheses only, not market-validated final prices. Before checkout goes live, confirm PayPal account country/currency support, conversion and settlement, taxes, refunds and provider fees.
 
 | Offer | Draft price | Includes |
 |---|---:|---|
 | Community Member | Free | Account, public catalogue, community updates |
-| Creator | KES 500/month | Creator profile, limited project tools and submission tracking |
-| Artist Plus | KES 1,500/month | Expanded artist workspace, release planning and defined support allowance |
-| Label / Studio | From KES 5,000/month | Multi-member workspace and catalogue administration; scope by agreement |
-| Music submission review | KES 1,000 one-off pilot | One defined review and written feedback; no guarantee of acceptance or promotion |
+| Creator | USD 5/month | Creator profile, limited project tools and submission tracking |
+| Artist Plus | USD 15/month | Expanded artist workspace, release planning and defined support allowance |
+| Label / Studio | From USD 49/month | Multi-member workspace and catalogue administration; scope by agreement |
+| Music submission review | USD 10 one-off pilot | One defined review and written feedback; no guarantee of acceptance or promotion |
 | AI usage | Included small allowance, then disclosed top-ups | Metered by provider/model cost and usage limits |
 
 Before charging, test willingness to pay with a small pilot group, calculate payment/provider costs, storage/egress, AI inference, support, taxes and refunds. Clearly disclose renewal date, cancellation, what is included and what is excluded. Do not charge for an undefined service.
