@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08090c" />
   <title>Red Planet | System Architect</title>
   <meta
     name="description"
@@ -13,8 +14,9 @@
 <body>
 
   <header class="navbar">
-    <div class="logo">RED PLANET</div>
-    <nav class="nav-links">
+    <a class="logo" href="#hero" aria-label="Red Planet home">RED PLANET</a>
+    <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+    <nav class="nav-links" aria-label="Main navigation">
       <a href="#hero">Home</a>
       <a href="#mission">Mission</a>
       <a href="#systems">Systems</a>
@@ -280,6 +282,7 @@
         <input type="text" name="whatsapp" placeholder="WhatsApp Number" required />
       </div>
 
+      <p class="form-status" role="status" aria-live="polite"></p>
       <button type="submit" class="btn btn-primary btn-full">Join Red Planet</button>
     </form>
   </section>
