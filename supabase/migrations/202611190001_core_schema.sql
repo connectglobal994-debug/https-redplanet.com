@@ -239,3 +239,21 @@ using (user_id = (select auth.uid()) or public.has_redplanet_role(array['adminis
 
 -- No authenticated client write policies for memberships, payment_records or audit_events.
 -- Trusted backend/webhook functions using the service role own those writes.
+
+
+-- Explicit grants complement RLS. Policies do not revoke table privileges.
+revoke all on table public.profiles, public.user_roles, public.artist_profiles,
+  public.music_submissions, public.releases, public.tracks, public.memberships,
+  public.payment_records, public.audit_events from anon, authenticated;
+
+grant select, insert, update on table public.profiles to authenticated;
+grant select on table public.user_roles to authenticated;
+grant select, insert, update on table public.artist_profiles to authenticated;
+grant select, insert, update on table public.music_submissions to authenticated;
+grant select on table public.releases to anon, authenticated;
+grant select on table public.tracks to anon, authenticated;
+grant select on table public.memberships to authenticated;
+grant select on table public.payment_records to authenticated;
+
+revoke all on function public.has_redplanet_role(text[]) from public, anon;
+grant execute on function public.has_redplanet_role(text[]) to authenticated;
