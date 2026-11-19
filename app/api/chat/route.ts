@@ -139,32 +139,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 3. Built-In Autonomous Coded AI Fallback (Universal Knowledge & Direct Formatting)
-  try {
-    let fallbackReply = '';
-
-    if (lastUserMessage.includes('win') && (lastUserMessage.includes('who') || lastUserMessage.includes('what'))) {
-      fallbackReply = 'Win is the co-founder, lead cinematic artist, and visionary director of Red Planet, crafting immersive audio-visual experiences and music rollouts designed to prepare human consciousness for multi-planetary expansion.';
-    } else if (lastUserMessage.includes('deblaq') && (lastUserMessage.includes('who') || lastUserMessage.includes('what'))) {
-      fallbackReply = 'Deblaq is the co-founder and operations lead of Red Planet, managing technical architecture, algorithmic trading bots like Expert Sniper Pro v2, and global media syndication infrastructure.';
-    } else if (lastUserMessage.includes('elon') || lastUserMessage.includes('musk') || lastUserMessage.includes('spacex')) {
-      fallbackReply = "Elon Musk is the founder of SpaceX and CEO of Tesla, spearheading commercial spaceflight, Starship rocket development, and humanity's long-term colonization goal of establishing a self-sustaining city on Mars.";
-    } else if (lastUserMessage.includes('mars') || lastUserMessage.includes('colonization')) {
-      fallbackReply = 'Mars colonization involves establishing permanent human habitation on the Martian surface, overcoming severe environmental hurdles such as thin atmospheric pressure, cosmic radiation, and sub-zero temperatures through advanced terraforming and closed-loop life support systems.';
-    } else if (lastUserMessage.includes('weather') || lastUserMessage.includes('climate')) {
-      fallbackReply = 'Global meteorological systems are driven by complex thermodynamic interactions between solar radiation, ocean currents, and atmospheric pressure gradients, while Martian atmospheric telemetry at Node 08 remains stabilized near 710 Pa.';
-    } else if (lastUserMessage.includes('trading') || lastUserMessage.includes('bot') || lastUserMessage.includes('crypto') || lastUserMessage.includes('finance')) {
-      fallbackReply = 'Algorithmic trading utilizes automated mathematical models and high-frequency execution scripts—such as MetaTrader 5 integration frameworks—to capture market inefficiencies and execute liquidity orders across currency pairs with minimal latency.';
-    } else {
-      fallbackReply = 'Global intelligence networks and interplanetary communication arrays are fully operational, delivering high-fidelity data across terrestrial and Martian nodes.';
-    }
-
-    return NextResponse.json({ reply: fallbackReply, source: 'autonomous_global_embedded_core' });
-  } catch (err) {
-    console.error('Embedded AI core error:', err);
-    return NextResponse.json(
-      { error: 'All neural communication channels temporarily unavailable. Contact redplanetcodes@gmail.com directly.' },
-      { status: 500 }
-    );
-  }
+  // Do not fabricate an answer or imply that an unavailable AI service is operational.
+  const providerConfigured = Boolean(anthropicKey || geminiKey);
+  return NextResponse.json(
+    {
+      error: providerConfigured
+        ? 'The configured AI provider is temporarily unavailable. Please try again shortly.'
+        : 'Red Planet AI is not configured yet. Add ANTHROPIC_API_KEY or GEMINI_API_KEY in the server environment to enable responses.',
+      status: providerConfigured ? 'AI_PROVIDER_UNAVAILABLE' : 'AI_NOT_CONFIGURED',
+    },
+    { status: providerConfigured ? 502 : 503 }
+  );
 }
