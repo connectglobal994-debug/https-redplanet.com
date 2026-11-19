@@ -13,13 +13,16 @@ const DEFAULT_NOTIFY_EMAIL = 'redplanetcodes@gmail.com';
 const MAX_MESSAGE_LENGTH = 3000;
 
 export async function POST(req: NextRequest) {
-  let body: InvestorSubmission;
+  let parsedBody: unknown;
   try {
-    body = await req.json();
+    parsedBody = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid submission payload.' }, { status: 400 });
   }
-
+  if (typeof parsedBody !== 'object' || parsedBody === null || Array.isArray(parsedBody)) {
+    return NextResponse.json({ error: 'Submission body must be a JSON object.' }, { status: 400 });
+  }
+  const body = parsedBody as InvestorSubmission;
   const name = typeof body.name === 'string' ? body.name.trim() : '';
   const email = typeof body.email === 'string' ? body.email.trim() : '';
   const type = typeof body.type === 'string' ? body.type.trim().slice(0, 100) : 'partnership';
