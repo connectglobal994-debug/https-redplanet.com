@@ -48,14 +48,17 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: nu
 }
 
 export async function POST(req: NextRequest) {
-  let body: { messages?: unknown };
+  let parsedBody: unknown;
   try {
-    body = await req.json();
+    parsedBody = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON payload format.' }, { status: 400 });
   }
-
-  const rawMessages = Array.isArray(body.messages) ? body.messages : [];
+  if (typeof parsedBody !== 'object' || parsedBody === null || Array.isArray(parsedBody)) {
+    return NextResponse.json({ error: 'Request body must be a JSON object.' }, { status: 400 });
+  }
+  const messagesInput = (parsedBody as { messages?: unknown }).messages;
+  const rawMessages = Array.isArray(messagesInput) ? messagesInput : [];
   const messages = rawMessages.filter(isValidMessage);
 
   if (messages.length === 0) {
