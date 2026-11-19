@@ -1,0 +1,23 @@
+# Red Planet Team OS — Development setup
+
+## What is included
+- `team-portal.html`: sign-in, personal task list, daily focus, AI Academy learning path, KPI summary.
+- `team-portal.js`: Supabase Auth and browser-side data access using the publishable anon key only.
+- `team-portal.css`: responsive Red Planet interface.
+- `supabase/migrations/202611200001_team_os.sql`: tasks, KPI assignments, training progress/materials and row-level security.
+
+## Required setup before sign-in works
+1. Create a Supabase **development** project.
+2. Apply `202611190001_core_schema.sql`, then `202611200001_team_os.sql` in the Supabase SQL Editor.
+3. In Supabase Authentication settings, configure the site URL and email redirect URLs for the deployed domain and local development.
+4. Copy the Project URL and publishable/anon key from Supabase Project Settings → API into the two empty constants at the top of `team-portal.js`.
+5. Never put the service-role key, database password, PayPal secret or AI provider keys in this file or any browser code.
+6. Create individual team accounts. An administrator role must be granted securely from the Supabase SQL editor or trusted server—not from the signup form. Example after verifying the correct auth user:
+   `insert into public.user_roles(user_id, role) values ('AUTH-USER-UUID','administrator');`
+7. Test with two ordinary accounts: each must only see their own tasks, KPI targets and training progress. Verify admin access separately before onboarding the whole team.
+
+## Current limits (do not represent as finished)
+- The AI Academy currently includes starter learning paths and progress tracking; it does not yet call a live AI model. AI tutor integration requires a server-side Edge Function and provider secret.
+- Manager assignment, team-wide task creation, admin member management, hiring pipeline, interview scorecards, software inventory, notifications and daily-update persistence are not yet implemented.
+- This static GitHub Pages front end cannot securely store secrets or run privileged operations. Use Supabase Edge Functions for those.
+- No database migration is applied merely by committing these files. Apply in development and test RLS before production.
