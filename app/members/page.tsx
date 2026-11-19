@@ -15,6 +15,7 @@ export default function MembersPage() {
   const [name, setName] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ export default function MembersPage() {
       const res = await fetch('/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), email: email.trim() }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), privacyConsent }),
       });
       const data = await res.json();
 
@@ -40,6 +41,7 @@ export default function MembersPage() {
       setStatus('done');
       setName('');
       setEmail('');
+      setPrivacyConsent(false);
     } catch {
       setStatus('error');
       setErrorMsg('Could not reach the Red Planet secure server. Try again.');
@@ -94,7 +96,7 @@ export default function MembersPage() {
 
           <button
             type="submit"
-            disabled={status === 'submitting'}
+            disabled={status === 'submitting' || !privacyConsent}
             className="w-full bg-marsRed hover:bg-marsRed/80 disabled:opacity-40 text-white font-bold py-4 px-6 rounded-xl text-xs uppercase tracking-widest transition-all glow-mars font-mono shadow-lg"
           >
             {status === 'submitting' ? 'Transmitting Credentials...' : 'Join the Syndicate'}

@@ -18,6 +18,8 @@ Set real values in `.env.local` locally and in Vercel Project Settings → Envir
 - `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY`: AI provider keys
 - `RESEND_API_KEY`: investor email notifications
 - `NEXT_PUBLIC_SITE_URL`: public site origin
+- `SUPABASE_URL`: Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY`: server-only service role key (never use a `NEXT_PUBLIC_` prefix)
 
 Never put real credentials in source files, `public/`, `.env.example`, or `.env.local.example`. Never expose provider secrets through `NEXT_PUBLIC_*`.
 
