@@ -30,13 +30,9 @@ const eslintConfig = defineConfig([
       // Prevent console statements in production code except for intentional warnings/errors
       'no-console': ['warn', { allow: ['warn', 'error'] }],
 
-      // Base JS rule off — TypeScript's own checker handles unused vars, but we turn on
-      // the TS-aware version below so it's actually enforced, not silently disabled.
+      // TypeScript typechecking is the source of truth for TypeScript-specific diagnostics.
+      // Do not reference @typescript-eslint rules until that plugin is an installed dependency.
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
 
       // React 19 / Next.js modern JSX standards
       'react/no-unescaped-entities': 'off',
@@ -47,16 +43,10 @@ const eslintConfig = defineConfig([
       'no-empty': ['error', { allowEmptyCatch: true }],
 
       // --- ADDITIONAL STRICTNESS, matching the tsconfig/next.config philosophy ---
-      // Flags `any` instead of letting type safety silently leak — warn, not error,
-      // so it doesn't block builds while you're still wiring real backends.
-      '@typescript-eslint/no-explicit-any': 'warn',
       // Catches `==`/`!=` where `===`/`!==` was almost certainly intended.
       eqeqeq: ['warn', 'smart'],
       // Flags `let` that's never reassigned — cheap correctness signal.
       'prefer-const': 'warn',
-      // Catches accidental floating promises (e.g. an unawaited fetch in an upload
-      // handler) — relevant now that you have real async upload/verify routes.
-      '@typescript-eslint/no-floating-promises': 'off', // enable once type-aware linting is fully configured
     },
   },
 ]);
