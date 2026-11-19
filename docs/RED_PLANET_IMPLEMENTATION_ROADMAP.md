@@ -177,3 +177,29 @@ Red Planet is ready for commercial launch only when:
 8. Monitoring, backups, incident response and support ownership are in place.
 
 **This document is an implementation plan. It does not mean any external account, backend, payment provider, AI provider or DNS setting has been connected.**
+
+
+## 9. People, hiring and performance management — newly approved direction
+
+Management has identified the need to restructure hiring for AI and performance-related roles as Red Planet invests in additional software. Management will lead the interview process.
+
+### Operating framework to implement
+- Define the business need, approved budget, role scope, responsibilities, reporting line and required skills before advertising.
+- Use consistent candidate screening, structured interviews and role-relevant practical assessments.
+- Record interview criteria and decisions fairly and consistently.
+- Give every approved role a written onboarding plan, least-privilege system access and named manager.
+- Set role-specific KPIs before work begins. Example dimensions: delivery against milestones, quality and reliability, security/compliance, collaboration and measurable business impact.
+- Review performance on an agreed cadence; KPIs must be relevant to the role and must not encourage unsafe shortcuts or quantity over quality.
+- Track software investments with an owner, purpose, cost, expected benefit, adoption plan and review date.
+- Keep candidate, employee and performance information private and accessible only to authorized HR/management roles. Publish policies and obtain appropriate consent/notice before processing personal data.
+
+### Proposed administration features
+- Role and vacancy management.
+- Candidate pipeline and interview scheduling/scorecards.
+- Hiring approval and onboarding checklist.
+- Staff directory and role-based access.
+- KPI definitions, review periods and evidence notes.
+- Software inventory, subscriptions, spend owner and renewal/review dates.
+- Audit history for administrative decisions.
+
+**Current implementation status:** The public people page is an explanatory framework only. Candidate management, staff records, private interview notes, KPI dashboards and software spend tracking are not yet connected to an authenticated backend. Do not enter private employee or candidate information into the public page.
