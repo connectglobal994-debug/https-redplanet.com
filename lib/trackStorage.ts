@@ -111,7 +111,6 @@ export async function saveUploadedTrack(
     await put('manifest/tracks.json', JSON.stringify(updated), {
       access: 'public',
       addRandomSuffix: false,
-      allowOverwrite: true,
       contentType: 'application/json',
     });
     return newTrack;
