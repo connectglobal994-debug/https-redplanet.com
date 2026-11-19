@@ -1,20 +1,8 @@
 {
   "name": "red-planet-portal",
   "version": "2.0.0",
-  "description": "Red Planet Portal \u2014 Multi-Planetary Autonomous Digital Media Empire, High-Fidelity Music Streaming Syndicate, Algorithmic Telemetry Core, and Neural AI Command Center (Tesla / Apple / SpaceX Grade Architecture)",
-  "keywords": [
-    "music",
-    "streaming",
-    "itunes-grade",
-    "artist platform",
-    "media distribution",
-    "autonomous finance",
-    "meta-trader",
-    "neural ai",
-    "3d webgl",
-    "mars expansion",
-    "red planet"
-  ],
+  "description": "Red Planet media and creator platform",
+  "keywords": ["music", "streaming", "artist platform", "media", "red planet"],
   "author": "Deblaq & Win (JustSis LLC)",
   "license": "UNLICENSED",
   "private": true,
@@ -22,7 +10,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@react-three/drei": "10.7.7",
