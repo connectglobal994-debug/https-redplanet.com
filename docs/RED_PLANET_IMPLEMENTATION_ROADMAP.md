@@ -227,3 +227,40 @@ Management reports that Red Planet has approximately 10 team members and wants e
 
 ### Implementation status
 The public People & Performance page explains this operating model. The individual workspaces, task system, team dashboard, KPI evidence, notifications and manager permissions are not yet implemented. Build these as authenticated application features backed by Supabase; do not expose private team information on public pages. The approximate team size is a planning assumption and should be confirmed during onboarding.
+
+
+## 11. Red Planet AI Training Portal
+
+Add a dedicated portal so the team can continue learning and practising with Red Planet AI while work progresses. The portal should support the mission and reduce repeated explanations by giving team members a shared, approved source of company knowledge.
+
+### Team member experience
+- Personal learning dashboard with role-based learning paths and recommended next steps.
+- AI tutor/coach for questions, explanations, guided practice and feedback.
+- Safe practice workspace for simulations and exercises; no direct access to production systems or customer data by default.
+- Short lessons, quizzes, practical assignments and completion milestones.
+- Training paths for platform/product knowledge, AI tool use, security and privacy, operating procedures, communication and each person's specialist role.
+- Progress tracking visible to the learner and appropriately authorized managers.
+
+### Administrator and trainer experience
+- Manage learning paths, lessons, assessments and approved reference material.
+- Assign training by role or team and track completion.
+- Review AI answers and learning content for accuracy; flag outdated or incorrect material.
+- Collect learner feedback and improvement suggestions.
+- Maintain access controls, content versioning and audit logs.
+
+### AI knowledge and safety
+- Ground company-specific answers in approved Red Planet documentation and show source references where practical.
+- Separate public information, internal team guidance and restricted HR, finance, customer or trading information.
+- Enforce each user's role permissions when retrieving documents; never let the AI bypass underlying access controls.
+- Treat uploaded material and user feedback as suggestions for review, not automatic instructions or trusted policy.
+- Learning conversations do not automatically retrain the underlying model. Any reuse of feedback or work materials for shared knowledge requires clear notice, permission, review and appropriate retention controls.
+- Do not allow the training portal to execute live payments, publish content, contact people or change production settings. Keep exercises sandboxed and require approval for consequential actions.
+
+### Delivery stages
+1. Build a protected training area linked to individual team accounts.
+2. Add the first approved Red Planet onboarding and product knowledge materials.
+3. Add AI tutor retrieval from that approved knowledge base.
+4. Add learning paths, quizzes, practical sandbox exercises and progress tracking.
+5. Add manager assignment and reporting with least-privilege access.
+
+**Implementation status:** The People & Performance page now describes the proposed AI Training Portal. The portal, AI knowledge retrieval, training content, sandbox, assessments and progress dashboard are requirements—not yet a deployed working feature. Build and test them in development before exposing them to the full team.
