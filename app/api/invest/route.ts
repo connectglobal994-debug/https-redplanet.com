@@ -1,19 +1,11 @@
-// app/api/invest/route.ts
-//
-// Enterprise-Grade Red Planet Investor & Autonomous Satellite News Telemetry Router
-// Founders: Deblaq & Win | Core Architecture & Engineering: Deblaq
-// Receives investor dossiers, validates parameters, simulates real-time satellite news/weather
-// telemetry from orbital Node 08, integrates Resend email dispatch to executive command
-// (redplanetcodes@gmail.com / WhatsApp: +254 794 190 600), and returns structured telemetry.
-
 import { NextRequest, NextResponse } from 'next/server';
 
 type InvestorSubmission = {
-  name?: string;
-  email?: string;
-  type?: string;
-  investmentTier?: string;
-  message?: string;
+  name?: unknown;
+  email?: unknown;
+  type?: unknown;
+  investmentTier?: unknown;
+  message?: unknown;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,129 +17,91 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid submission payload format.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid submission payload.' }, { status: 400 });
   }
 
-  const { name, email, type, investmentTier, message } = body;
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  const email = typeof body.email === 'string' ? body.email.trim() : '';
+  const type = typeof body.type === 'string' ? body.type.trim().slice(0, 100) : 'partnership';
+  const investmentTier = typeof body.investmentTier === 'string' ? body.investmentTier.trim().slice(0, 100) : '';
+  const message = typeof body.message === 'string' ? body.message.trim() : '';
 
-  // --- Validation ---
-  if (!name?.trim() || !email?.trim() || !message?.trim()) {
-    return NextResponse.json(
-      { error: 'Name, secure email address, and strategic message are required.' },
-      { status: 400 }
-    );
+  if (!name || name.length > 160 || !email || !message) {
+    return NextResponse.json({ error: 'Name, email and message are required. Name must be 160 characters or fewer.' }, { status: 400 });
   }
-  if (!EMAIL_REGEX.test(email.trim())) {
+  if (!EMAIL_REGEX.test(email) || email.length > 254) {
     return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });
   }
   if (message.length > MAX_MESSAGE_LENGTH) {
-    return NextResponse.json(
-      { error: `Message must be under ${MAX_MESSAGE_LENGTH} characters.` },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.` }, { status: 400 });
   }
 
-  // Investor submissions always route to the platform-owned inbox; never accept a
-  // caller-controlled recipient because that would turn this endpoint into an email relay.
-  const targetEmail = DEFAULT_NOTIFY_EMAIL;
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !fromEmail) {
+    return NextResponse.json({
+      success: false,
+      status: 'NOT_CONFIGURED',
+      error: 'Investor email delivery is not configured. This submission has not been saved by the platform. Please try again later or use the published contact details.',
+    }, { status: 503 });
+  }
 
-  const submission = {
-    investorName: name.trim(),
-    investorEmail: email.trim(),
-    engagementType: type?.trim() || 'institutional_investor',
-    allocationTier: investmentTier?.trim() || 'strategic_syndicate',
-    messageContent: message.trim(),
-    routedTo: targetEmail,
-    founders: 'Deblaq & Win',
-    satelliteNode: 'Orbital Relay 08',
-    receivedAt: new Date().toISOString(),
-  };
+  const receivedAt = new Date().toISOString();
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [DEFAULT_NOTIFY_EMAIL],
+        reply_to: email,
+        subject: `Red Planet enquiry — ${name}`,
+        text: [
+          'RED PLANET BUSINESS ENQUIRY',
+          `Name: ${name}`,
+          `Email: ${email}`,
+          `Enquiry type: ${type || 'Not specified'}`,
+          `Plan / tier: ${investmentTier || 'Not specified'}`,
+          `Received: ${receivedAt}`,
+          '',
+          message,
+        ].join('\n'),
+      }),
+    });
 
-  // Do not log investor names, email addresses, or private message content.
-
-  // --- Resend Email Dispatch Integration ---
-  const resendKey = process.env.RESEND_API_KEY;
-  let emailSent = false;
-
-  if (resendKey) {
-    try {
-      const emailRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Red Planet Investor Desk <onboarding@resend.dev>',
-          to: [targetEmail],
-          reply_to: submission.investorEmail,
-          subject: `New Investor Dossier — ${submission.investorName} (${submission.allocationTier})`,
-          text: [
-            `========================================`,
-            `RED PLANET SECURE INVESTOR DOSSIER UPLINK`,
-            `========================================`,
-            `Name / Entity: ${submission.investorName}`,
-            `Secure Email: ${submission.investorEmail}`,
-            `Engagement Type: ${submission.engagementType}`,
-            `Allocation Tier: ${submission.allocationTier}`,
-            `Satellite Node: ${submission.satelliteNode}`,
-            `Timestamp: ${submission.receivedAt}`,
-            '',
-            'Strategic Vision Statement & Message:',
-            submission.messageContent,
-            '',
-            '----------------------------------------',
-            'Founders: Deblaq & Win',
-            'Direct Contact: +254 794 190 600',
-          ].join('\n'),
-        }),
-      });
-      emailSent = emailRes.ok;
-      if (!emailRes.ok) {
-        console.warn('Resend API returned non-OK status:', emailRes.status);
-      }
-    } catch (err) {
-      console.warn('Failed to send investor notification email via Resend:', err);
+    if (!response.ok) {
+      console.error('Investor notification provider returned status:', response.status);
+      return NextResponse.json({
+        success: false,
+        status: 'DELIVERY_FAILED',
+        error: 'The notification service could not deliver this enquiry. It has not been stored in a platform database.',
+      }, { status: 502 });
     }
-  } else {
-    console.warn('RESEND_API_KEY not set — investor dossier was logged and simulated, but no external email was dispatched.');
+
+    return NextResponse.json({
+      success: true,
+      status: 'EMAIL_NOTIFICATION_SENT',
+      message: 'Your enquiry email was sent to the Red Planet team. This confirmation means email delivery was accepted; it is not a platform CRM record.',
+      timestamp: receivedAt,
+    }, { status: 200 });
+  } catch (error) {
+    console.error('Investor notification request failed:', error);
+    return NextResponse.json({
+      success: false,
+      status: 'DELIVERY_FAILED',
+      error: 'The notification service is temporarily unavailable. The platform has not stored this enquiry.',
+    }, { status: 502 });
   }
-
-  // --- Simulated Real-Time Satellite News & Weather Telemetry Data Feed ---
-  const simulatedSatelliteNewsFeed = {
-    nodeStatus: 'SYNCHRONIZED',
-    activeTelemetry: 'Martian High-Pressure Front (Wind 12 m/s, -63°C) — Orbital Node 08',
-    latestGlobalNewsBroadcast: 'RedPlanet.tv Node 08: Orbital Transport & Earth-Mars Logistics Fully Optimized.',
-    syndicationReach: '4.8M Impressions across X (@D Black), Instagram (@_african_motivation & @pillar.alliance), and YouTube.',
-  };
-
-  // --- Enterprise Response ---
-  return NextResponse.json({
-    success: true,
-    status: 'DOSSIER_SECURED_AND_ROUTED',
-    routedInbox: targetEmail,
-    notifiedViaEmail: emailSent,
-    foundersNotification: 'Deblaq & Win alerted via secure channel.',
-    satelliteTelemetry: simulatedSatelliteNewsFeed,
-    message: emailSent
-      ? "Thanks — your dossier has been securely encrypted and routed to founders Deblaq & Win."
-      : "Thanks — your dossier was received and logged. Direct email relay requires RESEND_API_KEY configuration; follow up via WhatsApp if necessary.",
-    contact: {
-      email: targetEmail,
-      whatsapp: '+254 794 190 600',
-    },
-    timestamp: submission.receivedAt,
-  });
 }
 
 export async function GET() {
+  const configured = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
   return NextResponse.json({
-    service: 'Red Planet Investor & Satellite Telemetry Gateway',
-    status: 'ONLINE',
-    primaryContact: DEFAULT_NOTIFY_EMAIL,
-    whatsapp: '+254 794 190 600',
-    founders: 'Deblaq & Win',
-    satelliteStatus: 'Active Orbital Relay 08 - Gathering Live News & Weather Data',
-    securityProtocol: 'Encrypted via Red Planet Secure Uplink Protocol',
-  });
+    service: 'Red Planet investor enquiry email notification',
+    status: configured ? 'CONFIGURED_NOT_HEALTHCHECKED' : 'NOT_CONFIGURED',
+    persistence: 'No database-backed CRM persistence is implemented yet.',
+  }, { status: configured ? 200 : 503 });
 }
