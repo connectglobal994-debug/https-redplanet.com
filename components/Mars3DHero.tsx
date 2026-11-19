@@ -236,7 +236,7 @@ export default function Mars3DHero() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-white/10">
             <div className="space-y-1">
               <span className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase border ${toneColor}`}>
-                {currentStage.phase} // {currentStage.date}
+                {currentStage.phase} {'//'} {currentStage.date}
               </span>
               <h3 className="text-xl sm:text-2xl font-black text-white uppercase font-sans mt-2">{currentStage.title}</h3>
             </div>
