@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#f4f4f4;
+    --line:#e4e4e4;
+    --text:#171a20;
+    --text-dim:#5c5e62;
+    --red:#e82127;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:#0d0d0d;
+    display:flex;justify-content:center;
+    padding:48px 16px;
+    font-family:'Inter',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .device{
+    width:390px;
+    background:var(--bg);
+    border-radius:44px;
+    box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 8px #1a1a1c,0 0 0 9px #2c2c2e;
+    overflow:hidden;
+    position:relative;
+  }
+  .statusbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 28px 4px;
+    font-size:15px;font-weight:600;color:var(--text);
+  }
+  .screen{padding:6px 22px 110px;height:780px;overflow-y:auto;scrollbar-width:none;}
+  .screen::-webkit-scrollbar{display:none;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin:16px 0 6px;}
+  .model-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-dim);}
+  .icon-btn{font-size:20px;color:var(--text);}
+
+  .car-stage{
+    position:relative;height:190px;
+    display:flex;align-items:center;justify-content:center;
+    margin:20px 0 8px;
+  }
+  .car-body{
+    width:260px;height:90px;
+    background:linear-gradient(180deg,#232323 0%,#0d0d0d 100%);
+    border-radius:40px 60px 30px 30px;
+    position:relative;
+    box-shadow:0 20px 30px rgba(0,0,0,0.15);
+  }
+  .car-body::before{
+    content:'';position:absolute;top:-28px;left:60px;width:130px;height:40px;
+    background:linear-gradient(180deg,#2b2b2b 0%,#151515 100%);
+    border-radius:30px 30px 0 0;
+  }
+  .car-shadow{position:absolute;bottom:-14px;width:220px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.18) 0%,transparent 70%);}
+
+  .lock-pill{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--text);color:#fff;
+    padding:9px 20px;border-radius:24px;
+    font-size:13px;font-weight:600;
+    width:fit-content;margin:0 auto 22px;
+  }
+
+  .status-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;}
+  .battery-num{font-family:'Rajdhani',sans-serif;font-size:44px;font-weight:700;color:var(--text);line-height:1;}
+  .battery-sub{font-size:12px;color:var(--text-dim);margin-top:2px;}
+  .battery-bar{width:100px;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+  .battery-fill{width:72%;height:100%;background:var(--text);}
+
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+  .action{
+    background:var(--surface);border-radius:14px;
+    padding:14px 6px;text-align:center;
+  }
+  .action i{font-size:20px;color:var(--text);}
+  .action-label{font-size:10px;font-weight:600;color:var(--text-dim);margin-top:6px;text-transform:uppercase;letter-spacing:0.03em;}
+
+  .card{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:12px;}
+  .card-label{font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+  .map-block{width:100%;height:100px;background:linear-gradient(135deg,#dcdcdc 0%,#c8c8c8 100%);border-radius:10px;position:relative;}
+  .map-pin{position:absolute;top:38%;left:52%;width:10px;height:10px;background:var(--red);border-radius:50% 50% 50% 0;transform:rotate(-45deg);}
+
+  .climate-row{display:flex;justify-content:space-between;align-items:center;}
+  .climate-temp{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--text);}
+
+  .tabbar{
+    position:absolute;left:0;right:0;bottom:0;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(20px);
+    border-top:1px solid var(--line);
+    display:flex;justify-content:space-around;
+    padding:10px 0 26px;
+  }
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;color:#b8b8ba;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+  .tab.active{color:var(--red);}
+  .tab i{font-size:21px;}
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:flex;gap:5px;align-items:center;">
+      <i class="ti ti-antenna-bars-5" style="font-size:15px;"></i>
+      <i class="ti ti-wifi" style="font-size:15px;"></i>
+      <i class="ti ti-battery-4" style="font-size:17px;"></i>
+    </span>
+  </div>
+
+  <div class="screen">
+    <div class="topbar">
+      <span class="model-name">Model 3 · Long Range</span>
+      <i class="ti ti-settings icon-btn"></i>
+    </div>
+
+    <div class="car-stage">
+      <div class="car-shadow"></div>
+      <div class="car-body"></div>
+    </div>
+
+    <div class="lock-pill"><i class="ti ti-lock" style="font-size:14px;"></i> Locked</div>
+
+    <div class="status-row">
+      <div>
+        <div class="battery-num">72<span style="font-size:20px;">%</span></div>
+        <div class="battery-sub">235 mi range</div>
+      </div>
+      <div>
+        <div class="battery-bar"><div class="battery-fill"></div></div>
+        <div class="battery-sub" style="text-align:right;">Not charging</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="action"><i class="ti ti-air-conditioning"></i><div class="action-label">Climate</div></div>
+      <div class="action"><i class="ti ti-bolt"></i><div class="action-label">Charge</div></div>
+      <div class="action"><i class="ti ti-briefcase"></i><div class="action-label">Frunk</div></div>
+      <div class="action"><i class="ti ti-steering-wheel"></i><div class="action-label">Vent</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Location</div>
+      <div class="map-block"><div class="map-pin"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Climate</div>
+      <div class="climate-row">
+        <div class="climate-temp">70°F</div>
+        <div style="font-size:12px;color:var(--text-dim);">Cabin off · Set to auto</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab active"><i class="ti ti-car"></i>Vehicle</div>
+    <div class="tab"><i class="ti ti-map-2"></i>Charging</div>
+    <div class="tab"><i class="ti ti-shopping-bag"></i>Shop</div>
+    <div class="tab"><i class="ti ti-user"></i>Account</div>
+  </div>
+</div>
+
+</body>
+</html>

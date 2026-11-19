@@ -1,0 +1,48 @@
+{
+  "name": "red-planet-portal",
+  "version": "2.0.0",
+  "description": "Red Planet Portal \u2014 Multi-Planetary Autonomous Digital Media Empire, High-Fidelity Music Streaming Syndicate, Algorithmic Telemetry Core, and Neural AI Command Center (Tesla / Apple / SpaceX Grade Architecture)",
+  "keywords": [
+    "music",
+    "streaming",
+    "itunes-grade",
+    "artist platform",
+    "media distribution",
+    "autonomous finance",
+    "meta-trader",
+    "neural ai",
+    "3d webgl",
+    "mars expansion",
+    "red planet"
+  ],
+  "author": "Deblaq & Win (JustSis LLC)",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.7",
+    "@react-three/fiber": "9.6.1",
+    "@vercel/blob": "^0.27.0",
+    "framer-motion": "^11.0.3",
+    "next": "16.2.11",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.19.0",
+    "eslint-config-next": "16.2.11",
+    "postcss": "^8.5.23",
+    "tailwindcss": "^4.3.3",
+    "typescript": "5.7.3"
+  }
+}

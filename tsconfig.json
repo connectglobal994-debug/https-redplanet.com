@@ -1,0 +1,76 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // --- ELITE ECOSYSTEM UPGRADES ---
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "exactOptionalPropertyTypes": false,
+
+    // --- ADDITIONAL STRICTNESS & ARCHITECTURAL SAFEGUARDS ---
+    // Catches accessing an array/object index that TypeScript can't prove exists —
+    // e.g. `arr[i]` returns `T | undefined` instead of hiding runtime bugs.
+    "noUncheckedIndexedAccess": true,
+    // Requires the `override` keyword on subclass methods, preventing silent orphan bugs.
+    "noImplicitOverride": true,
+    // Blocks unreachable code and unused labels from compiling.
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@components/*": [
+        "./components/*"
+      ],
+      "@lib/*": [
+        "./lib/*"
+      ],
+      "@data/*": [
+        "./data/*"
+      ],
+      "@context/*": [
+        "./context/*"
+      ],
+      "@scripts/*": [
+        "./scripts/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "scripts/automation"
+  ]
+}
