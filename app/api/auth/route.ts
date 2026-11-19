@@ -4,12 +4,16 @@ import { createAdminSession, verifyAdminPassword } from '@/lib/adminAuth';
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  let body: { password?: unknown };
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+    return NextResponse.json({ error: 'Request body must be a JSON object.' }, { status: 400 });
+  }
+  const password = (body as { password?: unknown }).password;
 
   if (!process.env.ADMIN_UPLOAD_PASSWORD || !process.env.ADMIN_SESSION_SECRET) {
     return NextResponse.json(
@@ -18,7 +22,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (!verifyAdminPassword(body.password)) {
+  if (!verifyAdminPassword(password)) {
     return NextResponse.json({ error: 'Incorrect password.' }, { status: 401 });
   }
 
