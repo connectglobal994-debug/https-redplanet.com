@@ -1,14 +1,6 @@
-// lib/trackStorage.ts
-//
-// Enterprise-Grade Red Planet High-Capacity Storage Abstraction (Tesla / SpaceX / Apple Scale)
-// Founders: Deblaq & Win | Core Builder & Operations: Deblaq
-// Handles multi-gigabyte lossless audio tracks, high-definition video master files, and cover assets.
-// Features automatic environment detection: routes securely via Vercel Blob cloud storage (supporting
-// objects up to 5 TB with multipart chunking) in production, and local disk storage in development.
-
-import { Track } from './tracks';
-import fs from 'fs';
-import path from 'path';
+import type { Track } from './tracks';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const LOCAL_MANIFEST_PATH = path.join(process.cwd(), 'data', 'uploaded-tracks.json');
 const LOCAL_AUDIO_DIR = path.join(process.cwd(), 'public', 'audio');
@@ -16,13 +8,19 @@ const LOCAL_COVERS_DIR = path.join(process.cwd(), 'public', 'covers');
 const LOCAL_VIDEO_DIR = path.join(process.cwd(), 'public', 'video');
 
 function usingBlob() {
-  return !!process.env.BLOB_READ_WRITE_TOKEN;
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+function safeFileName(filename: string) {
+  const base = path.basename(filename).normalize('NFKC');
+  const cleaned = base.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+  return cleaned || 'upload.bin';
 }
 
 function readLocalManifest(): Track[] {
   try {
-    const raw = fs.readFileSync(LOCAL_MANIFEST_PATH, 'utf-8');
-    return JSON.parse(raw);
+    const parsed: unknown = JSON.parse(fs.readFileSync(LOCAL_MANIFEST_PATH, 'utf8'));
+    return Array.isArray(parsed) ? parsed as Track[] : [];
   } catch {
     return [];
   }
@@ -30,39 +28,36 @@ function readLocalManifest(): Track[] {
 
 function writeLocalManifest(tracks: Track[]) {
   fs.mkdirSync(path.dirname(LOCAL_MANIFEST_PATH), { recursive: true });
-  fs.writeFileSync(LOCAL_MANIFEST_PATH, JSON.stringify(tracks, null, 2));
+  const temporaryPath = `${LOCAL_MANIFEST_PATH}.tmp`;
+  fs.writeFileSync(temporaryPath, JSON.stringify(tracks, null, 2), 'utf8');
+  fs.renameSync(temporaryPath, LOCAL_MANIFEST_PATH);
 }
 
-// Enterprise metadata defaults for uploaded content across all genres (Reggae, Afrobeat, Hip Hop, etc.)
 function withDefaults(track: Omit<Track, 'audioUrl' | 'coverUrl' | 'videoUrl'>): Omit<Track, 'audioUrl' | 'coverUrl' | 'videoUrl'> {
   return {
     ...track,
-    artist: track.artist?.trim() || 'Red Planet Syndicate / Independent Artist',
-    genre: track.genre?.trim() || 'Cinematic / Multi-Genre Master',
-    duration: track.duration ? String(track.duration) : '3:35',
-    streamingStandard: track.streamingStandard?.trim() || 'Studio Master Lossless / HD Stream',
+    artist: track.artist?.trim() || 'Independent Artist',
+    genre: track.genre?.trim() || 'Unspecified',
+    duration: track.duration ? String(track.duration) : 'Pending metadata',
+    streamingStandard: track.streamingStandard?.trim() || 'Original uploaded audio',
   };
 }
 
 export async function getUploadedTracks(): Promise<Track[]> {
   if (usingBlob()) {
-    try {
-      const { list } = await import('@vercel/blob');
-      const { blobs } = await list({ prefix: 'manifest/tracks.json' });
-      if (blobs.length === 0) return [];
-      const firstBlob = blobs[0];
-      if (!firstBlob || !firstBlob.url) return [];
-      const res = await fetch(firstBlob.url, { cache: 'no-store' });
-      if (!res.ok) {
-        console.error('Track manifest fetch failed from cloud storage:', res.status);
-        return [];
-      }
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch (err) {
-      console.error('Cloud Blob read error:', err);
-      return [];
-    }
+    const { list } = await import('@vercel/blob');
+    const { blobs } = await list({ prefix: 'manifest/tracks.json' });
+    const manifest = blobs.find((blob) => blob.pathname === 'manifest/tracks.json');
+    if (!manifest?.url) return [];
+    const response = await fetch(manifest.url, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Track manifest request failed: ${response.status}`);
+    const data: unknown = await response.json();
+    if (!Array.isArray(data)) throw new Error('Track manifest has an invalid format.');
+    return data as Track[];
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Persistent media storage is not configured. Set BLOB_READ_WRITE_TOKEN before enabling uploads.');
   }
   return readLocalManifest();
 }
@@ -73,39 +68,38 @@ export async function saveUploadedTrack(
   coverFile: File | null,
   videoFile?: File | null
 ): Promise<Track> {
-  const withMeta = withDefaults(track);
+  const metadata = withDefaults(track);
+  const audioName = safeFileName(audioFile.name);
+  const coverName = coverFile ? safeFileName(coverFile.name) : undefined;
+  const videoName = videoFile ? safeFileName(videoFile.name) : undefined;
 
   if (usingBlob()) {
     const { put } = await import('@vercel/blob');
-
-    // High-capacity cloud storage upload (Vercel Blob supports objects up to 5 TB with multipart chunking)
-    const audioBlob = await put(`audio/${track.id}-${audioFile.name}`, audioFile, {
+    const audioBlob = await put(`audio/${track.id}-${audioName}`, audioFile, {
       access: 'public',
-      addRandomSuffix: false,
-      multipart: audioFile.size > 100 * 1024 * 1024, // Enable automated multipart parallel chunking for large masters (>100MB)
-    } as any);
+      addRandomSuffix: true,
+    });
 
     let coverUrl: string | undefined;
-    if (coverFile) {
-      const coverBlob = await put(`covers/${track.id}-${coverFile.name}`, coverFile, {
+    if (coverFile && coverName) {
+      const coverBlob = await put(`covers/${track.id}-${coverName}`, coverFile, {
         access: 'public',
-        addRandomSuffix: false,
+        addRandomSuffix: true,
       });
       coverUrl = coverBlob.url;
     }
 
     let videoUrl: string | undefined;
-    if (videoFile && videoFile.size > 0) {
-      const videoBlob = await put(`video/${track.id}-${videoFile.name}`, videoFile, {
+    if (videoFile && videoFile.size > 0 && videoName) {
+      const videoBlob = await put(`video/${track.id}-${videoName}`, videoFile, {
         access: 'public',
-        addRandomSuffix: false,
-        multipart: true, // HD Video streams utilize multipart upload chunking
-      } as any);
+        addRandomSuffix: true,
+      });
       videoUrl = videoBlob.url;
     }
 
     const newTrack: Track = {
-      ...withMeta,
+      ...metadata,
       audioUrl: audioBlob.url,
       coverUrl,
       videoUrl,
@@ -113,55 +107,48 @@ export async function saveUploadedTrack(
     };
 
     const existing = await getUploadedTracks();
-    const updated = [...existing.filter((t) => t.id !== track.id), newTrack];
-
+    const updated = [...existing.filter((item) => item.id !== track.id), newTrack];
     await put('manifest/tracks.json', JSON.stringify(updated), {
       access: 'public',
       addRandomSuffix: false,
+      allowOverwrite: true,
       contentType: 'application/json',
     });
-
-    console.log('[RED PLANET EMPIRE — CLOUD STORAGE SYNDICATE SUCCESS]', { trackId: newTrack.id, sizeBytes: audioFile.size });
     return newTrack;
   }
 
-  // Local development high-capacity filesystem fallback
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Uploads are disabled until persistent cloud storage is configured.');
+  }
+
   fs.mkdirSync(LOCAL_AUDIO_DIR, { recursive: true });
   fs.mkdirSync(LOCAL_COVERS_DIR, { recursive: true });
   fs.mkdirSync(LOCAL_VIDEO_DIR, { recursive: true });
 
-  const audioFileName = `${track.id}-${audioFile.name}`;
-  const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
-  fs.writeFileSync(path.join(LOCAL_AUDIO_DIR, audioFileName), audioBuffer);
+  const audioFileName = `${track.id}-${audioName}`;
+  fs.writeFileSync(path.join(LOCAL_AUDIO_DIR, audioFileName), Buffer.from(await audioFile.arrayBuffer()));
 
   let coverUrl: string | undefined;
-  if (coverFile) {
-    const coverFileName = `${track.id}-${coverFile.name}`;
-    const coverBuffer = Buffer.from(await coverFile.arrayBuffer());
-    fs.writeFileSync(path.join(LOCAL_COVERS_DIR, coverFileName), coverBuffer);
+  if (coverFile && coverName) {
+    const coverFileName = `${track.id}-${coverName}`;
+    fs.writeFileSync(path.join(LOCAL_COVERS_DIR, coverFileName), Buffer.from(await coverFile.arrayBuffer()));
     coverUrl = `/covers/${coverFileName}`;
   }
 
   let videoUrl: string | undefined;
-  if (videoFile && videoFile.size > 0) {
-    const videoFileName = `${track.id}-${videoFile.name}`;
-    const videoBuffer = Buffer.from(await videoFile.arrayBuffer());
-    fs.writeFileSync(path.join(LOCAL_VIDEO_DIR, videoFileName), videoBuffer);
+  if (videoFile && videoFile.size > 0 && videoName) {
+    const videoFileName = `${track.id}-${videoName}`;
+    fs.writeFileSync(path.join(LOCAL_VIDEO_DIR, videoFileName), Buffer.from(await videoFile.arrayBuffer()));
     videoUrl = `/video/${videoFileName}`;
   }
 
   const newTrack: Track = {
-    ...withMeta,
+    ...metadata,
     audioUrl: `/audio/${audioFileName}`,
     coverUrl,
     videoUrl,
     mediaType: videoUrl ? 'video' : 'audio',
   };
-
-  const existing = readLocalManifest();
-  const updated = [...existing.filter((t) => t.id !== track.id), newTrack];
-  writeLocalManifest(updated);
-
-  console.log('[RED PLANET EMPIRE — LOCAL STORAGE PERSISTED]', { trackId: newTrack.id, sizeBytes: audioFile.size });
+  writeLocalManifest([...readLocalManifest().filter((item) => item.id !== track.id), newTrack]);
   return newTrack;
 }
