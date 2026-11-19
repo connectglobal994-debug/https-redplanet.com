@@ -21,10 +21,10 @@ interface NewsArticle {
 }
 
 const SATELLITE_AGENTS = [
-  { id: 'node-08', name: 'Mars Orbital Relay Node 08', status: 'ONLINE [99.9% LOCK]', anchor: 'Deblaq' },
-  { id: 'earth-hub', name: 'Earth Telemetry & Weather Hub', status: 'SYNCHRONIZED [98.4% LOCK]', anchor: 'Neural AI' },
-  { id: 'win-syndicate', name: 'Win Cinematic Broadcast Syndicate', status: 'OPTIMAL [100% LOCK]', anchor: 'Win' },
-  { id: 'elias-core', name: 'Vorn Advanced Quantum Relay', status: 'ACTIVE [ENCRYPTED]', anchor: 'Elias Vorn' }
+  { id: 'node-08', name: 'Mars Orbital Relay Node 08', status: 'NOT CONNECTED', anchor: 'Deblaq' },
+  { id: 'earth-hub', name: 'Earth Telemetry & Weather Hub', status: 'NOT CONNECTED', anchor: 'Neural AI' },
+  { id: 'win-syndicate', name: 'Win Cinematic Broadcast Syndicate', status: 'NOT VERIFIED', anchor: 'Win' },
+  { id: 'elias-core', name: 'Vorn Advanced Quantum Relay', status: 'NOT VERIFIED', anchor: 'Elias Vorn' }
 ];
 
 export default function RedPlanetNewsPage() {
@@ -56,38 +56,9 @@ export default function RedPlanetNewsPage() {
         setFilteredArticles(enriched);
       }
     } catch (err) {
-      console.error('Failed to sync live news wire', err);
-      const fallback: NewsArticle[] = [
-        {
-          title: 'Mars Orbital Node 08: Atmospheric Stabilization & Pressure Nominal',
-          summary: 'Automated telemetry reports stable barometric parameters across primary Martian colony sectors and subterranean hydroponic bays.',
-          url: '#',
-          source: 'Red Planet Core',
-          publishedAt: new Date().toISOString(),
-          agentNode: 'Mars Orbital Relay Node 08',
-          signalQuality: '99.9% [SECURE]'
-        },
-        {
-          title: 'Global Satellite Navigation Grid Synchronized for Interplanetary Trade',
-          summary: 'International trade corridors and high-frequency communication relays operating at peak efficiency under Vorn quantum routing architecture.',
-          url: '#',
-          source: 'Earth Telemetry Hub',
-          publishedAt: new Date().toISOString(),
-          agentNode: 'Earth Telemetry & Weather Hub',
-          signalQuality: '98.8% [SYNCHRONIZED]'
-        },
-        {
-          title: 'Win Cinematic Syndicate: 180+ Country Lossless Audio Rollout Active',
-          summary: 'Independent music release distribution, Dolby spatial metadata mapping, and automated high-definition video broadcasting fully operational.',
-          url: '#',
-          source: 'Win Syndicate',
-          publishedAt: new Date().toISOString(),
-          agentNode: 'Win Cinematic Broadcast Syndicate',
-          signalQuality: '100% [OPTIMAL]'
-        }
-      ];
-      setArticles(fallback);
-      setFilteredArticles(fallback);
+      console.error('Failed to load published news', err);
+      setArticles([]);
+      setFilteredArticles([]);
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -121,10 +92,10 @@ export default function RedPlanetNewsPage() {
             REDPLANET.NEWS // AUTOMATED SATELLITE &amp; AGENT WIRE
           </div>
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-white">
-            Live Space &amp; Interplanetary Intelligence
+            Red Planet Newsroom
           </h1>
           <p className="text-xs text-neutral-400">
-            Engineered by Elias Vorn, Deblaq &amp; Win. Real-time automated feeds sourced from global space agencies and orbital telemetry relays.
+            Engineered by Elias Vorn, Deblaq &amp; Win. Editorial articles approved for publication. External news feeds are not shown as live until a verified source is connected.
           </p>
         </div>
 

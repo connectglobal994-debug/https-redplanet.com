@@ -9,14 +9,13 @@ export async function supabaseAdmin<T>(path: string, init: RequestInit = {}): Pr
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Supabase server configuration is missing');
   }
+  const headers = new Headers(init.headers);
+  headers.set('apikey', SUPABASE_SERVICE_ROLE_KEY);
+  headers.set('Authorization', `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`);
+  headers.set('Content-Type', 'application/json');
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...init,
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-      ...(init.headers || {}),
-    },
+    headers,
     cache: 'no-store',
   });
   if (!response.ok) {

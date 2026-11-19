@@ -23,6 +23,8 @@ Set real values in `.env.local` locally and in Vercel Project Settings → Envir
 
 Never put real credentials in source files, `public/`, `.env.example`, or `.env.local.example`. Never expose provider secrets through `NEXT_PUBLIC_*`.
 
+Apply the SQL migrations in `supabase/migrations/` to the intended Supabase project in filename order. The second migration creates the membership waitlist and editorial news tables. Keep `SUPABASE_SERVICE_ROLE_KEY` server-side only; never expose it to browser code.
+
 ## 3. Run locally
 ```bash
 npm run dev
