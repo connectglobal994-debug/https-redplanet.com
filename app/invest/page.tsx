@@ -113,7 +113,7 @@ export default function InvestPage() {
             <span className="text-xs font-mono text-neonCyan uppercase tracking-widest">[MULTI-PLANETARY CAPITAL SYNDICATE]</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-wider uppercase text-white font-sans">
-            Invest <span className="text-marsRed">//</span> Collaborate
+            Invest <span className="text-marsRed">{'//'}</span> Collaborate
           </h1>
           <p className="text-sm text-neutral-400 mt-2 font-mono max-w-2xl leading-relaxed">
             Engineering the multi-planetary future. Backing the platform, catalog, audience, and distribution infrastructure from the ground up — inspired by Elon Musk’s Mars roadmap. Founded by Deblaq & Win.
