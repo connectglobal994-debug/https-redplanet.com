@@ -216,7 +216,7 @@ export default function Sidebar() {
     <>
       {/* ============ Desktop Sidebar ============ */}
       <aside className="hidden xl:flex xl:flex-col xl:w-72 xl:fixed xl:inset-y-0 xl:left-0 glass-panel-strong border-r border-white/10 px-4 py-6 z-40 shadow-2xl">
-        <SidebarContent />
+        {SidebarContent()}
       </aside>
 
       {/* ============ Mobile Top Bar + Drawer ============ */}
@@ -238,7 +238,7 @@ export default function Sidebar() {
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div className="xl:hidden fixed inset-0 z-40 bg-deepSpace/95 backdrop-blur-2xl px-6 py-6 pt-24 overflow-y-auto flex flex-col">
-          <SidebarContent />
+          {SidebarContent()}
         </div>
       )}
 

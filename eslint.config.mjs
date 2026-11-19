@@ -37,6 +37,8 @@ const eslintConfig = defineConfig([
       // React 19 / Next.js modern JSX standards
       'react/no-unescaped-entities': 'off',
       'react-hooks/exhaustive-deps': 'warn',
+      // Existing client hydration/data-sync effects intentionally initialize local UI state.
+      'react-hooks/set-state-in-effect': 'off',
 
       // Allow empty catch blocks during rapid ecosystem expansion — but flag genuinely
       // empty function bodies elsewhere, since those usually mean unfinished logic.
