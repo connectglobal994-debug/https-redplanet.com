@@ -203,3 +203,27 @@ Management has identified the need to restructure hiring for AI and performance-
 - Audit history for administrative decisions.
 
 **Current implementation status:** The public people page is an explanatory framework only. Candidate management, staff records, private interview notes, KPI dashboards and software spend tracking are not yet connected to an authenticated backend. Do not enter private employee or candidate information into the public page.
+
+
+## 10. Individual operating systems for the current team
+
+Management reports that Red Planet has approximately 10 team members and wants each person to have an operating system for their work. Interpret this as an individual, role-based digital workspace inside the Red Planet platform—not a separate computer operating system.
+
+### Required capabilities
+- Individual account and role assignment; no shared logins or shared passwords.
+- Personal dashboard showing responsibilities, priorities, assigned tasks, due dates, progress and blockers.
+- Role profile with manager, decision boundaries, expected deliverables and collaborators.
+- Individual goals and role-specific KPIs, with evidence, check-ins and feedback.
+- Team-wide project view for dependencies, handovers, announcements, meetings and shared resources.
+- Manager view for authorized workload and delivery oversight.
+- Permission boundaries for sensitive areas including finance, HR/candidate records, customer information, trading and platform administration.
+- Audit history for permission changes and important administrative actions.
+
+### Proposed operating rhythm
+1. Manager agrees role, responsibilities, priorities and measurable outcomes with each team member.
+2. Team member updates tasks and blockers during the agreed work cycle.
+3. Managers review delivery, quality, workload and support needs on a regular cadence.
+4. Goals and priorities are adjusted and recorded when business needs change.
+
+### Implementation status
+The public People & Performance page explains this operating model. The individual workspaces, task system, team dashboard, KPI evidence, notifications and manager permissions are not yet implemented. Build these as authenticated application features backed by Supabase; do not expose private team information on public pages. The approximate team size is a planning assumption and should be confirmed during onboarding.
