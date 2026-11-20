@@ -10,7 +10,7 @@
 </style>
 </head>
 <body>
-<header class="top"><a class="logo" href="index.html">RED <b>PLANET</b> / MUSIC</a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="music.html" aria-current="page">Music</a><a href="#studios">Studios</a><a href="ai.html">AI Studio</a><a href="tv.html">TV & News</a><a href="collaborations.html">Collaborate</a><a href="payments.html">Plans</a></nav></header>
+<header class="top"><a class="logo" href="index.html">RED <b>PLANET</b> / MUSIC</a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="music.html" aria-current="page">Music</a><a href="#studios">Studios</a><a href="ai.html">AI Studio</a><a href="tv.html">TV & News</a><a href="collaborations.html">Collaborate</a><a href="payments.html">Plans</a><a href="account.html">Account</a></nav></header>
 <section class="hero"><div class="wrap"><div class="eyebrow">RED PLANET SOUND UNIVERSE · ORIGINALS & INDEPENDENTS</div><h1>THE FUTURE<br>HAS A <span>SOUND.</span></h1><p class="lead">Discover music created by Red Planet's own AI music capability, explore Red Planet releases and meet independent artists. One home for original sound, new voices and the next generation of music culture.</p><div class="actions"><a class="btn" href="#originals">Explore Red Planet AI Music</a><a class="btn secondary" href="#submit">Submit your music</a></div></div></section>
 <main class="wrap">
 <section class="section" id="studios"><div class="head"><span class="pill">RED PLANET CREATIVE SPACES</span><h2>Step inside the music studios.</h2><p class="muted">A connected studio universe inspired by immersive creator platforms: choose a room, make music, collaborate, listen and build your sound. These are music and creator spaces—not adult or dating rooms.</p></div>
@@ -22,15 +22,80 @@
 <article class="card"><span class="pill">MASTERING</span><h3>Mix & Master Suite</h3><p>Prepare mixes, check delivery requirements and submit masters for quality review.</p><a class="btn secondary" href="#submit">Prepare a release</a></article>
 <article class="card"><span class="pill">RADIO</span><h3>Planet Radio</h3><p>Discover curated Red Planet Originals and approved independent music.</p><a class="btn secondary" href="#player">Listen now</a></article>
 </div>
-<div class="panel"><span class="pill">YOUR CREATOR DESK</span><h3>One place for every release</h3><p>Planned member workspace: projects, saved drafts, audio takes, cover art, contributor credits, release checklist, submission status and royalty/reporting statements where applicable.</p><p class="notice">Studio rooms are currently front-end previews. Recording, cloud project saving, collaboration sessions and published streaming require backend services and media infrastructure.</p></div></section>
+<div class="panel"><span class="pill">YOUR CREATOR DESK</span><h3>One place for every release</h3><p>Planned member workspace: projects, saved drafts, audio takes, cover art, contributor credits, release checklist, submission status and royalty/reporting statements where applicable.</p><p class="notice">Studio rooms are the creator workflow. Artist submissions now connect to Red Planet accounts and private storage; live recording, collaborative sessions and public streaming remain separate integrations.</p></div></section>
 <section class="section" id="originals"><div class="head"><span class="pill">RED PLANET ORIGINALS</span><h2>Made in our own AI music studio.</h2><p class="muted">A dedicated home for music created with Red Planet's own AI capability. Each release should be labelled clearly with its creator, production details and any AI contribution. Connect the generation engine and catalogue service to make creation and publishing available here.</p></div><div class="grid"><article class="card"><span class="step">01 / CREATE</span><h3>Red Planet AI Studio</h3><p>Develop original tracks, explore genres, shape ideas and prepare releases using Red Planet's music AI.</p><a class="btn secondary" href="ai.html">Open AI Studio</a></article><article class="card"><span class="step">02 / RELEASE</span><h3>Original releases</h3><p>Singles, albums, instrumentals, soundtracks and curated collections from the Red Planet catalogue.</p></article><article class="card"><span class="step">03 / DISCOVER</span><h3>Planet Radio</h3><p>A continuous listening experience built from approved Red Planet releases and featured independent artists.</p></article></div></section>
-<section class="section" id="player"><div class="head"><span class="pill">LISTENING ROOM</span><h2>Preview the sound.</h2><p class="muted">Select an audio file below to preview it in this browser. This demonstration does not publish or store the track.</p></div><div class="player"><div class="cover">RP</div><div><strong id="trackName">Red Planet listening room</strong><div class="muted" id="trackMeta">Choose a local audio file to preview</div></div><audio id="audio" controls preload="none"></audio></div><div class="field"><label for="previewFile">Local audio preview</label><input id="previewFile" type="file" accept="audio/*"></div><button class="btn secondary" id="loadPreview" type="button">Load preview</button><p class="muted" id="previewStatus" aria-live="polite">Your selected file stays on this device.</p></section>
-<section class="section" id="submit"><div class="head"><span class="pill">ARTIST & LABEL PORTAL</span><h2>Your music deserves a stage.</h2><p class="muted">Independent artists, producers and labels can prepare a submission for Red Planet review. The future artist dashboard will support audio masters, artwork, credits, release metadata, status tracking and paid release packages.</p></div><div class="grid"><article class="card"><span class="step">STARTER</span><h3>Track submission</h3><div class="price">Review first <small>pricing to be confirmed</small></div><p>Submit a single track for editorial and catalogue consideration. No payment is collected on this preview page.</p></article><article class="card"><span class="step">ARTIST RELEASE</span><h3>Artist release package</h3><div class="price">Coming soon</div><p>Planned options for artist profile, artwork, metadata support and release presentation.</p></article><article class="card"><span class="step">LABEL / PARTNER</span><h3>Label partnership</h3><div class="price">Talk to our team</div><p>For labels, managers and collectives submitting multiple artists or catalogue projects.</p></article></div>
-<div class="panel"><h3>Prepare an artist submission</h3><p>Use this form to prepare your information. It currently runs only in this browser; it does not upload files, create an account, submit a request or charge a fee.</p><form id="artistForm"><div class="field"><label for="artistName">Artist or label name</label><input id="artistName" name="artist" required></div><div class="field"><label for="contactEmail">Contact email</label><input id="contactEmail" name="email" type="email" required></div><div class="field"><label for="releaseTitle">Track / release title</label><input id="releaseTitle" name="title" required></div><div class="field"><label for="releaseType">Submission type</label><select id="releaseType" name="type"><option>Single track</option><option>EP</option><option>Album</option><option>Instrumental / beat</option><option>Label catalogue</option></select></div><div class="field"><label for="audioFile">Audio master (preview only)</label><input id="audioFile" type="file" accept="audio/*"></div><div class="field"><label for="artworkFile">Cover artwork (preview only)</label><input id="artworkFile" type="file" accept="image/*"></div><div class="field"><label for="credits">Writers, producers and credits</label><textarea id="credits" name="credits" placeholder="List all contributors and rights holders"></textarea></div><label class="checks"><input type="checkbox" required> I confirm that I control or have permission to submit this recording and artwork, and that all contributors and samples are disclosed.</label><button class="btn" type="submit">Prepare submission</button><p class="muted" id="artistStatus" aria-live="polite"></p></form></div></section>
-<section class="section"><div class="head"><span class="pill">TRUST & RIGHTS</span><h2>Built to respect artists.</h2></div><div class="grid"><article class="card"><h3>Rights declaration</h3><p>Confirm ownership or authorization for recordings, compositions, samples, artwork and featured performers before publication.</p></article><article class="card"><h3>Human review</h3><p>Submissions are reviewed for quality, metadata, rights and platform standards before any public release.</p></article><article class="card"><h3>Transparent earnings</h3><p>Future artist accounts will show package fees, approved release status, usage reporting and any agreed revenue share. No royalties are promised until contracts and reporting are in place.</p></article></div><p class="notice">Platform status: this is the front-end foundation. Persistent artist accounts, secure uploads, storage, transcoding, streaming delivery, moderation queues, checkout, contracts and payout accounting still require a connected backend and approved provider accounts.</p></section>
+<section class="section" id="player"><div class="head"><span class="pill">LISTENING ROOM</span><h2>Preview the sound.</h2><p class="muted">Preview a local audio file here. Submitted masters are uploaded privately to your Red Planet account for review.</p></div><div class="player"><div class="cover">RP</div><div><strong id="trackName">Red Planet listening room</strong><div class="muted" id="trackMeta">Choose a local audio file to preview</div></div><audio id="audio" controls preload="none"></audio></div><div class="field"><label for="previewFile">Local audio preview</label><input id="previewFile" type="file" accept="audio/*"></div><button class="btn secondary" id="loadPreview" type="button">Load preview</button><p class="muted" id="previewStatus" aria-live="polite">Local preview only; submission uploads are handled separately.</p></section>
+<section class="section" id="submit"><div class="head"><span class="pill">ARTIST & LABEL PORTAL</span><h2>Your music deserves a stage.</h2><p class="muted">Independent artists, producers and labels can submit music for Red Planet review. Sign in first; masters and artwork are stored privately, and submissions remain pending until an authorized reviewer acts.</p></div><div class="grid"><article class="card"><span class="step">STARTER</span><h3>Track submission</h3><div class="price">Review first <small>pricing to be confirmed</small></div><p>Submit a track for editorial and catalogue consideration. No payment is collected here.</p></article><article class="card"><span class="step">ARTIST RELEASE</span><h3>Artist release package</h3><div class="price">Coming soon</div><p>Planned options for artist profile, artwork, metadata support and release presentation.</p></article><article class="card"><span class="step">LABEL / PARTNER</span><h3>Label partnership</h3><div class="price">Talk to our team</div><p>For labels, managers and collectives submitting multiple artists or catalogue projects.</p></article></div>
+<div class="panel"><h3>Prepare an artist submission</h3><p>Sign in with your Red Planet account before submitting. Audio and artwork are uploaded to private storage; the submission is recorded for review. No payment is collected here.</p><form id="artistForm"><div class="field"><label for="artistName">Artist or label name</label><input id="artistName" name="artist" required></div><div class="field"><label for="contactEmail">Contact email</label><input id="contactEmail" name="email" type="email" required></div><div class="field"><label for="releaseTitle">Track / release title</label><input id="releaseTitle" name="title" required></div><div class="field"><label for="releaseType">Submission type</label><select id="releaseType" name="type"><option>Single track</option><option>EP</option><option>Album</option><option>Instrumental / beat</option><option>Label catalogue</option></select></div><div class="field"><label for="audioFile">Audio master (preview only)</label><input id="audioFile" type="file" accept="audio/*" required></div><div class="field"><label for="artworkFile">Cover artwork (preview only)</label><input id="artworkFile" type="file" accept="image/*"></div><div class="field"><label for="credits">Writers, producers and credits</label><textarea id="credits" name="credits" placeholder="List all contributors and rights holders"></textarea></div><label class="checks"><input type="checkbox" required> I confirm that I control or have permission to submit this recording and artwork, and that all contributors and samples are disclosed.</label><button class="btn" type="submit">Submit for review</button><p class="muted" id="artistStatus" aria-live="polite"></p></form></div></section>
+<section class="section"><div class="head"><span class="pill">TRUST & RIGHTS</span><h2>Built to respect artists.</h2></div><div class="grid"><article class="card"><h3>Rights declaration</h3><p>Confirm ownership or authorization for recordings, compositions, samples, artwork and featured performers before publication.</p></article><article class="card"><h3>Human review</h3><p>Submissions are reviewed for quality, metadata, rights and platform standards before any public release.</p></article><article class="card"><h3>Transparent earnings</h3><p>Future artist accounts will show package fees, approved release status, usage reporting and any agreed revenue share. No royalties are promised until contracts and reporting are in place.</p></article></div><p class="notice">Submission status: account authentication, private master/artwork uploads and pending review records are connected to Supabase. Public streaming, audio transcoding, admin review dashboard, checkout, contracts and payout accounting are not yet active.</p></section>
 </main><footer>RED PLANET MUSIC · Original AI sound · Independent artists · Music culture</footer>
-<script>
-const previewFile=document.getElementById('previewFile'),audio=document.getElementById('audio');let previewUrl;
-document.getElementById('loadPreview').addEventListener('click',()=>{const file=previewFile.files&&previewFile.files[0];const status=document.getElementById('previewStatus');if(!file){status.textContent='Choose an audio file first.';return;}if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(file);audio.src=previewUrl;document.getElementById('trackName').textContent=file.name;document.getElementById('trackMeta').textContent='Local preview · not published';status.textContent='Loaded locally. Press play to listen; nothing has been uploaded.';});
-document.getElementById('artistForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('artistStatus').textContent='Your submission has NOT been sent or saved. Artist accounts and secure submission services are not connected yet.';});
+<script src="supabase-config.js"></script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const config = window.RP_SUPABASE_CONFIG || {};
+const supabase = createClient(config.url, config.anonKey);
+const $ = (id) => document.getElementById(id);
+const previewFile=$("previewFile"), audio=$("audio"); let previewUrl;
+$("loadPreview").addEventListener("click",()=>{
+ const file=previewFile.files?.[0],status=$("previewStatus");
+ if(!file){status.textContent="Choose an audio file first.";return;}
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+ previewUrl=URL.createObjectURL(file);audio.src=previewUrl;
+ $("trackName").textContent=file.name;$("trackMeta").textContent="Local preview · not published";
+ status.textContent="Loaded locally. Press play to listen; nothing has been uploaded.";
+});
+async function uploadPrivate(file,userId,kind){
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"");
+ const path=userId+"/"+crypto.randomUUID()+"."+ext;
+ const {error}=await supabase.storage.from("rp-music-private").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+ if(error)throw error; return path;
+}
+$("artistForm").addEventListener("submit",async(e)=>{
+ e.preventDefault(); const status=$("artistStatus"),button=$("artistForm").querySelector('button[type="submit"]');
+ const data=new FormData(e.currentTarget);
+ const audioFile=$("audioFile").files?.[0],art=$("artworkFile").files?.[0];
+ if(!audioFile)return status.textContent="Choose the audio master before submitting.";
+ if(audioFile.size>50*1024*1024)return status.textContent="Audio file must be 50 MB or smaller.";
+ if(art&&art.size>5*1024*1024)return status.textContent="Artwork must be 5 MB or smaller.";
+ button.disabled=true;button.textContent="Uploading securely…";status.textContent="Checking your Red Planet account…";
+ try{
+  const {data:{user},error:authError}=await supabase.auth.getUser();
+  if(authError||!user)throw new Error("Please sign in to your Red Planet account first.");
+  const artistName=String(data.get("artist")||"").trim();
+  const {data:existing,error:findError}=await supabase.from("artist_profiles").select("id").eq("owner_user_id",user.id).maybeSingle();
+  if(findError)throw findError;
+  let artistId=existing?.id;
+  if(!artistId){
+   const {data:created,error:createError}=await supabase.from("artist_profiles").insert({owner_user_id:user.id,artist_name:artistName}).select("id").single();
+   if(createError)throw createError;artistId=created.id;
+  }else{
+   const {error:updateError}=await supabase.from("artist_profiles").update({artist_name:artistName}).eq("id",artistId);
+   if(updateError)throw updateError;
+  }
+  status.textContent="Uploading audio and artwork to private storage…";
+  const audioPath=await uploadPrivate(audioFile,user.id,"audio");
+  let artworkPath=null;
+  if(art)artworkPath=await uploadPrivate(art,user.id,"artwork");
+  const typeMap={"Single track":"single","EP":"ep","Album":"album","Instrumental / beat":"demo","Label catalogue":"other"};
+  const {error:submissionError}=await supabase.from("music_submissions").insert({
+   artist_profile_id:artistId,title:String(data.get("title")||"").trim(),
+   submission_type:typeMap[String(data.get("type"))]||"single",
+   status:"submitted",audio_object_path:audioPath,artwork_object_path:artworkPath,
+   rights_declaration:true,ai_assistance_disclosed:false,
+   contributor_credits:[{details:String(data.get("credits")||"").trim()}],
+   submitted_at:new Date().toISOString(),description:"Contact: "+String(data.get("email")||"").trim()
+  });
+  if(submissionError)throw submissionError;
+  status.textContent="Submission received. Your files are stored privately and the track is awaiting Red Planet review. No public release or payment has occurred.";
+  e.currentTarget.reset();
+ }catch(error){status.textContent=error.message||"Submission could not be completed. Please try again.";status.classList.add("error");}
+ finally{button.disabled=false;button.textContent="Submit for review";}
+});
+async function showSession(){
+ const {data:{user}}=await supabase.auth.getUser();
+ const banner=document.createElement("p");banner.className="notice";
+ banner.textContent=user?"Signed in as "+user.email+" · artist submissions enabled.":"Sign in at Account before submitting music.";
+ $("submit").querySelector(".head").append(banner);
+}
+showSession();
 </script></body></html>
