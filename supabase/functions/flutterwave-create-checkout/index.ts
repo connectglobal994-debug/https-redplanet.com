@@ -16,7 +16,7 @@ Deno.serve(async req=>{
  const secret=Deno.env.get("FLW_SECRET_KEY"),catalogSecret=Deno.env.get("FLW_PLAN_CATALOG"),site=Deno.env.get("RP_SITE_URL");
  if(!origin||!url||!anon||!service||!secret||!catalogSecret||!site)return reply({error:"Flutterwave checkout is not configured"},503);
  const auth=req.headers.get("Authorization");if(!auth?.startsWith("Bearer "))return reply({error:"Sign in required"},401);
- const userClient=createClient(url,anon,{global:{headers:{Authorization:auth}});
+ const userClient=createClient(url,anon,{global:{headers:{Authorization:auth}}});
  const {data:{user},error:authError}=await userClient.auth.getUser();
  if(authError||!user)return reply({error:"Invalid session"},401);
  if(!user.email)return reply({error:"A verified account email is required for checkout"},400);
