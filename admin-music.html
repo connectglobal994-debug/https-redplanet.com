@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Red Planet · Music Review Desk</title><style>
+:root{color-scheme:dark;--bg:#09070a;--panel:#171117;--line:#40202a;--red:#f12b42;--muted:#b9aeb4}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff8fa;font:15px/1.6 Inter,system-ui,sans-serif}.wrap{width:min(1100px,92%);margin:45px auto}.panel,.item{padding:22px;border:1px solid var(--line);border-radius:14px;background:var(--panel);margin:14px 0}h1{font-size:clamp(30px,5vw,48px);margin:8px 0}.muted{color:var(--muted)}button{padding:10px 15px;border:0;border-radius:8px;background:var(--red);color:white;font-weight:800;cursor:pointer;margin:5px}button.secondary{background:#33212a;border:1px solid var(--line)}button:disabled{opacity:.5}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{padding:4px 9px;border-radius:99px;background:#35131e;color:#ff9aa6;font-size:12px}.error{color:#ff8e9c}.success{color:#9fe4b0}audio{width:100%;max-width:600px}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body><main class="wrap"><p class="muted">RED PLANET · INTERNAL OPERATIONS</p><h1>Music review desk</h1><p class="muted">Review artist submissions, listen to private masters and make a recorded decision. Only authorized editors, moderators and administrators can enter.</p><section id="gate" class="panel">Checking administrator access…</section><section id="queue"></section></main>
+<script src="supabase-config.js"></script><script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
+const cfg=window.RP_SUPABASE_CONFIG||{};const db=createClient(cfg.url,cfg.anonKey);
+const gate=document.getElementById("gate"),queue=document.getElementById("queue");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function init(){
+ const{data:{user},error}=await db.auth.getUser();
+ if(error||!user){gate.innerHTML='Please <a href="account.html">sign in</a> with your Red Planet staff account.';return;}
+ const{data:roles,error:roleError}=await db.from("user_roles").select("role").eq("user_id",user.id);
+ if(roleError)throw roleError;
+ if(!(roles||[]).some(x=>["administrator","moderator","editor"].includes(x.role))){gate.textContent="Access denied. This account does not have music-review permissions.";return;}
+ gate.innerHTML='<strong class="success">Authorized reviewer</strong><p class="muted">'+esc(user.email)+'</p><button id="refresh">Refresh queue</button>';
+ document.getElementById("refresh").onclick=loadQueue;await loadQueue();
+}
+async function loadQueue(){
+ queue.textContent="Loading pending submissions…";
+ const{data,error}=await db.from("music_submissions").select("id,title,submission_type,status,description,audio_object_path,artwork_object_path,contributor_credits,submitted_at,artist_profiles(artist_name,owner_user_id)").in("status",["submitted","needs_changes","rights_review"]).order("submitted_at",{ascending:true});
+ if(error){queue.innerHTML='<p class="error">'+esc(error.message)+'</p>';return;}
+ queue.innerHTML="";
+ if(!data?.length){queue.innerHTML='<section class="panel">No submissions awaiting review.</section>';return;}
+ for(const item of data){
+  const el=document.createElement("article");el.className="item";
+  el.innerHTML='<div class="row"><span class="status">'+esc(item.status)+'</span><span class="muted">'+esc(item.submission_type)+'</span></div><h2>'+esc(item.title)+'</h2><p>Artist: '+esc(item.artist_profiles?.artist_name)+' · Submitted: '+esc(item.submitted_at||"date unavailable")+'</p><p class="muted">'+esc(item.description||"No additional description")+'</p><p class="muted">Credits: '+esc(JSON.stringify(item.contributor_credits||[]))+'</p><div class="audio muted">Loading private audio preview…</div><div class="row"><button data-action="approved">Approve</button><button class="secondary" data-action="needs_changes">Request changes</button><button class="secondary" data-action="rejected">Reject</button></div><p class="muted result" aria-live="polite"></p>';
+  const audioBox=el.querySelector(".audio");
+  const{data:file,error:fileError}=await db.storage.from("rp-music-private").createSignedUrl(item.audio_object_path,300);
+  if(fileError)audioBox.textContent="Audio preview unavailable: "+fileError.message;
+  else audioBox.innerHTML='<audio controls preload="none" src="'+esc(file.signedUrl)+'"></audio>';
+  el.querySelectorAll("button[data-action]").forEach(btn=>btn.addEventListener("click",async()=>{
+   if(!confirm("Record decision: "+btn.dataset.action+" for "+item.title+"?"))return;
+   btn.disabled=true;const result=el.querySelector(".result");
+   const{error:updateError}=await db.from("music_submissions").update({status:btn.dataset.action,reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);
+   if(updateError){result.textContent=updateError.message;result.className="result error";btn.disabled=false;return;}
+   result.textContent="Decision saved.";result.className="result success";el.remove();
+  }));
+  queue.append(el);
+ }
+}
+init().catch(e=>{gate.innerHTML='<p class="error">'+esc(e.message)+'</p>';});
+</script></body></html>
