@@ -37,16 +37,21 @@ Deno.serve(async req=>{
  const type=event.event_type as string;
  const mapping:Record<string,string>={"PAYMENT.CAPTURE.COMPLETED":"completed","PAYMENT.CAPTURE.DENIED":"failed","PAYMENT.CAPTURE.REFUNDED":"refunded","PAYMENT.CAPTURE.REVERSED":"reversed"};
  const nextStatus=mapping[type];
+ let deliveryId:string|number;
  const {data:delivery,error:deliveryError}=await db.from("payment_webhook_events").insert({
   provider:"paypal",provider_event_id:event.id,event_type:type,related_order_id:orderId,processing_status:nextStatus?"received":"ignored",processed_at:nextStatus?null:new Date().toISOString()
  }).select("id").single();
  if(deliveryError){
-  if(deliveryError.code==="23505")return json({received:true,duplicate:true});
-  return json({error:"Could not record verified notification"},500);
- }
+  if(deliveryError.code!=="23505")return json({error:"Could not record verified notification"},500);
+  const {data:existing,error:existingError}=await db.from("payment_webhook_events").select("id,processing_status").eq("provider","paypal").eq("provider_event_id",event.id).maybeSingle();
+  if(existingError||!existing)return json({error:"Could not load previous notification"},500);
+  if(["processed","ignored"].includes(existing.processing_status))return json({received:true,duplicate:true});
+  deliveryId=existing.id;
+  await db.from("payment_webhook_events").update({processing_status:"received",error_message:null}).eq("id",deliveryId);
+ }else deliveryId=delivery.id;
  if(!nextStatus)return json({received:true,ignored:true});
  if(!orderId){
-  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:"Verified event did not contain a related order ID"}).eq("id",delivery.id);
+  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:"Verified event did not contain a related order ID"}).eq("id",deliveryId);
   return json({received:true,processed:false,reason:"order_id_missing"},202);
  }
  const updates:Record<string,unknown>={status:nextStatus,verified_at:new Date().toISOString()};
@@ -54,9 +59,9 @@ Deno.serve(async req=>{
  const {data:updated,error:updateError}=await db.from("payment_records").update(updates).eq("provider","paypal").eq("provider_order_id",orderId).select("id").maybeSingle();
  if(updateError||!updated){
   const message=updateError?.message||"No matching payment order was found";
-  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",delivery.id);
+  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
   return json({received:true,processed:false,reason:"payment_record_not_updated"},202);
  }
- await db.from("payment_webhook_events").update({processing_status:"processed",processed_at:new Date().toISOString()}).eq("id",delivery.id);
+ await db.from("payment_webhook_events").update({processing_status:"processed",processed_at:new Date().toISOString()}).eq("id",deliveryId);
  return json({received:true,processed:true});
 });
