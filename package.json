@@ -2,7 +2,13 @@
   "name": "red-planet-portal",
   "version": "2.0.0",
   "description": "Red Planet media and creator platform",
-  "keywords": ["music", "streaming", "artist platform", "media", "red planet"],
+  "keywords": [
+    "music",
+    "streaming",
+    "artist platform",
+    "media",
+    "red planet"
+  ],
   "author": "Deblaq & Win (JustSis LLC)",
   "license": "UNLICENSED",
   "private": true,
@@ -10,7 +16,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "eslint app components context data lib",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build"
   },
