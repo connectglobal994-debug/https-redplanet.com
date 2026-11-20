@@ -92,3 +92,31 @@ grant select,insert,update on public.rp_tasks to authenticated;
 grant select,insert,update on public.rp_kpis to authenticated;
 grant select,insert,update on public.rp_training_progress to authenticated;
 grant select on public.rp_training_materials to authenticated;
+
+
+-- Private daily progress notes for each team member.
+create table if not exists public.rp_daily_updates (
+ id uuid primary key default gen_random_uuid(),
+ user_id uuid not null references auth.users(id) on delete cascade,
+ update_date date not null default current_date,
+ body text not null check (char_length(body) between 1 and 1200),
+ created_at timestamptz not null default now(),
+ updated_at timestamptz not null default now(),
+ unique(user_id, update_date)
+);
+alter table public.rp_daily_updates enable row level security;
+drop policy if exists rp_daily_updates_read_own_or_admin on public.rp_daily_updates;
+create policy rp_daily_updates_read_own_or_admin on public.rp_daily_updates
+for select to authenticated
+using (user_id = (select auth.uid()) or public.has_redplanet_role(array['administrator']));
+drop policy if exists rp_daily_updates_insert_own on public.rp_daily_updates;
+create policy rp_daily_updates_insert_own on public.rp_daily_updates
+for insert to authenticated
+with check (user_id = (select auth.uid()));
+drop policy if exists rp_daily_updates_update_own on public.rp_daily_updates;
+create policy rp_daily_updates_update_own on public.rp_daily_updates
+for update to authenticated
+using (user_id = (select auth.uid()))
+with check (user_id = (select auth.uid()));
+revoke all on public.rp_daily_updates from anon, authenticated;
+grant select, insert, update on public.rp_daily_updates to authenticated;
