@@ -79,6 +79,7 @@ export default function RedPlanetAIPage() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [allowExternalLLM, setAllowExternalLLM] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [automations, setAutomations] = useState<Automation[]>(AUTOMATIONS);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -89,7 +90,7 @@ export default function RedPlanetAIPage() {
 
   async function sendMessage() {
     const trimmed = input.trim();
-    if (!trimmed || loading) return;
+    if (!trimmed || loading || !allowExternalLLM) return;
 
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: trimmed };
     const nextMessages = [...messages, userMsg];
@@ -102,7 +103,7 @@ export default function RedPlanetAIPage() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages.map((m) => ({ role: m.role, content: m.content })) }),
+        body: JSON.stringify({ messages: nextMessages.map((m) => ({ role: m.role, content: m.content })), allowExternalLLM }),
       });
 
       const data = await res.json();
@@ -265,7 +266,7 @@ export default function RedPlanetAIPage() {
             <button
               type="button"
               onClick={sendMessage}
-              disabled={loading || !input.trim()}
+              disabled={loading || !input.trim() || !allowExternalLLM}
               className="bg-neonCyan hover:bg-neonCyan/80 disabled:opacity-40 disabled:cursor-not-allowed text-deepSpace font-bold px-6 py-4 rounded-2xl text-xs uppercase tracking-wider transition-all shadow-cyan"
             >
               Transmit
