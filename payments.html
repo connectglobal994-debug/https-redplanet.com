@@ -35,6 +35,8 @@ if(paypalState==="return"&&paypalOrder){
 }else status.textContent="Signed in. Your billing records are private to this account.";
 const plansGrid=document.getElementById("plans-grid"),checkoutStatus=document.getElementById("checkout-status");
 const {data:planData,error:planError}=await supabase.functions.invoke("flutterwave-list-plans",{method:"GET"});
+const {data:paypalPlanData,error:paypalPlanError}=await supabase.functions.invoke("paypal-list-plans",{method:"GET"});
+const paypalPlans=new Map((paypalPlanData?.plans||[]).map(p=>[p.code,p]));
 if(planError){plansGrid.textContent="Checkout plans are not available yet. The secure payment catalog still needs configuration.";}
 else if(!planData?.plans?.length){plansGrid.textContent="No approved plans are published yet.";}
 else{
@@ -45,7 +47,9 @@ else{
   const digits=new Intl.NumberFormat("en",{style:"currency",currency:plan.currency}).resolvedOptions().maximumFractionDigits;
   detail.textContent=new Intl.NumberFormat(undefined,{style:"currency",currency:plan.currency}).format(Number(plan.amount_minor)/Math.pow(10,digits))+" · "+plan.period_days+" days";
   actions.className="plan-actions";button.type="button";button.className="plan-button";button.textContent="Pay with M-Pesa / card / bank";
-  const paypalButton=document.createElement("button");paypalButton.type="button";paypalButton.className="plan-button";paypalButton.textContent="Pay with PayPal";
+  const paypalPlan=paypalPlans.get(plan.code);
+  const paypalMatches=paypalPlan&&paypalPlan.amount_minor===plan.amount_minor&&paypalPlan.currency===plan.currency&&paypalPlan.period_days===plan.period_days;
+  const paypalButton=document.createElement("button");paypalButton.type="button";paypalButton.className="plan-button";paypalButton.textContent="Pay with PayPal";paypalButton.hidden=!paypalMatches;
   paypalButton.addEventListener("click",async()=>{
    paypalButton.disabled=true;button.disabled=true;checkoutStatus.textContent="Creating your secure PayPal order…";
    const {data,error}=await supabase.functions.invoke("paypal-create-order",{body:{plan_code:plan.code}});
@@ -62,7 +66,7 @@ else{
    }
    window.location.assign(data.checkout_url);
   });
-  actions.append(button,paypalButton);card.append(heading,detail,actions);plansGrid.append(card);
+  actions.append(button);if(paypalMatches)actions.append(paypalButton);card.append(heading,detail,actions);plansGrid.append(card);
  });
 }
 const {data:memberships,error:membershipError}=await supabase.from("memberships").select("plan_code,status,provider,current_period_start,current_period_end,created_at").order("created_at",{ascending:false}).limit(5);if(membershipError)throw membershipError;
