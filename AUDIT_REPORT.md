@@ -196,3 +196,17 @@ Do not interpret this as a passing build. The next engineering environment must 
 **Do not deploy this archive as a completed production platform.** It is suitable as a starting codebase and implementation handoff. Close all Critical and High findings, complete the studio/account/database architecture, and pass the full release checklist in `SETUP.md` first.
 
 For the agreed product vision and implementation sequence, read `RED_PLANET_HANDOFF.md`.
+
+
+## Follow-up verification — 2026-11-20
+
+This section supersedes earlier statements above that lint, typecheck, and build had not been verified.
+
+- Latest verified branch commit before this documentation update: `e0f6969ab3515f64f64962d76c0700eafe2a74b5`.
+- GitHub Actions PR run `44721092510`: dependency installation, ESLint, TypeScript typecheck, and production build all passed.
+- Netlify Deploy Preview for that commit reported success: https://deploy-preview-4--redplanetsite.netlify.app
+- Added `supabase/migrations/202611200001_harden_ecosystem_rls.sql` to address recursive studio RLS checks and prevent self-approval of studios, jobs, applications, media, and social publishing records.
+- These checks do not execute Supabase migrations or prove database policies against a live database. The migration must still be applied to a dedicated development Supabase project and tested with separate member, studio-owner, reviewer, and administrator accounts.
+- The admin upload login remains a temporary shared-password gate, not the requested full Supabase Auth account system with platform-owner bootstrap, MFA, department-scoped RBAC, invitations, and audit logging.
+- Payment providers, video transcoding/streaming, social OAuth publishing, job marketplace workflows, artist/studio offices, and production MT5 integration are not complete merely because the schema and shell UI exist.
+- Production readiness remains **NOT APPROVED** until database migration tests, authentication/RBAC, rate limiting, provider integrations, rights/moderation workflows, privacy/security review, and full browser/device QA are completed.
