@@ -30,6 +30,8 @@ Apply the repository migrations in filename order, after reviewing them in the S
 - `202611200014_trading_workspace.sql`
 - `202611200015_trading_review_guard.sql`
 - `202611200016_payment_webhook_events.sql`
+- `202611200017_payment_plan_metadata.sql`
+- `202611200018_paypal_membership_activation.sql`
 
 Verify each migration succeeds. Do not assume the list has been applied just because the files exist in the repository.
 
@@ -42,6 +44,8 @@ supabase login
 supabase link --project-ref YOUR_VERIFIED_PROJECT_REF
 supabase functions deploy generate-music
 supabase functions deploy paypal-webhook
+supabase functions deploy paypal-create-order
+supabase functions deploy paypal-capture-order
 ```
 
 The project reference above is a placeholder. Replace it only with the confirmed project reference.
@@ -61,6 +65,10 @@ For `paypal-webhook`:
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
 - `PAYPAL_ENV` set to `sandbox` for testing or `live` after merchant approval.
+- `PAYPAL_PLAN_CATALOG` as a server-side JSON object mapping each approved plan code to `amount_minor`, uppercase `currency`, and `period_days`. Example shape only (not approved pricing): `{"member_monthly":{"amount_minor":1000,"currency":"KES","period_days":30}}`.
+- `SUPABASE_ANON_KEY` for user-session verification in the order and capture functions.
+- `RP_SITE_URL` set to the canonical HTTPS site origin used for PayPal return and cancel URLs.
+- `ALLOWED_ORIGIN` set to the exact website origin allowed to call the checkout functions.
 
 The webhook URL registered with PayPal is:
 `https://YOUR_VERIFIED_PROJECT_REF.supabase.co/functions/v1/paypal-webhook`
@@ -70,6 +78,9 @@ The webhook URL registered with PayPal is:
 - Confirm the merchant's PayPal business account and approved application.
 - Configure sandbox credentials first and register the webhook URL in the PayPal developer dashboard.
 - Subscribe to capture completed, denied, refunded and reversed events.
+- The create-order function accepts a plan code only; the server-side plan catalog controls the amount, currency and membership duration.
+- The capture function checks that the signed-in user owns the order. Browser return URLs never activate a membership.
+- The verified webhook checks the captured amount and currency, then calls a service-role-only database function to activate one membership idempotently. Refunds and reversals cancel the linked membership.
 - Create and verify a test order flow before accepting customer payments.
 - Confirm every PayPal event is signature-verified and duplicate deliveries are idempotent.
 - Do not activate memberships from an unverified browser redirect. The current webhook records verified payment outcomes; a trusted order-creation and membership-activation workflow is still required before paid plans can be sold.
