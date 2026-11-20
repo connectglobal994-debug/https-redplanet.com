@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Listen | Red Planet Music</title><style>
+:root{color-scheme:dark;--bg:#09070a;--panel:#171117;--line:#40202a;--red:#f12b42;--muted:#b9aeb4}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0,#54101f80,transparent 35rem),var(--bg);color:#fff8fa;font:15px/1.6 Inter,system-ui,sans-serif}a{color:inherit;text-decoration:none}.top{padding:16px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.top nav{display:flex;gap:15px;color:var(--muted);flex-wrap:wrap}.wrap{width:min(1100px,92%);margin:45px auto}.hero{padding:35px 0}.hero h1{font-size:clamp(42px,8vw,78px);line-height:.95;margin:10px 0}.red{color:var(--red)}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}.card{padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--panel)}audio{width:100%;margin-top:12px}.tag{font-size:11px;letter-spacing:.15em;color:#ff8190}.empty{padding:30px;border:1px dashed var(--line);border-radius:15px;color:var(--muted)}
+</style></head><body><header class="top"><a href="index.html"><b>RED PLANET / MUSIC</b></a><nav><a href="music.html">Studios</a><a href="ai.html">AI Studio</a><a href="account.html">Account</a></nav></header><main class="wrap"><section class="hero"><div class="tag">APPROVED RELEASES ONLY</div><h1>PLANET <span class="red">SOUNDS.</span></h1><p class="muted">Stream music officially released by Red Planet and its approved independent artists.</p></section><div id="catalogue" class="grid"><div class="empty">Loading the approved catalogue…</div></div></main>
+<script src="supabase-config.js"></script><script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
+const cfg=window.RP_SUPABASE_CONFIG||{};const db=createClient(cfg.url,cfg.anonKey);const root=document.getElementById("catalogue");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function load(){
+ const{data,error}=await db.from("releases").select("id,title,release_type,release_date,artist_profiles(artist_name),tracks(id,title,track_number,audio_delivery_path,duration_seconds)").eq("published",true).order("release_date",{ascending:false});
+ if(error){root.innerHTML='<div class="empty">Catalogue unavailable: '+esc(error.message)+'</div>';return;}
+ if(!data?.length){root.innerHTML='<div class="empty">No releases have been published yet. Approved releases will appear here after their audio masters are prepared for public delivery.</div>';return;}
+ root.innerHTML="";
+ for(const release of data){
+  const card=document.createElement("article");card.className="card";
+  card.innerHTML='<div class="tag">'+esc(release.release_type)+'</div><h2>'+esc(release.title)+'</h2><p class="muted">'+esc(release.artist_profiles?.artist_name||"Red Planet")+' · '+esc(release.release_date||"Release date pending")+'</p><div class="tracks"></div>';
+  const list=card.querySelector(".tracks");
+  for(const track of (release.tracks||[]).sort((a,b)=>a.track_number-b.track_number)){
+   const row=document.createElement("div");row.style.padding="12px 0";row.style.borderTop="1px solid #40202a";
+   row.innerHTML='<strong>'+esc(track.track_number)+'. '+esc(track.title)+'</strong>';
+   if(track.audio_delivery_path){
+    const{data:file,error:fileError}=await db.storage.from("rp-music-public").createSignedUrl(track.audio_delivery_path,3600);
+    if(!fileError){const audio=document.createElement("audio");audio.controls=true;audio.preload="none";audio.src=file.signedUrl;row.append(audio);}
+    else row.insertAdjacentHTML("beforeend",'<p class="muted">Audio delivery is being prepared.</p>');
+   }else row.insertAdjacentHTML("beforeend",'<p class="muted">Audio delivery is being prepared.</p>');
+   list.append(row);
+  }
+  root.append(card);
+ }
+}
+load();
+</script></body></html>
