@@ -24,7 +24,7 @@ async function loadQueue(){
  if(!data?.length){queue.innerHTML='<section class="panel">No submissions awaiting review.</section>';return;}
  for(const item of data){
   const el=document.createElement("article");el.className="item";
-  el.innerHTML='<div class="row"><span class="status">'+esc(item.status)+'</span><span class="muted">'+esc(item.submission_type)+'</span></div><h2>'+esc(item.title)+'</h2><p>Artist: '+esc(item.artist_profiles?.artist_name)+' · Submitted: '+esc(item.submitted_at||"date unavailable")+'</p><p class="muted">'+esc(item.description||"No additional description")+'</p><p class="muted">Credits: '+esc(JSON.stringify(item.contributor_credits||[]))+'</p><div class="audio muted">Loading private audio preview…</div><div class="field"><label>Approved public audio master (required to publish)</label><input class="delivery-file" type="file" accept="audio/*"></div><div class="row"><button data-action="publish">Publish release</button><button class="secondary" data-action="needs_changes">Request changes</button><button class="secondary" data-action="rejected">Reject</button></div><p class="muted result" aria-live="polite"></p>';
+  el.innerHTML='<div class="row"><span class="status">'+esc(item.status)+'</span><span class="muted">'+esc(item.submission_type)+'</span></div><h2>'+esc(item.title)+'</h2><p>Artist: '+esc(item.artist_profiles?.artist_name)+' · Submitted: '+esc(item.submitted_at||"date unavailable")+'</p><p class="muted">'+esc(item.description||"No additional description")+'</p><p class="muted">Credits: '+esc(JSON.stringify(item.contributor_credits||[]))+'</p><div class="audio muted">Loading private audio preview…</div><div class="field"><label>Approved public audio master (required to publish)</label><input class="delivery-file" type="file" accept="audio/*"></div><label class="muted">Reviewer notes (required when requesting changes or rejecting)<textarea class="review-notes" rows="3" style="display:block;width:100%;margin:8px 0;padding:10px;background:#09070a;color:white;border:1px solid #40202a;border-radius:8px"></textarea></label><div class="row"><button data-action="publish">Publish release</button><button class="secondary" data-action="needs_changes">Request changes</button><button class="secondary" data-action="rejected">Reject</button></div><p class="muted result" aria-live="polite"></p>';
   const publishButton=el.querySelector('button[data-action="publish"]');if(!window.rpCanPublish)publishButton.hidden=true;
   const audioBox=el.querySelector(".audio");
   const{data:file,error:fileError}=await db.storage.from("rp-music-private").createSignedUrl(item.audio_object_path,300);
@@ -32,6 +32,7 @@ async function loadQueue(){
   else audioBox.innerHTML='<audio controls preload="none" src="'+esc(file.signedUrl)+'"></audio>';
   el.querySelectorAll("button[data-action]").forEach(btn=>btn.addEventListener("click",async()=>{
    if(!confirm((btn.dataset.action==="publish"?"Publish approved release: ":"Record decision: ")+item.title+"?"))return;
+   const reviewerNotes=el.querySelector(".review-notes").value.trim();if(["needs_changes","rejected"].includes(btn.dataset.action)&&!reviewerNotes){const result=el.querySelector(".result");result.textContent="Add a clear reviewer note before requesting changes or rejecting.";result.className="result error";return;}
    btn.disabled=true;const result=el.querySelector(".result");
    if(btn.dataset.action==="publish"){
     const publicFile=el.querySelector(".delivery-file").files?.[0];
@@ -52,7 +53,7 @@ async function loadQueue(){
     const{error:publishError}=await db.from("releases").update({published:true,published_at:new Date().toISOString()}).eq("id",release.id);
     if(publishError){await db.from("music_submissions").update({status:"approved",reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);await db.from("tracks").delete().eq("release_id",release.id);await db.from("releases").delete().eq("id",release.id);await db.storage.from("rp-music-public").remove([deliveryPath]);result.textContent="Could not publish release; publication was rolled back: "+publishError.message;result.className="result error";btn.disabled=false;return;}
    }else{
-    const{error:updateError}=await db.from("music_submissions").update({status:btn.dataset.action,reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);
+    const{error:updateError}=await db.from("music_submissions").update({status:btn.dataset.action,review_notes:reviewerNotes,reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);
     if(updateError){result.textContent=updateError.message;result.className="result error";btn.disabled=false;return;}
    }
    result.textContent=btn.dataset.action==="publish"?"Release published to the public catalogue.":"Decision saved.";result.className="result success";el.remove();
