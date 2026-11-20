@@ -21,3 +21,13 @@
 - Manager assignment, team-wide task creation, admin member management, hiring pipeline, interview scorecards, software inventory, notifications and daily-update persistence are not yet implemented.
 - This static GitHub Pages front end cannot securely store secrets or run privileged operations. Use Supabase Edge Functions for those.
 - No database migration is applied merely by committing these files. Apply in development and test RLS before production.
+
+
+## AI Teacher setup
+1. Deploy the authenticated Edge Function: `supabase functions deploy ai-teacher`.
+2. Add the model-provider key as a Supabase Function secret, never in `team-portal.html`, `team-portal.js`, or `supabase-config.js`: `supabase secrets set OPENAI_API_KEY=...`.
+3. Optional: set `OPENAI_MODEL` to an enabled model for your account. The function defaults to `gpt-4.1-mini`.
+4. Apply the Team OS migration and verify the authenticated user can read only published resources allowed by the row-level security policies.
+5. Sign in with a normal team account and ask the AI Teacher a question. Verify the answer cites the approved resource titles returned by the function and does not expose another user's private data.
+6. The AI Teacher uses approved published resources as context; chat messages do not automatically retrain the underlying model. Do not enter passwords, API keys, private customer data, or sensitive employee information.
+7. Before wider rollout, test administrator publishing, ordinary-member access, resource visibility, sign-out, rate limits and provider error handling in the development project.
