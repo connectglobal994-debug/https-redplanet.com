@@ -70,6 +70,7 @@ export default function InvestPage() {
   const [form, setForm] = useState({ name: '', email: '', type: 'investor', investmentTier: 'strategic_syndicate', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [consentToExternalProcessing, setConsentToExternalProcessing] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -96,6 +97,7 @@ export default function InvestPage() {
 
       setStatus('sent');
       setForm({ name: '', email: '', type: 'investor', investmentTier: 'strategic_syndicate', message: '' });
+      setConsentToExternalProcessing(false);
     } catch {
       setErrorMsg('Could not reach the Red Planet secure server. Try again.');
       setStatus('error');
@@ -336,6 +338,11 @@ export default function InvestPage() {
               />
             </div>
 
+            <label className="flex items-start gap-2 text-xs text-neutral-400">
+              <input type="checkbox" required checked={consentToExternalProcessing} onChange={(e) => setConsentToExternalProcessing(e.target.checked)} className="mt-0.5" />
+              I consent to Red Planet processing this enquiry and sending it to its configured email service so the team can respond. Do not include passwords, payment details, or confidential information.
+            </label>
+
             {status === 'error' && (
               <div className="text-xs text-red-400 bg-red-950/40 border border-red-900/50 rounded-xl px-4 py-3 font-mono">
                 {errorMsg}
@@ -348,7 +355,7 @@ export default function InvestPage() {
               </span>
               <button
                 type="submit"
-                disabled={status === 'sending'}
+                disabled={status === 'sending' || !consentToExternalProcessing}
                 className="w-full sm:w-auto bg-marsRed hover:bg-marsRed/80 disabled:opacity-40 text-white font-bold py-4 px-8 rounded-xl text-xs uppercase tracking-widest transition-all glow-mars font-mono shadow-lg"
               >
                 {status === 'sending' ? 'Transmitting Dossier...' : 'Submit Investor Dossier'}
