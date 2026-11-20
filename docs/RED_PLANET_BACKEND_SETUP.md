@@ -48,6 +48,7 @@ supabase login
 supabase link --project-ref YOUR_VERIFIED_PROJECT_REF
 supabase functions deploy generate-music
 supabase functions deploy paypal-webhook --no-verify-jwt
+supabase functions deploy paypal-list-plans
 supabase functions deploy paypal-create-order
 supabase functions deploy paypal-capture-order
 supabase functions deploy flutterwave-list-plans
@@ -74,6 +75,7 @@ For direct Daraja STK Push (only if Red Planet later chooses a direct Safaricom 
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
 - `PAYPAL_ENV` set to `sandbox` for testing or `live` after merchant approval.
+- `paypal-list-plans` returns only safe public plan fields from the private PayPal catalog to signed-in customers; `payments.html` now presents a PayPal checkout button for each approved plan and redirects to the provider approval page.
 - `PAYPAL_PLAN_CATALOG` as a server-side JSON object mapping each approved plan code to `amount_minor`, uppercase `currency`, and `period_days`. Example shape only (not approved pricing): `{"member_monthly":{"amount_minor":1000,"currency":"KES","period_days":30}}`.
 - `SUPABASE_ANON_KEY` for user-session verification in the order and capture functions.
 - `RP_SITE_URL` set to the canonical HTTPS site origin used for PayPal return and cancel URLs.
