@@ -2,5 +2,5 @@
    NEVER put a Supabase service_role key or provider secret in this file. */
 window.RP_SUPABASE_CONFIG = Object.freeze({
   url: "https://jizyoxviuaegmihezaih.supabase.co",
-  anonKey: ""
+  anonKey: "sb_publishable_FcNad_DPj3arSADIp0j8Rg_OleVOCNg"
 });
