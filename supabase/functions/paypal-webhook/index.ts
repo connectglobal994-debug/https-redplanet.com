@@ -76,7 +76,13 @@ Deno.serve(async req=>{
    }
   }catch{/* Invalid or unsupported currency is rejected below. */}
  }
- if(currencyCode!==String(payment.currency).trim().toUpperCase()||eventAmountMinor===null||eventAmountMinor!==BigInt(payment.amount_minor)){
+ const expectedAmount=BigInt(payment.amount_minor);
+ const amountIsValid=eventAmountMinor!==null&&(
+  (nextStatus==="refunded"||nextStatus==="reversed")
+   ? eventAmountMinor>0n&&eventAmountMinor<=expectedAmount
+   : eventAmountMinor===expectedAmount
+ );
+ if(currencyCode!==String(payment.currency).trim().toUpperCase()||!amountIsValid){
   const message="Verified PayPal amount or currency does not match the stored payment record";
   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message}).eq("id",deliveryId);
   return json({received:true,processed:false,reason:"amount_currency_mismatch"},202);
