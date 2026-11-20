@@ -92,7 +92,7 @@ $("artistForm").addEventListener("submit",async(e)=>{
   }).eq("id",submission.id);
   if(submitError)throw submitError;
   status.textContent="Submission received. Your files are stored privately and the track is awaiting Red Planet review. No public release or payment has occurred.";
-  e.currentTarget.reset();
+  e.currentTarget.reset();await loadMySubmissions(user);
  }catch(error){
   const cleanup=[];
   if(uploadedAudioPath)cleanup.push(supabase.storage.from("rp-music-private").remove([uploadedAudioPath]));
@@ -107,11 +107,38 @@ async function loadMySubmissions(user){
  const {data:profile,error:profileError}=await supabase.from("artist_profiles").select("id").eq("owner_user_id",user.id).maybeSingle();
  if(profileError){root.textContent="Could not load artist profile: "+profileError.message;return;}
  if(!profile){root.textContent="You have not submitted any music yet.";return;}
- const {data,error}=await supabase.from("music_submissions").select("id,title,submission_type,status,review_notes,submitted_at,created_at").eq("artist_profile_id",profile.id).order("created_at",{ascending:false});
+ const {data,error}=await supabase.from("music_submissions").select("id,title,submission_type,status,review_notes,submitted_at,created_at,audio_object_path").eq("artist_profile_id",profile.id).order("created_at",{ascending:false});
  if(error){root.textContent="Could not load submissions: "+error.message;return;}
  if(!data?.length){root.textContent="You have not submitted any music yet.";return;}
  const escapeText=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
- root.innerHTML=data.map(item=>'<article class="card" style="margin:10px 0"><strong>'+escapeText(item.title)+'</strong> · '+escapeText(item.submission_type)+'<p class="muted">Status: '+escapeText(item.status.replace(/_/g," "))+'</p>'+(item.review_notes?'<p class="notice">Reviewer notes: '+escapeText(item.review_notes)+'</p>':"")+'</article>').join("");
+ root.innerHTML="";
+ for(const item of data){
+  const card=document.createElement("article");card.className="card";card.style.margin="10px 0";
+  card.innerHTML='<strong>'+escapeText(item.title)+'</strong> · '+escapeText(item.submission_type)+'<p class="muted">Status: '+escapeText(item.status.replace(/_/g," "))+'</p>'+(item.review_notes?'<p class="notice">Reviewer notes: '+escapeText(item.review_notes)+'</p>':"");
+  if(item.status==="needs_changes"){
+   const controls=document.createElement("div");
+   controls.innerHTML='<p class="muted">Replace the audio master after making the requested changes, then resubmit for review.</p><input type="file" accept="audio/*" aria-label="Replacement audio master"><button type="button">Upload revision & resubmit</button><p class="muted" aria-live="polite"></p>';
+   const fileInput=controls.querySelector("input"),button=controls.querySelector("button"),message=controls.querySelector("p[aria-live]");
+   button.addEventListener("click",async()=>{
+    const file=fileInput.files?.[0];if(!file){message.textContent="Choose the revised audio file first.";return;}
+    if(file.size>50*1024*1024){message.textContent="Audio file must be 50 MB or smaller.";return;}
+    button.disabled=true;message.textContent="Uploading your revised master…";let newPath=null;
+    try{
+     newPath=await uploadPrivate(file,user.id);
+     const {error:updateError}=await supabase.from("music_submissions").update({audio_object_path:newPath,status:"submitted",review_notes:null,submitted_at:new Date().toISOString()}).eq("id",item.id);
+     if(updateError)throw updateError;
+     if(item.audio_object_path)await supabase.storage.from("rp-music-private").remove([item.audio_object_path]);
+     await loadMySubmissions(user);
+    }catch(error){
+     if(newPath)await supabase.storage.from("rp-music-private").remove([newPath]);
+     message.textContent=error.message||"Could not resubmit this revision.";
+     button.disabled=false;
+    }
+   });
+   card.append(controls);
+  }
+  root.append(card);
+ }
 }
 async function showSession(){
  const {data:{user}}=await supabase.auth.getUser();
