@@ -44,7 +44,7 @@ $("loadPreview").addEventListener("click",()=>{
  $("trackName").textContent=file.name;$("trackMeta").textContent="Local preview · not published";
  status.textContent="Loaded locally. Press play to listen; nothing has been uploaded.";
 });
-async function uploadPrivate(file,userId,kind){
+async function uploadPrivate(file,userId){
  const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"");
  const path=userId+"/"+crypto.randomUUID()+"."+ext;
  const {error}=await supabase.storage.from("rp-music-private").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
@@ -77,15 +77,19 @@ $("artistForm").addEventListener("submit",async(e)=>{
   let artworkPath=null;
   if(art)artworkPath=await uploadPrivate(art,user.id,"artwork");
   const typeMap={"Single track":"single","EP":"ep","Album":"album","Instrumental / beat":"demo","Label catalogue":"other"};
-  const {error:submissionError}=await supabase.from("music_submissions").insert({
+  const {data:submission,error:submissionError}=await supabase.from("music_submissions").insert({
    artist_profile_id:artistId,title:String(data.get("title")||"").trim(),
    submission_type:typeMap[String(data.get("type"))]||"single",
-   status:"submitted",audio_object_path:audioPath,artwork_object_path:artworkPath,
+   status:"draft",audio_object_path:audioPath,artwork_object_path:artworkPath,
    rights_declaration:true,ai_assistance_disclosed:false,
    contributor_credits:[{details:String(data.get("credits")||"").trim()}],
-   submitted_at:new Date().toISOString(),description:"Contact: "+String(data.get("email")||"").trim()
-  });
+   description:"Artist contact: "+String(data.get("email")||"").trim()
+  }).select("id").single();
   if(submissionError)throw submissionError;
+  const {error:submitError}=await supabase.from("music_submissions").update({
+   status:"submitted",submitted_at:new Date().toISOString()
+  }).eq("id",submission.id);
+  if(submitError)throw submitError;
   status.textContent="Submission received. Your files are stored privately and the track is awaiting Red Planet review. No public release or payment has occurred.";
   e.currentTarget.reset();
  }catch(error){status.textContent=error.message||"Submission could not be completed. Please try again.";status.classList.add("error");}
