@@ -25,6 +25,15 @@ const UPSTREAM_TIMEOUT_MS = 15000;
 
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
+function redactSensitiveText(value: string): string {
+  return value
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[REDACTED_EMAIL]')
+    .replace(/\b(?:\+?\d[\d .()/-]{7,}\d)\b/g, '[REDACTED_PHONE]')
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer [REDACTED_TOKEN]')
+    .replace(/\b(?:api[_-]?key|secret|password|token)\s*[:=]\s*[^\s,;]+/gi, '[REDACTED_SECRET]')
+    .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9]{20,})\b/g, '[REDACTED_TOKEN]');
+}
+
 function isValidMessage(m: unknown): m is ChatMessage {
   if (typeof m !== 'object' || m === null) return false;
   const msg = m as Record<string, unknown>;
@@ -57,7 +66,11 @@ export async function POST(req: NextRequest) {
   if (typeof parsedBody !== 'object' || parsedBody === null || Array.isArray(parsedBody)) {
     return NextResponse.json({ error: 'Request body must be a JSON object.' }, { status: 400 });
   }
-  const messagesInput = (parsedBody as { messages?: unknown }).messages;
+  const requestBody = parsedBody as { messages?: unknown; allowExternalLLM?: unknown };
+  if (requestBody.allowExternalLLM !== true) {
+    return NextResponse.json({ error: 'Please accept the external AI processing notice before using the assistant.' }, { status: 403 });
+  }
+  const messagesInput = requestBody.messages;
   const rawMessages = Array.isArray(messagesInput) ? messagesInput : [];
   const messages = rawMessages.filter(isValidMessage);
 
@@ -68,7 +81,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const trimmedMessages = messages.slice(-MAX_HISTORY);
+  const trimmedMessages = messages.slice(-MAX_HISTORY).map((message) => ({ ...message, content: redactSensitiveText(message.content) }));
   const lastUserMessage = trimmedMessages[trimmedMessages.length - 1]?.content?.toLowerCase() ?? '';
 
   // 1. Try Primary Upstream API (Anthropic Claude)
