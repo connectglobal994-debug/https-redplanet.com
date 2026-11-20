@@ -6,11 +6,25 @@ type InvestorSubmission = {
   type?: unknown;
   investmentTier?: unknown;
   message?: unknown;
+  consentToExternalProcessing?: unknown;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_NOTIFY_EMAIL = 'redplanetcodes@gmail.com';
 const MAX_MESSAGE_LENGTH = 3000;
+
+function redactSensitiveText(value: string): string {
+  return value
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[REDACTED_EMAIL]')
+    .replace(/\b(?:\+?\d[\d .()/-]{7,}\d)\b/g, '[REDACTED_PHONE]')
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer [REDACTED_TOKEN]')
+    .replace(/\b(?:api[_-]?key|secret|password|token)\s*[:=]\s*[^\s,;]+/gi, '[REDACTED_SECRET]');
+}
+
+function maskEmail(value: string): string {
+  const parts = value.split('@');
+  return parts.length === 2 ? parts[0].slice(0, 1) + '***@' + parts[1] : '[REDACTED_EMAIL]';
+}
 
 export async function POST(req: NextRequest) {
   let parsedBody: unknown;
@@ -28,6 +42,9 @@ export async function POST(req: NextRequest) {
   const type = typeof body.type === 'string' ? body.type.trim().slice(0, 100) : 'partnership';
   const investmentTier = typeof body.investmentTier === 'string' ? body.investmentTier.trim().slice(0, 100) : '';
   const message = typeof body.message === 'string' ? body.message.trim() : '';
+  if (body.consentToExternalProcessing !== true) {
+    return NextResponse.json({ error: 'Please consent to email processing before submitting this enquiry.' }, { status: 400 });
+  }
 
   if (!name || name.length > 160 || !email || !message) {
     return NextResponse.json({ error: 'Name, email and message are required. Name must be 160 characters or fewer.' }, { status: 400 });
@@ -65,12 +82,12 @@ export async function POST(req: NextRequest) {
         text: [
           'RED PLANET BUSINESS ENQUIRY',
           `Name: ${name}`,
-          `Email: ${email}`,
+          `Email: ${maskEmail(email)}`,
           `Enquiry type: ${type || 'Not specified'}`,
           `Plan / tier: ${investmentTier || 'Not specified'}`,
           `Received: ${receivedAt}`,
           '',
-          message,
+          redactSensitiveText(message),
         ].join('\n'),
       }),
     });
