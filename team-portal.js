@@ -28,6 +28,16 @@ async function loadTeamMembers(){
  const {data,error}=await client.from("profiles").select("id,display_name").order("display_name");
  if(error){select.innerHTML='<option value="">Could not load team</option>';say("admin-task-message","Team list unavailable: "+error.message);return;}
  select.innerHTML='<option value="">Choose a team member</option>'+(data||[]).map(p=>'<option value="'+p.id+'">'+escapeHtml(p.display_name||"Team member")+'</option>').join("");
+ await loadTeamTasks(data||[]);
+}
+async function loadTeamTasks(members){
+ const root=$("team-list");if(!root)return;
+ const {data,error}=await client.from("rp_tasks").select("id,title,status,priority,due_at,assignee_id").order("created_at",{ascending:false}).limit(100);
+ if(error){root.textContent="Team tasks unavailable: "+error.message;return;}
+ const names=new Map(members.map(p=>[p.id,p.display_name||"Team member"]));
+ if(!data?.length){root.textContent="No team tasks have been assigned yet.";return;}
+ root.innerHTML=data.map(task=>'<article class="item"><div><b>'+escapeHtml(task.title)+'</b><small>'+escapeHtml(names.get(task.assignee_id)||"Team member")+' · '+escapeHtml(task.priority)+' · '+(task.due_at?"Due "+task.due_at:"No due date")+'</small></div><select data-team-task="'+task.id+'" aria-label="Update task status"><option value="todo">To do</option><option value="doing">In progress</option><option value="blocked">Blocked</option><option value="done">Done</option></select></article>').join("");
+ root.querySelectorAll("[data-team-task]").forEach(select=>{const task=data.find(x=>x.id===select.dataset.teamTask);select.value=task.status;select.addEventListener("change",async()=>{const {error:updateError}=await client.from("rp_tasks").update({status:select.value,updated_at:new Date().toISOString()}).eq("id",task.id);say("admin-task-message",updateError?"Could not update task: "+updateError.message:"Team task updated.");});});
 }
 async function refresh(){await loadProfile();await Promise.all([loadTasks(),loadKpis(),loadProgress()]);setReady(true)}
 async function boot(){initCourses();if(!RP_SUPABASE_URL||!RP_SUPABASE_ANON_KEY||!window.supabase){$("setup-warning").hidden=false;$("auth-form").querySelectorAll("input,button").forEach(x=>x.disabled=true);return}client=window.supabase.createClient(RP_SUPABASE_URL,RP_SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data}=await client.auth.getSession();currentUser=data.session?.user||null;if(currentUser)await refresh();client.auth.onAuthStateChange(async(_event,session)=>{currentUser=session?.user||null;if(currentUser)await refresh();else setReady(false)})}
