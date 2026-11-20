@@ -15,9 +15,10 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405, headers: cors });
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const providerUrl = Deno.env.get("MUSIC_PROVIDER_URL");
   const providerKey = Deno.env.get("MUSIC_PROVIDER_API_KEY");
-  if (!url || !anon || !providerUrl || !providerKey) {
+  if (!url || !anon || !serviceRole || !providerUrl || !providerKey) {
     return Response.json({ error: "Music generation provider is not configured yet." }, { status: 503, headers: cors });
   }
   const authorization = req.headers.get("Authorization");
@@ -43,7 +44,8 @@ Deno.serve(async (req) => {
   if (!response.ok) return Response.json({ error: "Music provider request failed.", provider_status: response.status }, { status: 502, headers: cors });
   let result;
   try { result = JSON.parse(raw); } catch { return Response.json({ error: "Music provider returned an invalid response." }, { status: 502, headers: cors }); }
-  const { data: job, error: insertError } = await supabase.from("music_generation_jobs").insert({
+  const admin = createClient(url, serviceRole);
+  const { data: job, error: insertError } = await admin.from("music_generation_jobs").insert({
     user_id: user.id, prompt, style, duration_seconds: duration,
     status: ["queued", "processing", "completed"].includes(result.status) ? result.status : "queued",
     provider_job_id: typeof result.provider_job_id === "string" ? result.provider_job_id : null,
