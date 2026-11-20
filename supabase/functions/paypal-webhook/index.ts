@@ -69,7 +69,7 @@ Deno.serve(async req=>{
  if(typeof amountValue==="string"&&typeof currencyCode==="string"){
   try{
    const fractionDigits=new Intl.NumberFormat("en",{style:"currency",currency:currencyCode}).resolvedOptions().maximumFractionDigits;
-   const parts=amountValue.match(/^(\\d+)(?:\\.(\\d+))?$/);
+   const parts=amountValue.match(/^(\d+)(?:\.(\d+))?$/);
    if(parts&&(parts[2]||"").length<=fractionDigits){
     const fraction=(parts[2]||"").padEnd(fractionDigits,"0");
     eventAmountMinor=BigInt(parts[1])*BigInt(10**fractionDigits)+BigInt(fraction||"0");
