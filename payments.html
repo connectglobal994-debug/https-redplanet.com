@@ -44,7 +44,16 @@ else{
   card.className="billing-card";heading.textContent=plan.code.replace(/[_-]+/g," ");detail.className="billing-muted";
   const digits=new Intl.NumberFormat("en",{style:"currency",currency:plan.currency}).resolvedOptions().maximumFractionDigits;
   detail.textContent=new Intl.NumberFormat(undefined,{style:"currency",currency:plan.currency}).format(Number(plan.amount_minor)/Math.pow(10,digits))+" · "+plan.period_days+" days";
-  actions.className="plan-actions";button.type="button";button.className="plan-button";button.textContent="Continue to secure checkout";
+  actions.className="plan-actions";button.type="button";button.className="plan-button";button.textContent="Pay with M-Pesa / card / bank";
+  const paypalButton=document.createElement("button");paypalButton.type="button";paypalButton.className="plan-button";paypalButton.textContent="Pay with PayPal";
+  paypalButton.addEventListener("click",async()=>{
+   paypalButton.disabled=true;button.disabled=true;checkoutStatus.textContent="Creating your secure PayPal order…";
+   const {data,error}=await supabase.functions.invoke("paypal-create-order",{body:{plan_code:plan.code}});
+   if(error||!data?.approval_url||!data.approval_url.startsWith("https://")){
+    checkoutStatus.textContent="PayPal checkout could not be started. No payment has been taken.";paypalButton.disabled=false;button.disabled=false;return;
+   }
+   window.location.assign(data.approval_url);
+  });
   button.addEventListener("click",async()=>{
    button.disabled=true;checkoutStatus.textContent="Creating your secure hosted checkout…";
    const {data,error}=await supabase.functions.invoke("flutterwave-create-checkout",{body:{plan_code:plan.code}});
@@ -53,7 +62,7 @@ else{
    }
    window.location.assign(data.checkout_url);
   });
-  actions.append(button);card.append(heading,detail,actions);plansGrid.append(card);
+  actions.append(button,paypalButton);card.append(heading,detail,actions);plansGrid.append(card);
  });
 }
 const {data:memberships,error:membershipError}=await supabase.from("memberships").select("plan_code,status,provider,current_period_start,current_period_end,created_at").order("created_at",{ascending:false}).limit(5);if(membershipError)throw membershipError;
