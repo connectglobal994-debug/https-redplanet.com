@@ -110,7 +110,11 @@ Deno.serve(async req=>{
    await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
    return json({received:true,processed:false,reason:"payment_record_not_updated"},202);
   }
-  if((nextStatus==="refunded"||nextStatus==="reversed")&&payment.membership_id){
+  // A partial refund is recorded against the payment, but does not revoke the
+  // membership. Cancel only when the refunded/reversed amount covers the full
+  // original payment. Reversals are treated as full reversals by their provider event.
+  const isFullRefundOrReversal = nextStatus==="reversed" || eventAmountMinor===expectedAmount;
+  if((nextStatus==="refunded"||nextStatus==="reversed")&&isFullRefundOrReversal&&payment.membership_id){
    const {error:membershipError}=await db.from("memberships").update({status:"cancelled",updated_at:new Date().toISOString()}).eq("id",payment.membership_id);
    if(membershipError){
     await db.from("payment_webhook_events").update({processing_status:"failed",error_message:membershipError.message.slice(0,500)}).eq("id",deliveryId);
