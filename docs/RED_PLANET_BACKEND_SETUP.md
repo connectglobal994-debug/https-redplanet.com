@@ -94,7 +94,7 @@ The webhook URL registered with PayPal is:
 - The verified PayPal webhook checks the captured amount and currency, then calls a service-role-only database function to activate one membership idempotently. The shared `complete_verified_provider_membership_payment` RPC is available to other provider handlers only after they independently verify the provider transaction. Refunds and reversals must be reconciled with the provider and cancel a linked membership only when policy and the verified refund outcome require it.
 - Create and verify a test order flow before accepting customer payments.
 - Confirm every PayPal event is signature-verified and duplicate deliveries are idempotent.
-- Do not activate memberships from an unverified browser redirect. The current webhook records verified payment outcomes; a trusted order-creation and membership-activation workflow is still required before paid plans can be sold.
+- Do not activate memberships from an unverified browser redirect. The customer-facing PayPal plan listing and order-creation flow are now implemented; membership activation still depends exclusively on the verified provider webhook. Keep checkout disabled until sandbox end-to-end tests pass.
 - Publish plan codes, amounts, currencies, billing periods, refund rules and cancellation terms only after the business owner approves them.
 
 ## 5. Additional payment methods and international coverage
