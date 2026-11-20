@@ -23,7 +23,7 @@ function redactSensitiveText(value: string): string {
 
 function maskEmail(value: string): string {
   const parts = value.split('@');
-  return parts.length === 2 ? parts[0].slice(0, 1) + '***@' + parts[1] : '[REDACTED_EMAIL]';
+  return parts.length === 2 ? (parts[0]?.slice(0, 1) ?? '') + '***@' + (parts[1] ?? '') : '[REDACTED_EMAIL]';
 }
 
 export async function POST(req: NextRequest) {
