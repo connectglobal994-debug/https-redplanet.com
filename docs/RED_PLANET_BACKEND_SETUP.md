@@ -35,6 +35,7 @@ Apply the repository migrations in filename order, after reviewing them in the S
 - `202611200019_multi_provider_payments.sql`
 - `202611200020_multi_provider_webhook_events.sql`
 - `202611200021_verified_provider_membership_activation.sql`
+- `202611200022_flutterwave_provider.sql`
 
 Verify each migration succeeds. Do not assume the list has been applied just because the files exist in the repository.
 
@@ -49,6 +50,9 @@ supabase functions deploy generate-music
 supabase functions deploy paypal-webhook
 supabase functions deploy paypal-create-order
 supabase functions deploy paypal-capture-order
+supabase functions deploy flutterwave-list-plans
+supabase functions deploy flutterwave-create-checkout
+supabase functions deploy flutterwave-webhook
 ```
 
 The project reference above is a placeholder. Replace it only with the confirmed project reference.
@@ -63,7 +67,7 @@ For `generate-music`:
 - `ALLOWED_ORIGIN`
 - Supabase supplies the project URL and service role to the Edge Function runtime; verify the expected environment variables exist before testing.
 
-For a future `mpesa-stk-push` and `mpesa-callback` integration:\n- `MPESA_ENV` (`sandbox` or `production`)\n- `MPESA_CONSUMER_KEY` and `MPESA_CONSUMER_SECRET`\n- `MPESA_SHORTCODE`, `MPESA_PASSKEY`, and approved transaction type\n- `MPESA_CALLBACK_URL` (public HTTPS Supabase Edge Function URL)\n- `MPESA_RECEIVING_PHONE` only for an explicitly approved manual Send Money option; it is not a Daraja shortcode\n- Use the approved Daraja STK Push and STK Query APIs; reconcile callback status, amount, account reference, checkout request ID and receipt before completing the payment. Do not trust a client redirect or receipt screenshot.\n\nFor `paypal-webhook`:
+For a future `mpesa-stk-push` and `mpesa-callback` integration:\n- `MPESA_ENV` (`sandbox` or `production`)\n- `MPESA_CONSUMER_KEY` and `MPESA_CONSUMER_SECRET`\n- `MPESA_SHORTCODE`, `MPESA_PASSKEY`, and approved transaction type\n- `MPESA_CALLBACK_URL` (public HTTPS Supabase Edge Function URL)\n- `MPESA_RECEIVING_PHONE` only for an explicitly approved manual Send Money option; it is not a Daraja shortcode\n- Use the approved Daraja STK Push and STK Query APIs; reconcile callback status, amount, account reference, checkout request ID and receipt before completing the payment. Do not trust a client redirect or receipt screenshot.\n\nFor Flutterwave hosted checkout and webhook functions:\n- `FLW_SECRET_KEY` (server-side test key first, live key only after merchant KYC approval)\n- `FLW_WEBHOOK_SECRET_HASH` (same secret hash configured in Flutterwave dashboard)\n- `FLW_PLAN_CATALOG` as server-side JSON mapping approved plan codes to `amount_minor`, uppercase `currency`, and `period_days`\n- `RP_SITE_URL` and `ALLOWED_ORIGIN` set to the canonical HTTPS website origin\n- Register `https://YOUR_VERIFIED_PROJECT_REF.supabase.co/functions/v1/flutterwave-webhook` in the Flutterwave dashboard and configure its webhook secret hash\n- `flutterwave-list-plans` returns only safe public plan fields to signed-in users; `flutterwave-create-checkout` creates a hosted payment link using the private key; `flutterwave-webhook` validates `verif-hash`, re-queries the transaction and checks reference, exact amount and currency before activating a membership\n- Flutterwave's hosted checkout can present available cards, M-Pesa/mobile money and bank-transfer channels according to the merchant account, country, currency and dashboard configuration. Do not promise a channel until it is enabled and tested on the merchant account.\n\nFor `paypal-webhook`:
 - `PAYPAL_CLIENT_ID`
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
@@ -91,17 +95,17 @@ The webhook URL registered with PayPal is:
 
 ## 5. Additional payment methods and international coverage
 
-The membership schema now recognizes these payment providers: PayPal, M-Pesa, card, bank transfer, Wise, manual and other. This is provider support in the data model; it does not mean a provider is connected or ready to accept money.
+The membership schema now recognizes PayPal, Flutterwave, M-Pesa, card, bank transfer, Wise, manual and other. Flutterwave hosted-checkout functions are committed; the other provider labels remain schema support until their individual integrations are implemented. This is provider support in the data model; it does not mean a provider is connected or ready to accept money.
 
 Implementation requirements before enabling each method:
 
-- **M-Pesa (Kenya):** integrate Safaricom Daraja STK Push for customer checkout and a server-side callback endpoint. Configure the Daraja consumer key/secret, shortcode or PayBill/Till details, passkey where required, environment and callback URL as server-side secrets/configuration. Verify callback authenticity and reconcile the checkout request/result before marking a payment complete. Never trust a browser success screen or a customer-entered transaction code by itself.
-- **Debit/credit cards:** use a PCI-compliant hosted checkout or tokenized payment provider that is available for the merchant's registered country. Red Planet must never collect or store raw card numbers, CVV values or magnetic-stripe data. Provider webhooks must confirm the exact amount, currency and payment reference.
-- **Bank transfers:** show only business-approved beneficiary details, bank name, account name, currency, SWIFT/BIC and any required routing details. Keep these details in protected server-side configuration or an admin-managed secure store, not hard-coded into public HTML. Payments remain pending until a trusted bank statement/API reconciliation or authorized finance review confirms cleared funds.
+- **M-Pesa (Kenya):** Flutterwave's hosted checkout lists Kenyan M-Pesa/mobile-money as an available channel, subject to merchant approval and channel enablement. This gives Red Planet one hosted flow for card and mobile-money acceptance without exposing card data. A direct Daraja integration remains an alternative if the business obtains its own shortcode/PayBill/Till and Daraja credentials.
+- **Debit/credit cards:** Flutterwave hosted checkout is the initial PCI-conscious option; use only its hosted page and never collect card numbers or CVV on Red Planet pages. Red Planet must never collect or store raw card numbers, CVV values or magnetic-stripe data. Provider webhooks must confirm the exact amount, currency and payment reference.
+- **Bank transfers:** Flutterwave lists bank transfer as a payment channel in supported markets; availability depends on the merchant account and currency. For direct transfers, show only business-approved beneficiary details, bank name, account name, currency, SWIFT/BIC and any required routing details. Keep these details in protected server-side configuration or an admin-managed secure store, not hard-coded into public HTML. Payments remain pending until a trusted bank statement/API reconciliation or authorized finance review confirms cleared funds.
 - **Wise:** use Wise Business payment links or a supported Wise Business integration where the merchant account and country are eligible. A Wise transfer is not automatically verified merely because a customer uploads a receipt. Reconcile it against the actual incoming transfer.
 - **Canada and international customers:** design the checkout catalog to support approved currencies such as CAD, USD and KES per plan/provider. Confirm the merchant's settlement country, supported currencies, FX conversion, fees, tax obligations and payout bank eligibility with each provider before publishing prices. Do not assume every provider supports every currency or Kenya/Canada cross-border settlement.
 
-The owner supplied an M-Pesa receiving contact number for configuration. Keep it in protected server-side configuration as `MPESA_RECEIVING_PHONE`; do not hard-code the number into public frontend files or Git history. It can be displayed as a manual Send Money destination only after the business confirms the account holder name and authorizes publication. A phone number alone is not a Daraja shortcode and does not enable STK Push.\n\nRequired business inputs before live activation: registered merchant country/entities, approved plan prices and currencies, business bank beneficiary details, M-Pesa PayBill/Till/shortcode and account reference, Daraja consumer key/secret/passkey and callback URL, and the chosen card processor. Add these through the provider's secure dashboard/secret manager; do not send passwords, full card details, PINs or secret keys in chat or commit them to Git.
+The owner supplied an M-Pesa receiving contact number. It is not required for Flutterwave hosted checkout and must not be hard-coded into public frontend files or Git history. A phone number alone is not a Daraja shortcode and does not enable direct STK Push.\n\nRequired business inputs before live activation: registered merchant country/entities, approved plan prices and currencies, business bank beneficiary details, M-Pesa PayBill/Till/shortcode and account reference, Daraja consumer key/secret/passkey and callback URL, and the chosen card processor. Add these through the provider's secure dashboard/secret manager; do not send passwords, full card details, PINs or secret keys in chat or commit them to Git.
 
 Provider-specific endpoints and webhook handlers must be implemented and sandbox-tested individually. The shared activation RPC is a database primitive, not a payment integration or a substitute for provider verification. The existing PayPal webhook is not a substitute for M-Pesa, card, Wise or bank-transfer verification. Use a shared internal payment state transition only after each provider's own server-side verification has succeeded.
 
