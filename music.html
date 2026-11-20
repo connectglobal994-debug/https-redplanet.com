@@ -58,6 +58,7 @@ $("artistForm").addEventListener("submit",async(e)=>{
  if(audioFile.size>50*1024*1024)return status.textContent="Audio file must be 50 MB or smaller.";
  if(art&&art.size>5*1024*1024)return status.textContent="Artwork must be 5 MB or smaller.";
  button.disabled=true;button.textContent="Uploading securely…";status.textContent="Checking your Red Planet account…";
+ let uploadedAudioPath=null,uploadedArtworkPath=null;
  try{
   const {data:{user},error:authError}=await supabase.auth.getUser();
   if(authError||!user)throw new Error("Please sign in to your Red Planet account first.");
@@ -73,9 +74,9 @@ $("artistForm").addEventListener("submit",async(e)=>{
    if(updateError)throw updateError;
   }
   status.textContent="Uploading audio and artwork to private storage…";
-  const audioPath=await uploadPrivate(audioFile,user.id,"audio");
+  const audioPath=await uploadPrivate(audioFile,user.id);uploadedAudioPath=audioPath;
   let artworkPath=null;
-  if(art)artworkPath=await uploadPrivate(art,user.id,"artwork");
+  if(art){artworkPath=await uploadPrivate(art,user.id);uploadedArtworkPath=artworkPath;}
   const typeMap={"Single track":"single","EP":"ep","Album":"album","Instrumental / beat":"demo","Label catalogue":"other"};
   const {data:submission,error:submissionError}=await supabase.from("music_submissions").insert({
    artist_profile_id:artistId,title:String(data.get("title")||"").trim(),
@@ -92,7 +93,13 @@ $("artistForm").addEventListener("submit",async(e)=>{
   if(submitError)throw submitError;
   status.textContent="Submission received. Your files are stored privately and the track is awaiting Red Planet review. No public release or payment has occurred.";
   e.currentTarget.reset();
- }catch(error){status.textContent=error.message||"Submission could not be completed. Please try again.";status.classList.add("error");}
+ }catch(error){
+  const cleanup=[];
+  if(uploadedAudioPath)cleanup.push(supabase.storage.from("rp-music-private").remove([uploadedAudioPath]));
+  if(uploadedArtworkPath)cleanup.push(supabase.storage.from("rp-music-private").remove([uploadedArtworkPath]));
+  if(cleanup.length)await Promise.allSettled(cleanup);
+  status.textContent=error.message||"Submission could not be completed. Please try again.";status.classList.add("error");
+ }
  finally{button.disabled=false;button.textContent="Submit for review";}
 });
 async function showSession(){
