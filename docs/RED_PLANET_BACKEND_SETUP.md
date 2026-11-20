@@ -34,6 +34,7 @@ Apply the repository migrations in filename order, after reviewing them in the S
 - `202611200018_paypal_membership_activation.sql`
 - `202611200019_multi_provider_payments.sql`
 - `202611200020_multi_provider_webhook_events.sql`
+- `202611200021_verified_provider_membership_activation.sql`
 
 Verify each migration succeeds. Do not assume the list has been applied just because the files exist in the repository.
 
@@ -82,7 +83,7 @@ The webhook URL registered with PayPal is:
 - Subscribe to capture completed, denied, refunded and reversed events.
 - The create-order function accepts a plan code only; the server-side plan catalog controls the amount, currency and membership duration.
 - The capture function checks that the signed-in user owns the order. Browser return URLs never activate a membership.
-- The verified webhook checks the captured amount and currency, then calls a service-role-only database function to activate one membership idempotently. Refunds and reversals cancel the linked membership.
+- The verified PayPal webhook checks the captured amount and currency, then calls a service-role-only database function to activate one membership idempotently. The shared `complete_verified_provider_membership_payment` RPC is available to other provider handlers only after they independently verify the provider transaction. Refunds and reversals must be reconciled with the provider and cancel a linked membership only when policy and the verified refund outcome require it.
 - Create and verify a test order flow before accepting customer payments.
 - Confirm every PayPal event is signature-verified and duplicate deliveries are idempotent.
 - Do not activate memberships from an unverified browser redirect. The current webhook records verified payment outcomes; a trusted order-creation and membership-activation workflow is still required before paid plans can be sold.
@@ -102,7 +103,7 @@ Implementation requirements before enabling each method:
 
 The owner supplied an M-Pesa receiving contact number for configuration. Keep it in protected server-side configuration as `MPESA_RECEIVING_PHONE`; do not hard-code the number into public frontend files or Git history. It can be displayed as a manual Send Money destination only after the business confirms the account holder name and authorizes publication. A phone number alone is not a Daraja shortcode and does not enable STK Push.\n\nRequired business inputs before live activation: registered merchant country/entities, approved plan prices and currencies, business bank beneficiary details, M-Pesa PayBill/Till/shortcode and account reference, Daraja consumer key/secret/passkey and callback URL, and the chosen card processor. Add these through the provider's secure dashboard/secret manager; do not send passwords, full card details, PINs or secret keys in chat or commit them to Git.
 
-Provider-specific endpoints and webhook handlers must be implemented and sandbox-tested individually. The existing PayPal webhook is not a substitute for M-Pesa, card, Wise or bank-transfer verification. Use a shared internal payment state transition only after each provider's own server-side verification has succeeded.
+Provider-specific endpoints and webhook handlers must be implemented and sandbox-tested individually. The shared activation RPC is a database primitive, not a payment integration or a substitute for provider verification. The existing PayPal webhook is not a substitute for M-Pesa, card, Wise or bank-transfer verification. Use a shared internal payment state transition only after each provider's own server-side verification has succeeded.
 
 ## 6. Trading activation gates
 
