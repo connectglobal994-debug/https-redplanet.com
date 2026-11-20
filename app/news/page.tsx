@@ -29,7 +29,6 @@ const SATELLITE_AGENTS = [
 
 export default function RedPlanetNewsPage() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'MARS' | 'GLOBAL' | 'SYNDICATE'>('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -53,12 +52,10 @@ export default function RedPlanetNewsPage() {
           };
         });
         setArticles(enriched);
-        setFilteredArticles(enriched);
       }
     } catch (err) {
       console.error('Failed to load published news', err);
       setArticles([]);
-      setFilteredArticles([]);
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -66,20 +63,47 @@ export default function RedPlanetNewsPage() {
   };
 
   useEffect(() => {
-    fetchNews();
+    let cancelled = false;
+
+    async function loadInitialNews() {
+      try {
+        const res = await fetch('/api/news');
+        const data = await res.json();
+        if (!cancelled && data.articles && Array.isArray(data.articles)) {
+          const enriched = data.articles.map((item: any, idx: number) => {
+            const defaultAgentName = SATELLITE_AGENTS[0]?.name ?? 'Mars Orbital Relay Node 08';
+            const agent = SATELLITE_AGENTS[idx % SATELLITE_AGENTS.length];
+            return {
+              ...item,
+              summary: item.summary ?? item.description ?? 'Autonomous quantum satellite news telemetry feed.',
+              source: item.source?.name ?? item.source ?? 'Red Planet Wire',
+              agentNode: agent?.name ?? defaultAgentName,
+              signalQuality: `${(98 + (idx % 20) * 0.1).toFixed(1)}% [SECURE]`
+            };
+          });
+          setArticles(enriched);
+        }
+      } catch (err) {
+        console.error('Failed to load published news', err);
+        if (!cancelled) setArticles([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadInitialNews();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  useEffect(() => {
-    if (activeCategory === 'ALL') {
-      setFilteredArticles(articles);
-    } else if (activeCategory === 'MARS') {
-      setFilteredArticles(articles.filter(a => a.title.toLowerCase().includes('mars') || a.source.toLowerCase().includes('mars') || a.agentNode?.includes('Mars')));
-    } else if (activeCategory === 'GLOBAL') {
-      setFilteredArticles(articles.filter(a => a.source.toLowerCase().includes('earth') || a.agentNode?.includes('Earth')));
-    } else {
-      setFilteredArticles(articles.filter(a => a.agentNode?.includes('Win') || a.source.toLowerCase().includes('syndicate')));
-    }
-  }, [activeCategory, articles]);
+  const filteredArticles = activeCategory === 'ALL'
+    ? articles
+    : activeCategory === 'MARS'
+      ? articles.filter(a => a.title.toLowerCase().includes('mars') || a.source.toLowerCase().includes('mars') || a.agentNode?.includes('Mars'))
+      : activeCategory === 'GLOBAL'
+        ? articles.filter(a => a.source.toLowerCase().includes('earth') || a.agentNode?.includes('Earth'))
+        : articles.filter(a => a.agentNode?.includes('Win') || a.source.toLowerCase().includes('syndicate'));
 
   return (
     <main className="flex-1 flex flex-col px-6 py-8 max-w-7xl mx-auto w-full min-h-screen space-y-8 font-mono">
