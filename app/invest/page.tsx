@@ -130,7 +130,7 @@ export default function InvestPage() {
       {/* Tesla-Level Strategic Vision Grid */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-3">
-          <div className="text-xs font-mono text-marsRed">01 // COLONIZATION TIMELINE</div>
+          <div className="text-xs font-mono text-marsRed">01 · COLONIZATION TIMELINE</div>
           <h3 className="text-lg font-bold text-white uppercase font-sans">The Mars Roadmap</h3>
           <p className="text-xs text-neutral-400 font-mono leading-relaxed">
             Preparing human consciousness for multi-planetary existence through immersive Martian soundscapes, autonomous broadcasting nodes, and satellite infrastructure.
@@ -138,7 +138,7 @@ export default function InvestPage() {
         </div>
 
         <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-3">
-          <div className="text-xs font-mono text-neonCyan">02 // AUTONOMOUS ECOSYSTEM</div>
+          <div className="text-xs font-mono text-neonCyan">02 · AUTONOMOUS ECOSYSTEM</div>
           <h3 className="text-lg font-bold text-white uppercase font-sans">Tesla-Grade Infrastructure</h3>
           <p className="text-xs text-neutral-400 font-mono leading-relaxed">
             Self-sustaining digital economies powered by algorithmic trading bots (Expert Sniper Pro v2), automated social media syndication, and AI-driven news anchors.
@@ -146,7 +146,7 @@ export default function InvestPage() {
         </div>
 
         <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-3">
-          <div className="text-xs font-mono text-emerald-400">03 // FOUNDERS SYNDICATE</div>
+          <div className="text-xs font-mono text-emerald-400">03 · FOUNDERS SYNDICATE</div>
           <h3 className="text-lg font-bold text-white uppercase font-sans">Led by Deblaq & Win</h3>
           <p className="text-xs text-neutral-400 font-mono leading-relaxed">
             Every investor submission is reviewed personally by core creators Deblaq (Operations) and Win (Strategy) to ensure absolute alignment with sovereign expansion.
