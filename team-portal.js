@@ -29,5 +29,7 @@ $("auth-form").addEventListener("submit",async e=>{e.preventDefault();if(!client
 $("signup").addEventListener("click",async()=>{if(!client)return;const {data,error}=await client.auth.signUp({email:$("email").value,password:$("password").value});say("auth-message",error?error.message:"Account created. Check your email to verify it, then sign in. An administrator must grant your role before you can access manager features.")});
 $("signout").addEventListener("click",async()=>{await client.auth.signOut();currentUser=null;setReady(false)});
 $("task-form").addEventListener("submit",async e=>{e.preventDefault();if(!client||!currentUser)return;const title=$("task-title").value.trim();const due=$("task-due").value||null;const {error}=await client.from("rp_tasks").insert({title,due_at:due,assignee_id:currentUser.id,created_by:currentUser.id});if(error){say("update-message",error.message);return}e.target.reset();await loadTasks()});
-$("save-update").addEventListener("click",async()=>{if(!client||!currentUser)return;const body=$("daily-update").value.trim();if(!body)return;say("update-message","Daily updates require the manager-approved reporting table in the next backend iteration. Your text has not been submitted.");});
+$("save-update").addEventListener("click",async()=>{if(!client||!currentUser)return;const body=$("daily-update").value.trim();if(!body)return;
+const {error}=await client.from("rp_daily_updates").upsert({user_id:currentUser.id,update_date:new Date().toISOString().slice(0,10),body},{onConflict:"user_id,update_date"});
+say("update-message",error?"Could not save update: "+error.message:"Daily update saved securely.");});
 boot();
