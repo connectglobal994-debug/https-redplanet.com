@@ -1,66 +1,20 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Red Planet plans, subscriptions and payment options.">
-  <title>Red Planet | Plans & Billing</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .billing-wrap{width:min(1080px,90%);margin:58px auto 90px}
-    .billing-hero{max-width:760px;margin-bottom:36px}
-    .billing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
-    .billing-card{padding:26px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:linear-gradient(145deg,#211319,#111116)}
-    .billing-card h2{margin-top:0}
-    .billing-label{display:inline-block;color:#ff6875;font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-    .billing-note{margin-top:22px;padding:18px;border-left:3px solid #ed1b2f;background:#1a1116;border-radius:8px;color:#c9c2c6}
-    .bank-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-    .bank-fields span{padding:12px;border:1px dashed rgba(255,255,255,.18);border-radius:8px;color:#9996a0;font-size:.9rem}
-    @media(max-width:560px){.bank-fields{grid-template-columns:1fr}}
-  </style>
-</head>
-<body>
-  <header class="navbar">
-    <a class="logo" href="index.html">RED PLANET</a>
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="index.html">Home</a><a href="music.html">Music</a><a href="ai.html">AI Studio</a>
-      <a href="collaborations.html">Collaborate</a><a href="trading.html">Trading</a>
-      <a href="payments.html" aria-current="page">Plans & Billing</a>
-    </nav>
-  </header>
-  <main class="billing-wrap">
-    <section class="billing-hero">
-      <p class="section-tag">ONE RED PLANET ACCOUNT</p>
-      <h1>Plans & Billing</h1>
-      <p class="subtext">Manage access to Red Planet services through one membership. Subscription plans and secure checkout will be activated after the payment provider and backend are connected.</p>
-    </section>
-    <section class="billing-grid" aria-label="Payment methods">
-      <article class="billing-card">
-        <span class="billing-label">Planned online payment</span>
-        <h2>PayPal</h2>
-        <p>Payments are intended to be directed to:</p>
-        <p><strong>anyokazadock03@gmail.com</strong></p>
-        <p class="muted">PayPal checkout is not connected yet. No payment will be taken from this preview page. The account owner will securely authorize the PayPal integration before activation.</p>
-      </article>
-      <article class="billing-card">
-        <span class="billing-label">Coming later</span>
-        <h2>Bank transfer</h2>
-        <p class="muted">We’ll add the official receiving-account details here when they are ready.</p>
-        <div class="bank-fields" aria-label="Bank details placeholders">
-          <span>Bank name — to be added</span>
-          <span>Account name — to be added</span>
-          <span>Account number — to be added</span>
-          <span>Branch / SWIFT — to be added</span>
-        </div>
-      </article>
-    </section>
-    <section class="billing-card" style="margin-top:18px">
-      <span class="billing-label">Subscription access</span>
-      <h2>Choose your Red Planet services</h2>
-      <p class="muted">Membership tiers, prices, billing periods, receipts, renewals, cancellations and access permissions will be configured in the secure backend. We will not display a live checkout button until the provider connection and subscription rules have been tested.</p>
-    </section>
-    <p class="billing-note"><strong>Preview status:</strong> This page is an information and layout section only. It does not accept payments, store card details or activate subscriptions. Never send card numbers, passwords or bank credentials by email or through this page.</p>
-  </main>
-  <footer class="footer"><p>Red Planet © 2026 · Secure membership and payments are being prepared.</p></footer>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Red Planet memberships, payment history and billing status."><title>Red Planet | Plans & Billing</title><link rel="stylesheet" href="style.css">
+<style>
+.billing-wrap{width:min(1080px,92%);margin:56px auto 90px}.billing-hero{max-width:760px;margin-bottom:30px}.billing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.billing-card{padding:24px;border:1px solid var(--rp-line);border-radius:18px;background:linear-gradient(145deg,#211319,#111116)}.billing-card h2{margin-top:0}.billing-label{display:inline-block;color:#ff6875;font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.billing-muted{color:var(--rp-muted);font-size:.9rem}.billing-status{padding:14px;border-radius:9px;background:#17151b;color:#d4cbd0;min-height:44px;margin:14px 0}.billing-list{padding-left:18px;color:var(--rp-muted)}.billing-warning{margin-top:18px;padding:16px;border-left:3px solid #ed1b2f;background:#1a1116;border-radius:8px;color:#c9c2c6}
+</style></head><body>
+<header class="navbar"><a class="logo" href="index.html">RED PLANET</a><button class="menu-toggle" type="button" aria-label="Toggle navigation">☰</button><nav class="nav-links"><a href="index.html">Home</a><a href="music.html">Music</a><a href="account.html">Account</a><a href="trading.html">Trading</a><a href="payments.html" aria-current="page">Plans & Billing</a></nav></header>
+<main class="billing-wrap"><section class="billing-hero"><p class="section-tag">ONE RED PLANET ACCOUNT</p><h1>Plans & Billing</h1><p class="subtext">Review membership and payment records linked to your Red Planet account. Checkout stays disabled until pricing, merchant credentials and verified payment webhooks are configured.</p></section>
+<div id="billing-status" class="billing-status" role="status" aria-live="polite">Checking your account…</div>
+<section class="billing-grid"><article class="billing-card"><span class="billing-label">Membership</span><h2>Your plan</h2><p id="membership-summary" class="billing-muted">Sign in to view membership status.</p></article><article class="billing-card"><span class="billing-label">Payment history</span><h2>Recent payments</h2><ul id="payment-list" class="billing-list"><li>No records loaded.</li></ul></article></section>
+<section class="billing-card" style="margin-top:16px"><span class="billing-label">Payment provider</span><h2>Secure checkout preparation</h2><p class="billing-muted">PayPal is the intended first provider, but no live checkout is enabled. The backend must create orders, verify captures and webhook signatures, prevent duplicate processing, and activate memberships only after confirmed payment. Bank transfer details and subscription prices will be published only after they are approved.</p></section>
+<p class="billing-warning"><strong>Preview status:</strong> This page does not accept payments, collect card or bank details, or activate subscriptions. Do not send payment credentials by email or chat.</p></main>
+<footer class="footer"><p>Red Planet © 2026 · Membership billing is under development.</p></footer>
+<script src="supabase-config.js"></script><script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const cfg=window.RP_SUPABASE_CONFIG||{},status=document.getElementById("billing-status"),summary=document.getElementById("membership-summary"),list=document.getElementById("payment-list");
+try{if(!cfg.url?.startsWith("https://")||!cfg.anonKey?.startsWith("sb_publishable_"))throw new Error("Account configuration unavailable.");const supabase=createClient(cfg.url,cfg.anonKey),{data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)throw new Error("Sign in to view your private billing records.");status.textContent="Signed in. Your billing records are private to this account.";
+const {data:memberships,error:membershipError}=await supabase.from("memberships").select("plan_code,status,provider,current_period_start,current_period_end,created_at").order("created_at",{ascending:false}).limit(5);if(membershipError)throw membershipError;
+summary.textContent=memberships?.length?memberships.map(m=>m.plan_code+" · "+m.status+" · "+m.provider+(m.current_period_end?" · ends "+new Date(m.current_period_end).toLocaleDateString():"")).join(" | "):"No membership is currently recorded for this account.";
+const {data:payments,error:paymentError}=await supabase.from("payment_records").select("currency,amount_minor,status,created_at").order("created_at",{ascending:false}).limit(10);if(paymentError)throw paymentError;list.replaceChildren();if(!payments?.length){const li=document.createElement("li");li.textContent="No payment records found.";list.append(li);}else payments.forEach(p=>{const li=document.createElement("li");li.textContent=p.currency+" "+(Number(p.amount_minor)/100).toFixed(2)+" · "+p.status+" · "+new Date(p.created_at).toLocaleDateString();list.append(li);});
+}catch(error){status.textContent=error.message||"Billing records could not be loaded.";summary.textContent="Unavailable until sign-in and backend access are ready.";}
+</script><script src="script.js"></script></body></html>
