@@ -18,24 +18,15 @@
     "jsx": "react-jsx",
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
-
-    // --- ELITE ECOSYSTEM UPGRADES ---
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "exactOptionalPropertyTypes": false,
-
-    // --- ADDITIONAL STRICTNESS & ARCHITECTURAL SAFEGUARDS ---
-    // Catches accessing an array/object index that TypeScript can't prove exists —
-    // e.g. `arr[i]` returns `T | undefined` instead of hiding runtime bugs.
     "noUncheckedIndexedAccess": true,
-    // Requires the `override` keyword on subclass methods, preventing silent orphan bugs.
     "noImplicitOverride": true,
-    // Blocks unreachable code and unused labels from compiling.
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-
     "plugins": [
       {
         "name": "next"
@@ -71,6 +62,7 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts/automation"
+    "scripts/automation",
+    "supabase/functions"
   ]
 }
