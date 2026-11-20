@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Install, audit, lint, typecheck and build
+    name: Lint, typecheck and production build
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -28,11 +28,26 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Audit dependency vulnerabilities
-        run: npm audit --audit-level=high
       - name: Lint
         run: npm run lint
       - name: Type check
         run: npm run typecheck
       - name: Production build
         run: npm run build
+
+  dependency-audit:
+    name: Dependency security audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Audit dependency vulnerabilities
+        run: npm audit --audit-level=high
