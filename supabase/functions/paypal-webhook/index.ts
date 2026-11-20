@@ -54,14 +54,46 @@ Deno.serve(async req=>{
   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:"Verified event did not contain a related order ID"}).eq("id",deliveryId);
   return json({received:true,processed:false,reason:"order_id_missing"},202);
  }
+ const {data:payment,error:paymentError}=await db.from("payment_records")
+  .select("id,amount_minor,currency,status").eq("provider","paypal").eq("provider_order_id",orderId).maybeSingle();
+ if(paymentError||!payment){
+  const message=paymentError?.message||"No matching payment order was found";
+  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
+  return json({received:true,processed:false,reason:"payment_record_not_found"},202);
+ }
+ // Never trust a signed event's order reference alone: match the captured amount and currency
+ // against the server-created payment record before changing its financial state.
+ const amountValue=resource.amount?.value;
+ const currencyCode=resource.amount?.currency_code;
+ let eventAmountMinor:bigint|null=null;
+ if(typeof amountValue==="string"&&typeof currencyCode==="string"){
+  try{
+   const fractionDigits=new Intl.NumberFormat("en",{style:"currency",currency:currencyCode}).resolvedOptions().maximumFractionDigits;
+   const parts=amountValue.match(/^(\\d+)(?:\\.(\\d+))?$/);
+   if(parts&&(parts[2]||"").length<=fractionDigits){
+    const fraction=(parts[2]||"").padEnd(fractionDigits,"0");
+    eventAmountMinor=BigInt(parts[1])*BigInt(10**fractionDigits)+BigInt(fraction||"0");
+   }
+  }catch{/* Invalid or unsupported currency is rejected below. */}
+ }
+ if(currencyCode!==String(payment.currency).trim().toUpperCase()||eventAmountMinor===null||eventAmountMinor!==BigInt(payment.amount_minor)){
+  const message="Verified PayPal amount or currency does not match the stored payment record";
+  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message}).eq("id",deliveryId);
+  return json({received:true,processed:false,reason:"amount_currency_mismatch"},202);
+ }
+ // A later denial must never downgrade a payment already confirmed as completed.
+ if(payment.status==="completed"&&nextStatus!=="completed"){
+  await db.from("payment_webhook_events").update({processing_status:"ignored",processed_at:new Date().toISOString(),error_message:"Ignored a later non-completion event for an already completed payment"}).eq("id",deliveryId);
+  return json({received:true,ignored:true});
+ }
  const updates:Record<string,unknown>={status:nextStatus,verified_at:new Date().toISOString()};
  if(captureId)updates.provider_capture_id=captureId;
- const {data:updated,error:updateError}=await db.from("payment_records").update(updates).eq("provider","paypal").eq("provider_order_id",orderId).select("id").maybeSingle();
+ const {data:updated,error:updateError}=await db.from("payment_records").update(updates).eq("id",payment.id).select("id").maybeSingle();
  if(updateError||!updated){
-  const message=updateError?.message||"No matching payment order was found";
+  const message=updateError?.message||"Payment record could not be updated";
   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
   return json({received:true,processed:false,reason:"payment_record_not_updated"},202);
  }
- await db.from("payment_webhook_events").update({processing_status:"processed",processed_at:new Date().toISOString()}).eq("id",deliveryId);
+ await db.from("payment_webhook_events").update({processing_status:"processed",processed_at:new Date().toISOString(),error_message:null}).eq("id",deliveryId);
  return json({received:true,processed:true});
 });
