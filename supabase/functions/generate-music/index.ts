@@ -57,13 +57,17 @@ Deno.serve(async (req) => {
     await admin.from("music_generation_jobs").update({ status: "failed", error_code: "invalid_provider_response" }).eq("id", job.id);
     return reply({ error: "Music provider returned an invalid response.", job_id: job.id }, 502);
   }
-  const providerStatus = ["queued", "processing", "completed"].includes(String(result.status)) ? String(result.status) : "queued";
+  const reportedStatus = ["queued", "processing", "completed"].includes(String(result.status)) ? String(result.status) : "queued";
+  // A provider saying "completed" is not enough: Red Planet must first ingest and
+  // validate the audio into its own private storage before marking the job completed.
+  const providerStatus = reportedStatus === "completed" ? "processing" : reportedStatus;
   const providerJobId = typeof result.provider_job_id === "string" ? result.provider_job_id.slice(0, 255) : null;
   const { error: updateError } = await admin.from("music_generation_jobs").update({
     status: providerStatus,
     provider_job_id: providerJobId,
-    completed_at: providerStatus === "completed" ? new Date().toISOString() : null,
+    completed_at: null,
+    error_code: reportedStatus === "completed" ? "awaiting_audio_ingestion" : null,
   }).eq("id", job.id);
   if (updateError) return reply({ error: "Provider accepted the request, but the job status could not be saved.", job_id: job.id }, 500);
-  return reply({ job_id: job.id, status: providerStatus, provider_job_id: providerJobId });
+  return reply({ job_id: job.id, status: providerStatus, provider_job_id: providerJobId, audio_ready: false });
 });
