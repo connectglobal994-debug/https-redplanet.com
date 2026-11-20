@@ -55,7 +55,7 @@ Deno.serve(async req=>{
   return json({received:true,processed:false,reason:"order_id_missing"},202);
  }
  const {data:payment,error:paymentError}=await db.from("payment_records")
-  .select("id,amount_minor,currency,status").eq("provider","paypal").eq("provider_order_id",orderId).maybeSingle();
+  .select("id,amount_minor,currency,status,membership_id").eq("provider","paypal").eq("provider_order_id",orderId).maybeSingle();
  if(paymentError||!payment){
   const message=paymentError?.message||"No matching payment order was found";
   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
@@ -86,13 +86,31 @@ Deno.serve(async req=>{
   await db.from("payment_webhook_events").update({processing_status:"ignored",processed_at:new Date().toISOString(),error_message:"Ignored a later non-completion event for an already completed payment"}).eq("id",deliveryId);
   return json({received:true,ignored:true});
  }
- const updates:Record<string,unknown>={status:nextStatus,verified_at:new Date().toISOString()};
- if(captureId)updates.provider_capture_id=captureId;
- const {data:updated,error:updateError}=await db.from("payment_records").update(updates).eq("id",payment.id).select("id").maybeSingle();
- if(updateError||!updated){
-  const message=updateError?.message||"Payment record could not be updated";
-  await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
-  return json({received:true,processed:false,reason:"payment_record_not_updated"},202);
+ if(nextStatus==="completed"){
+  const {data:membershipId,error:activationError}=await db.rpc("complete_paypal_membership_payment",{
+   p_payment_id:payment.id,p_capture_id:captureId
+  });
+  if(activationError||!membershipId){
+   const message=activationError?.message||"Membership activation did not return an ID";
+   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
+   return json({received:true,processed:false,reason:"membership_activation_failed"},202);
+  }
+ }else{
+  const updates:Record<string,unknown>={status:nextStatus,verified_at:new Date().toISOString()};
+  if(captureId)updates.provider_capture_id=captureId;
+  const {data:updated,error:updateError}=await db.from("payment_records").update(updates).eq("id",payment.id).select("id").maybeSingle();
+  if(updateError||!updated){
+   const message=updateError?.message||"Payment record could not be updated";
+   await db.from("payment_webhook_events").update({processing_status:"failed",error_message:message.slice(0,500)}).eq("id",deliveryId);
+   return json({received:true,processed:false,reason:"payment_record_not_updated"},202);
+  }
+  if((nextStatus==="refunded"||nextStatus==="reversed")&&payment.membership_id){
+   const {error:membershipError}=await db.from("memberships").update({status:"cancelled",updated_at:new Date().toISOString()}).eq("id",payment.membership_id);
+   if(membershipError){
+    await db.from("payment_webhook_events").update({processing_status:"failed",error_message:membershipError.message.slice(0,500)}).eq("id",deliveryId);
+    return json({received:true,processed:false,reason:"membership_cancellation_failed"},202);
+   }
+  }
  }
  await db.from("payment_webhook_events").update({processing_status:"processed",processed_at:new Date().toISOString(),error_message:null}).eq("id",deliveryId);
  return json({received:true,processed:true});
