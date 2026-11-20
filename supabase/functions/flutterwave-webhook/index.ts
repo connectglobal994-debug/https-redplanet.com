@@ -23,6 +23,56 @@ Deno.serve(async req=>{
  const data=event?.data;
  const transactionId=data?.id;
  if(!Number.isSafeInteger(Number(transactionId))||Number(transactionId)<=0)return json({error:"Missing transaction ID"},400);
+ if(event.event==="refund.completed"){
+  const refundId=data?.id;
+  if(!Number.isSafeInteger(Number(refundId))||Number(refundId)<=0)return json({error:"Missing refund ID"},400);
+  let refundResponse:Response;
+  try{refundResponse=await fetch("https://api.flutterwave.com/v3/refunds/"+encodeURIComponent(String(refundId)),{headers:{Authorization:"Bearer "+secret,Accept:"application/json"},signal:AbortSignal.timeout(20000)});}
+  catch{return json({error:"Could not verify refund with provider"},502);}
+  if(!refundResponse.ok)return json({error:"Provider refund verification failed"},502);
+  const refundBody=await refundResponse.json().catch(()=>({}));
+  const refund=refundBody?.data;
+  const refundStatus=String(refund?.status||"").toLowerCase();
+  const transactionId=refund?.transaction_id??refund?.tx_id??data?.charge_id;
+  const amountMinor=toMinor(refund?.amount_refunded??data?.amount_refunded,String(refund?.currency||data?.currency||"KES").toUpperCase());
+  if(refundBody?.status!=="success"||!["completed","completed-bank-transfer","completed-momo","completed-mpgs","completed-offline","completed-preauth","succeeded"].includes(refundStatus)||!Number.isSafeInteger(Number(transactionId))||Number(transactionId)<=0||amountMinor===null||amountMinor<=0n){
+   return json({received:true,processed:false,reason:"refund_not_final_or_invalid"},202);
+  }
+  const db=createClient(url,service);
+  const {data:payment,error:paymentError}=await db.from("payment_records").select("id,amount_minor,currency,status,membership_id,provider_capture_id").eq("provider","flutterwave").eq("provider_capture_id",String(transactionId)).maybeSingle();
+  if(paymentError||!payment)return json({received:true,processed:false,reason:"original_payment_not_found"},202);
+  const currency=String(payment.currency).toUpperCase();
+  if(amountMinor>BigInt(payment.amount_minor))return json({received:true,processed:false,reason:"refund_exceeds_payment"},202);
+  // Re-query the original charge as well: refund metadata alone is not the authority
+  // for the original transaction's currency or reference.
+  let chargeResponse:Response;
+  try{chargeResponse=await fetch("https://api.flutterwave.com/v3/transactions/"+encodeURIComponent(String(transactionId))+"/verify",{headers:{Authorization:"Bearer "+secret,Accept:"application/json"},signal:AbortSignal.timeout(20000)});}
+  catch{return json({error:"Could not verify original charge"},502);}
+  if(!chargeResponse.ok)return json({error:"Original charge verification failed"},502);
+  const chargeBody=await chargeResponse.json().catch(()=>({}));
+  const charge=chargeBody?.data;
+  if(chargeBody?.status!=="success"||String(charge?.currency||"").toUpperCase()!==currency||String(charge?.tx_ref||"")!==String(payment.id)){
+   return json({received:true,processed:false,reason:"original_charge_mismatch"},202);
+  }
+  const refundAmount=Number(amountMinor);
+  if(!Number.isSafeInteger(refundAmount))return json({received:true,processed:false,reason:"refund_amount_out_of_range"},202);
+  const {error:upsertError}=await db.from("payment_refunds").upsert({
+   payment_id:payment.id,provider:"flutterwave",provider_refund_id:String(refundId),
+   amount_minor:refundAmount,currency,status:"completed",provider_reference:String(refund?.flw_ref||"")
+  },{onConflict:"provider,provider_refund_id"});
+  if(upsertError)return json({error:"Could not record verified refund"},500);
+  const {data:refundRows,error:sumError}=await db.from("payment_refunds").select("amount_minor").eq("payment_id",payment.id).eq("provider","flutterwave").eq("status","completed");
+  if(sumError||!refundRows)return json({error:"Could not reconcile verified refunds"},500);
+  const totalRefunded=refundRows.reduce((sum,row)=>sum+BigInt(row.amount_minor),0n);
+  if(totalRefunded>BigInt(payment.amount_minor))return json({received:true,processed:false,reason:"cumulative_refund_exceeds_payment"},202);
+  if(totalRefunded===BigInt(payment.amount_minor)&&payment.membership_id){
+   const {error:membershipError}=await db.from("memberships").update({status:"cancelled",updated_at:new Date().toISOString()}).eq("id",payment.membership_id);
+   if(membershipError)return json({error:"Refund recorded but membership cancellation failed"},500);
+  }
+  const {error:paymentUpdateError}=await db.from("payment_records").update({status:totalRefunded===BigInt(payment.amount_minor)?"refunded":"completed"}).eq("id",payment.id);
+  if(paymentUpdateError)return json({error:"Refund recorded but payment reconciliation failed"},500);
+  return json({received:true,processed:true,refund_status:"completed",fully_refunded:totalRefunded===BigInt(payment.amount_minor)});
+ }
  if(event.event!=="charge.completed")return json({received:true,ignored:true});
  let verifyResponse:Response;
  try{
