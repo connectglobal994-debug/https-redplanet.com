@@ -24,7 +24,8 @@ async function loadTrainingMaterials(){
  if(!data?.length){root.textContent="No published resources yet.";return;}
  root.innerHTML=data.map(item=>'<article class="item"><div><b>'+escapeHtml(item.title)+'</b><small>'+escapeHtml(item.course_code)+' · '+escapeHtml(item.visibility)+'</small><p>'+escapeHtml(item.body).replace(/\n/g,"<br>")+'</p></div></article>').join("");
 }
-\nasync function loadTasks(){const {data,error}=await client.from("rp_tasks").select("id,title,status,due_at").eq("assignee_id",currentUser.id).order("created_at",{ascending:false});if(error){$("task-list").innerHTML='<p class="muted">Tasks table unavailable. Apply the Red Planet team migration first.</p>';return}const rows=data||[];$("open-count").textContent=rows.filter(x=>x.status!=="done").length;$("done-count").textContent=rows.filter(x=>x.status==="done").length;$("task-list").innerHTML=rows.length?rows.map(t=>'<article class="item"><div><b>'+escapeHtml(t.title)+'</b><small>'+(t.due_at?"Due "+t.due_at:"No due date")+" · "+t.status+'</small></div><button data-task="'+t.id+'" data-status="'+(t.status==="done"?"todo":"done")+'">'+(t.status==="done"?"Reopen":"Complete")+'</button></article>').join(""):'<p class="muted">No tasks assigned yet. Add your first priority above.</p>';document.querySelectorAll("[data-task]").forEach(b=>b.addEventListener("click",()=>updateTask(b.dataset.task,b.dataset.status)))}
+
+async function loadTasks(){const {data,error}=await client.from("rp_tasks").select("id,title,status,due_at").eq("assignee_id",currentUser.id).order("created_at",{ascending:false});if(error){$("task-list").innerHTML='<p class="muted">Tasks table unavailable. Apply the Red Planet team migration first.</p>';return}const rows=data||[];$("open-count").textContent=rows.filter(x=>x.status!=="done").length;$("done-count").textContent=rows.filter(x=>x.status==="done").length;$("task-list").innerHTML=rows.length?rows.map(t=>'<article class="item"><div><b>'+escapeHtml(t.title)+'</b><small>'+(t.due_at?"Due "+t.due_at:"No due date")+" · "+t.status+'</small></div><button data-task="'+t.id+'" data-status="'+(t.status==="done"?"todo":"done")+'">'+(t.status==="done"?"Reopen":"Complete")+'</button></article>').join(""):'<p class="muted">No tasks assigned yet. Add your first priority above.</p>';document.querySelectorAll("[data-task]").forEach(b=>b.addEventListener("click",()=>updateTask(b.dataset.task,b.dataset.status)))}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 async function updateTask(id,status){const {error}=await client.from("rp_tasks").update({status}).eq("id",id);if(error){say("update-message",error.message);return}await loadTasks()}
 async function loadKpis(){const {data,error}=await client.from("rp_kpis").select("id,title,target_value,current_value,unit").eq("owner_id",currentUser.id).order("created_at",{ascending:false});if(error){$("kpi-list").innerHTML='<p class="muted">No KPI records available yet.</p>';return}const rows=data||[];$("goal-count").textContent=rows.length;$("kpi-list").innerHTML=rows.length?rows.map(k=>'<article class="item"><div><b>'+escapeHtml(k.title)+'</b><small>'+k.current_value+' / '+k.target_value+' '+escapeHtml(k.unit||"")+'</small></div></article>').join(""):'<p class="muted">Your manager has not assigned goals yet.</p>'}
@@ -47,6 +48,32 @@ async function loadTeamTasks(members){
  root.innerHTML=data.map(task=>'<article class="item"><div><b>'+escapeHtml(task.title)+'</b><small>'+escapeHtml(names.get(task.assignee_id)||"Team member")+' · '+escapeHtml(task.priority)+' · '+(task.due_at?"Due "+task.due_at:"No due date")+'</small></div><select data-team-task="'+task.id+'" aria-label="Update task status"><option value="todo">To do</option><option value="doing">In progress</option><option value="blocked">Blocked</option><option value="done">Done</option></select></article>').join("");
  root.querySelectorAll("[data-team-task]").forEach(select=>{const task=data.find(x=>x.id===select.dataset.teamTask);select.value=task.status;select.addEventListener("change",async()=>{const {error:updateError}=await client.from("rp_tasks").update({status:select.value,updated_at:new Date().toISOString()}).eq("id",task.id);say("admin-task-message",updateError?"Could not update task: "+updateError.message:"Team task updated.");});});
 }
+
+const aiConversation=[];
+function renderAiMessage(role,content){
+ const root=$("ai-chat-log");
+ if(root.querySelector(".muted")?.textContent==="Your training conversation will appear here.")root.innerHTML="";
+ const article=document.createElement("article");article.className="item";article.style.display="block";
+ const heading=document.createElement("b");heading.textContent=role==="assistant"?"AI Teacher":"You";
+ const body=document.createElement("p");body.style.whiteSpace="pre-wrap";body.textContent=content;
+ article.append(heading,body);root.append(article);root.scrollTop=root.scrollHeight;
+}
+$("ai-teacher-form")?.addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(!client||!currentUser){say("ai-teacher-status","Sign in before asking the AI teacher.");return;}
+ const input=$("ai-teacher-question"),button=$("ai-teacher-send"),question=input.value.trim();
+ if(!question)return;
+ button.disabled=true;input.disabled=true;say("ai-teacher-status","Your teacher is preparing an answer…");
+ renderAiMessage("user",question);aiConversation.push({role:"user",content:question});input.value="";
+ try{
+  const {data,error}=await client.functions.invoke("ai-teacher",{body:{message:question,history:aiConversation.slice(-8)}});
+  if(error)throw error;
+  const answer=String(data?.answer||"The AI teacher did not return an answer.");
+  renderAiMessage("assistant",answer);aiConversation.push({role:"assistant",content:answer});
+  say("ai-teacher-status",data?.sources?.length?"Answered using "+data.sources.length+" approved team resource(s).":"Answered without a matching published team resource. Verify company-specific instructions with your manager.");
+ }catch(error){aiConversation.pop();renderAiMessage("assistant","I couldn't reach the AI teacher service. Your question has not been lost—please try again after the AI service is configured.");say("ai-teacher-status",error.message||"AI teacher service unavailable.");}
+ finally{button.disabled=false;input.disabled=false;input.focus();}
+});
 async function refresh(){await loadProfile();await Promise.all([loadTasks(),loadKpis(),loadProgress(),loadTrainingMaterials()]);setReady(true)}
 async function boot(){initCourses();if(!RP_SUPABASE_URL||!RP_SUPABASE_ANON_KEY||!window.supabase){$("setup-warning").hidden=false;$("auth-form").querySelectorAll("input,button").forEach(x=>x.disabled=true);return}client=window.supabase.createClient(RP_SUPABASE_URL,RP_SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data}=await client.auth.getSession();currentUser=data.session?.user||null;if(currentUser)await refresh();client.auth.onAuthStateChange(async(_event,session)=>{currentUser=session?.user||null;if(currentUser)await refresh();else setReady(false)})}
 $("auth-form").addEventListener("submit",async e=>{e.preventDefault();if(!client)return;const {data,error}=await client.auth.signInWithPassword({email:$("email").value,password:$("password").value});say("auth-message",error?error.message:"Signed in.");if(!error){currentUser=data.user;await refresh()}});
