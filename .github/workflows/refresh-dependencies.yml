@@ -29,6 +29,11 @@ jobs:
         run: |
           npm install --save-exact next@16.4.6 @vercel/blob@2.9.0
           npm install --save-dev --save-exact eslint-config-next@16.4.6
+          # Blob 2.9.0 currently resolves an older exact OIDC release. Pin its
+          # OIDC child to the patched 4.x line, which consumes cli-config 0.4.x
+          # with Zod >=4.6.6. CI below validates compatibility before commit.
+          npm pkg set 'overrides.@vercel/blob.@vercel/oidc=4.0.9'
+          npm install
           npm audit fix
       - name: Verify lockfile and audit result
         run: |
