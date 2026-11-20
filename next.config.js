@@ -14,10 +14,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-
   // Elite Image Pipeline: Allowlist trusted external storage, media origins, and Vercel Blob cloud buckets.
   images: {
     remotePatterns: [
