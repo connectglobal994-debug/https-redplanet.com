@@ -47,15 +47,17 @@ Deploy from the repository root after linking the verified project:
 supabase login
 supabase link --project-ref YOUR_VERIFIED_PROJECT_REF
 supabase functions deploy generate-music
-supabase functions deploy paypal-webhook
+supabase functions deploy paypal-webhook --no-verify-jwt
 supabase functions deploy paypal-create-order
 supabase functions deploy paypal-capture-order
 supabase functions deploy flutterwave-list-plans
 supabase functions deploy flutterwave-create-checkout
-supabase functions deploy flutterwave-webhook
+supabase functions deploy flutterwave-webhook --no-verify-jwt
 ```
 
 The project reference above is a placeholder. Replace it only with the confirmed project reference.
+
+Provider webhooks (`paypal-webhook` and `flutterwave-webhook`) must be deployed with `--no-verify-jwt` because the payment providers cannot send a Supabase user JWT. Each endpoint performs its own provider signature/secret-hash verification before processing. Keep JWT verification enabled for customer-facing checkout and plan functions.
 
 ### Function secrets
 
