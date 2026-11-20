@@ -14,12 +14,23 @@
 <button class="pill" type="submit" style="border:0;padding:12px 18px;cursor:pointer">Generate music</button>
 <p id="music-generation-status" class="muted" role="status" aria-live="polite">Sign in with your Red Planet account to use generation.</p>
 <a class="pill" href="account.html">Open account / sign in</a>
-</form></section></main><footer>RED PLANET AI · Human direction. Machine leverage.</footer><script src="supabase-config.js"></script>
+</form><div style="margin-top:24px"><h3>Your generation history</h3><div id="generation-history" class="muted" aria-live="polite">Sign in to view your recent generation requests.</div></div></section></main><footer>RED PLANET AI · Human direction. Machine leverage.</footer><script src="supabase-config.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const cfg=window.RP_SUPABASE_CONFIG||{};
 const client=createClient(cfg.url,cfg.anonKey);
 const form=document.getElementById("music-generation-form");
+const historyRoot=document.getElementById("generation-history");
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function loadGenerationHistory(){
+ const {data:{user},error:authError}=await client.auth.getUser();
+ if(authError||!user){historyRoot.textContent="Sign in to view your recent generation requests.";return;}
+ const {data,error}=await client.from("music_generation_jobs").select("id,prompt,style,duration_seconds,status,created_at,error_code").order("created_at",{ascending:false}).limit(20);
+ if(error){historyRoot.textContent="Generation history unavailable: "+error.message;return;}
+ if(!data?.length){historyRoot.textContent="No generation requests yet.";return;}
+ historyRoot.innerHTML=data.map(job=>'<article class="card" style="margin:10px 0;padding:14px"><strong>'+escapeHtml(job.prompt)+'</strong><p class="muted">'+escapeHtml(job.style||"Style not specified")+' · '+job.duration_seconds+' sec · '+escapeHtml(job.status)+'</p><small class="muted">'+new Date(job.created_at).toLocaleString()+(job.error_code?' · '+escapeHtml(job.error_code):'')+'</small></article>').join("");
+}
+loadGenerationHistory();
 form?.addEventListener("submit",async(event)=>{
  event.preventDefault();
  const status=document.getElementById("music-generation-status");
@@ -34,7 +45,7 @@ form?.addEventListener("submit",async(event)=>{
    duration_seconds:Number(document.getElementById("music-duration").value)
   }});
   if(error)throw error;
-  status.textContent=data?.job_id?"Generation request accepted. Job "+data.job_id+" · status: "+data.status+". The provider still needs to be configured and return the completed audio.":"Request sent, but no job confirmation was returned.";
+  status.textContent=data?.job_id?"Generation request accepted. Job "+data.job_id+" · status: "+data.status+".":"Request sent, but no job confirmation was returned.";await loadGenerationHistory();
  }catch(error){status.textContent=error.message||"Generation could not be started. Check the account and provider setup."; }
  finally{button.disabled=false;}
 });
