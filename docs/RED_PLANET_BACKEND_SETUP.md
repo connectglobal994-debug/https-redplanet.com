@@ -32,6 +32,7 @@ Apply the repository migrations in filename order, after reviewing them in the S
 - `202611200016_payment_webhook_events.sql`
 - `202611200017_payment_plan_metadata.sql`
 - `202611200018_paypal_membership_activation.sql`
+- `202611200019_multi_provider_payments.sql`
 
 Verify each migration succeeds. Do not assume the list has been applied just because the files exist in the repository.
 
@@ -86,7 +87,23 @@ The webhook URL registered with PayPal is:
 - Do not activate memberships from an unverified browser redirect. The current webhook records verified payment outcomes; a trusted order-creation and membership-activation workflow is still required before paid plans can be sold.
 - Publish plan codes, amounts, currencies, billing periods, refund rules and cancellation terms only after the business owner approves them.
 
-## 5. Trading activation gates
+## 5. Additional payment methods and international coverage
+
+The membership schema now recognizes these payment providers: PayPal, M-Pesa, card, bank transfer, Wise, manual and other. This is provider support in the data model; it does not mean a provider is connected or ready to accept money.
+
+Implementation requirements before enabling each method:
+
+- **M-Pesa (Kenya):** integrate Safaricom Daraja STK Push for customer checkout and a server-side callback endpoint. Configure the Daraja consumer key/secret, shortcode or PayBill/Till details, passkey where required, environment and callback URL as server-side secrets/configuration. Verify callback authenticity and reconcile the checkout request/result before marking a payment complete. Never trust a browser success screen or a customer-entered transaction code by itself.
+- **Debit/credit cards:** use a PCI-compliant hosted checkout or tokenized payment provider that is available for the merchant's registered country. Red Planet must never collect or store raw card numbers, CVV values or magnetic-stripe data. Provider webhooks must confirm the exact amount, currency and payment reference.
+- **Bank transfers:** show only business-approved beneficiary details, bank name, account name, currency, SWIFT/BIC and any required routing details. Keep these details in protected server-side configuration or an admin-managed secure store, not hard-coded into public HTML. Payments remain pending until a trusted bank statement/API reconciliation or authorized finance review confirms cleared funds.
+- **Wise:** use Wise Business payment links or a supported Wise Business integration where the merchant account and country are eligible. A Wise transfer is not automatically verified merely because a customer uploads a receipt. Reconcile it against the actual incoming transfer.
+- **Canada and international customers:** design the checkout catalog to support approved currencies such as CAD, USD and KES per plan/provider. Confirm the merchant's settlement country, supported currencies, FX conversion, fees, tax obligations and payout bank eligibility with each provider before publishing prices. Do not assume every provider supports every currency or Kenya/Canada cross-border settlement.
+
+Required business inputs before live activation: registered merchant country/entities, approved plan prices and currencies, business bank beneficiary details, M-Pesa PayBill/Till/shortcode and account reference, and the chosen card processor. Add these through the provider's secure dashboard/secret manager; do not send passwords, full card details, PINs or secret keys in chat or commit them to Git.
+
+Provider-specific endpoints and webhook handlers must be implemented and sandbox-tested individually. The existing PayPal webhook is not a substitute for M-Pesa, card, Wise or bank-transfer verification. Use a shared internal payment state transition only after each provider's own server-side verification has succeeded.
+
+## 6. Trading activation gates
 
 - MT5 connection requests are intake records only; they do not connect a broker account.
 - Do not request or store broker passwords in the website.
@@ -94,7 +111,7 @@ The webhook URL registered with PayPal is:
 - Start with a broker demo account. Test market data, disconnections, order rejection, duplicate requests, risk limits, emergency stop and reconciliation before considering live access.
 - The current customer workspace does not execute orders and cannot enable a bot.
 
-## 6. Verification checklist
+## 7. Verification checklist
 
 - Test account signup, email confirmation, login, password reset, profile creation, profile update and sign-out.
 - Test each user can read only their own profile, membership, payment records, trading workspace and connection requests.
@@ -103,8 +120,9 @@ The webhook URL registered with PayPal is:
 - Test artists cannot modify reviewer fields or publish their own submissions.
 - Test public music storage cannot expose unpublished audio.
 - Test PayPal webhook signature failures, unknown order IDs, duplicate event IDs, retries and refund/reversal events in sandbox.
+- For each added provider, test invalid signatures/callbacks, duplicate notifications, wrong amount/currency, pending-to-confirmed reconciliation, refunds/reversals where supported, and payout/settlement reconciliation.
 - Test the AI generation path with the provider's documented API contract and confirm audio is ingested and validated before a job is marked complete.
 
-## 7. Live deployment status
+## 8. Live deployment status
 
 The repository is the source of truth for committed code. This checklist does not assert that migrations, Edge Functions, provider secrets, DNS, broker bridges, or payment webhooks have been deployed. Record each successful test and deployment separately before enabling production access.
