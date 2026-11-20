@@ -1,95 +1,52 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#09070a">
-<title>Red Planet Account</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09070a">
+<title>Red Planet Account</title><link rel="stylesheet" href="style.css">
 <style>
-.account-wrap{width:min(960px,92%);margin:70px auto 90px}.account-panel{max-width:520px;margin:0 auto;padding:clamp(22px,5vw,38px);border:1px solid var(--rp-line);border-radius:20px;background:linear-gradient(145deg,#1c151b,#101116);box-shadow:var(--rp-shadow)}.account-panel h1{font-size:clamp(2rem,5vw,3rem);line-height:1.05;margin:8px 0}.account-panel>p{color:var(--rp-muted)}.account-tabs{display:flex;gap:8px;margin:24px 0}.account-tabs button{flex:1;padding:11px;border:1px solid var(--rp-line);border-radius:9px;background:#111218;color:#ddd;cursor:pointer;font-weight:750}.account-tabs button[aria-pressed=true]{background:#641322;border-color:#ed1b2f;color:#fff}.account-form{display:grid;gap:13px}.account-form label{display:grid;gap:6px;color:#c7c4ca;font-size:.9rem}.account-form input{width:100%;min-height:48px;padding:12px 14px;border:1px solid #37313a;border-radius:9px;background:#090a0e;color:white}.account-form input:focus{outline:2px solid #ed1b2f;outline-offset:1px}.account-status{min-height:48px;padding:10px 12px;border-radius:9px;background:#17151b;color:#cfcbd2;font-size:.9rem}.account-status.error{color:#ff9ba4}.account-status.success{color:#9be2b3}.account-note{font-size:.82rem;color:#97939c!important}.account-link{border:0;background:none;color:#ff7b89;text-decoration:underline;cursor:pointer;padding:4px}.account-hidden{display:none!important}
-</style>
-</head>
-<body>
-<header class="navbar"><a class="logo" href="index.html">RED PLANET</a><button class="menu-toggle" type="button" aria-label="Toggle navigation">☰</button><nav class="nav-links"><a href="index.html">Home</a><a href="music.html">Music</a><a href="ai.html">AI Studio</a><a href="tv.html">TV & News</a><a href="collaborations.html">Collaborate</a></nav></header>
-<main class="account-wrap"><section class="account-panel">
-<p class="section-tag">RED PLANET MEMBERSHIP</p><h1>Your account.<br>Your universe.</h1><p>Create an account or sign in to continue. This is the first authentication connection; member profiles, paid plans and artist uploads will be connected in later stages.</p>
-<div class="account-tabs"><button id="signup-tab" type="button" aria-pressed="true">Create account</button><button id="login-tab" type="button" aria-pressed="false">Sign in</button></div>
+.account-wrap{width:min(1000px,92%);margin:56px auto 90px}.account-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.account-panel{padding:clamp(22px,4vw,34px);border:1px solid var(--rp-line);border-radius:18px;background:linear-gradient(145deg,#1c151b,#101116);box-shadow:var(--rp-shadow)}.account-panel h1{font-size:clamp(2rem,5vw,3rem);line-height:1.05;margin:8px 0}.account-panel h2{margin-top:0}.account-panel>p,.account-muted{color:var(--rp-muted)}.account-form{display:grid;gap:13px}.account-form label{display:grid;gap:6px;color:#c7c4ca;font-size:.9rem}.account-form input{width:100%;min-height:46px;padding:12px 14px;border:1px solid #37313a;border-radius:9px;background:#090a0e;color:white}.account-status{min-height:44px;padding:10px 12px;border-radius:9px;background:#17151b;color:#cfcbd2;font-size:.9rem}.account-status.error{color:#ff9ba4}.account-status.success{color:#9be2b3}.account-note{font-size:.82rem;color:#97939c!important}.account-hidden{display:none!important}.account-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+</style></head><body>
+<header class="navbar"><a class="logo" href="index.html">RED PLANET</a><button class="menu-toggle" type="button" aria-label="Toggle navigation">☰</button><nav class="nav-links"><a href="index.html">Home</a><a href="music.html">Music</a><a href="listen.html">Listen</a><a href="tv.html">TV & News</a><a href="collaborations.html">Collaborate</a><a href="payments.html">Plans</a><a href="trading.html">Trading</a></nav></header>
+<main class="account-wrap">
+<section class="account-panel"><p class="section-tag">RED PLANET MEMBERSHIP</p><h1>Your account.<br>Your universe.</h1><p>Create an account or sign in to manage your Red Planet profile and access member services.</p>
+<div class="account-grid">
+<section class="account-panel"><h2>Account access</h2>
+<div class="account-actions"><button id="signup-tab" class="btn btn-primary" type="button">Create account</button><button id="login-tab" class="btn btn-secondary" type="button">Sign in</button></div>
 <form id="signup-form" class="account-form">
-<label>Full name<input name="name" autocomplete="name" maxlength="100" required></label>
-<label>Email address<input name="email" type="email" autocomplete="email" required></label>
-<label>Password<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
-<button class="btn btn-primary btn-full" type="submit">Create Red Planet account</button>
+<label>Full name<input name="name" autocomplete="name" maxlength="100" required></label><label>Email address<input name="email" type="email" autocomplete="email" required></label><label>Password<input name="password" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn btn-primary" type="submit">Create account</button>
 </form>
 <form id="login-form" class="account-form account-hidden">
-<label>Email address<input name="email" type="email" autocomplete="email" required></label>
-<label>Password<input name="password" type="password" autocomplete="current-password" required></label>
-<button class="btn btn-primary btn-full" type="submit">Sign in</button>
-<button id="reset-password" class="account-link" type="button">Forgot password?</button>
-</form>
-<div id="account-status" class="account-status" role="status" aria-live="polite">Connecting securely to Red Planet authentication…</div>
-<p class="account-note">Use a valid email address. Depending on the project's email settings, you may need to confirm your email before signing in. Never share your password or verification code.</p>
-</section></main>
-<footer class="footer"><p>Red Planet © 2026 · Account services powered by Supabase</p></footer>
-<script src="supabase-config.js"></script>
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const { url: SUPABASE_URL, anonKey: SUPABASE_PUBLISHABLE_KEY } = window.RP_SUPABASE_CONFIG || {};
-const status = document.getElementById("account-status");
-const signupForm = document.getElementById("signup-form");
-const loginForm = document.getElementById("login-form");
-const signupTab = document.getElementById("signup-tab");
-const loginTab = document.getElementById("login-tab");
-let supabase;
-function showStatus(message, type="") { status.textContent = message; status.className = "account-status " + type; }
-function setMode(mode) {
-  const signup = mode === "signup";
-  signupForm.classList.toggle("account-hidden", !signup);
-  loginForm.classList.toggle("account-hidden", signup);
-  signupTab.setAttribute("aria-pressed", String(signup));
-  loginTab.setAttribute("aria-pressed", String(!signup));
-  showStatus(signup ? "Create your Red Planet account." : "Sign in with your Red Planet account.");
+<label>Email address<input name="email" type="email" autocomplete="email" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Sign in</button><button id="reset-password" type="button" class="btn btn-secondary">Forgot password?</button>
+</form><div id="account-status" class="account-status" role="status" aria-live="polite">Connecting securely…</div>
+</section>
+<section id="profile-panel" class="account-panel account-hidden"><h2>Your profile</h2><p id="profile-email" class="account-muted"></p>
+<form id="profile-form" class="account-form"><label>Display name<input name="display_name" maxlength="100" required></label><label>Country code (optional)<input name="country_code" maxlength="2" placeholder="KE"></label><button class="btn btn-primary" type="submit">Save profile</button></form>
+<div class="account-actions"><button id="signout" type="button" class="btn btn-secondary">Sign out</button></div>
+<p class="account-note">Your profile is private to your account. Email address changes are handled through Supabase account verification, not this profile form.</p>
+</section></div></section></main>
+<footer class="footer"><p>Red Planet © 2026 · Secure member account</p></footer>
+<script src="supabase-config.js"></script><script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
+const cfg=window.RP_SUPABASE_CONFIG||{},status=document.getElementById("account-status"),signupForm=document.getElementById("signup-form"),loginForm=document.getElementById("login-form"),profilePanel=document.getElementById("profile-panel");
+let supabase,user;
+function message(value,type=""){status.textContent=value;status.className="account-status "+type;}
+function mode(signup){signupForm.classList.toggle("account-hidden",!signup);loginForm.classList.toggle("account-hidden",signup);}
+document.getElementById("signup-tab").onclick=()=>mode(true);document.getElementById("login-tab").onclick=()=>mode(false);
+async function loadProfile(){
+ const result=await supabase.auth.getUser();user=result.data.user;if(!user){profilePanel.classList.add("account-hidden");return;}
+ profilePanel.classList.remove("account-hidden");document.getElementById("profile-email").textContent=user.email||"";
+ const {data,error}=await supabase.from("profiles").select("display_name,country_code").eq("id",user.id).maybeSingle();
+ if(error){message("Signed in, but profile could not be loaded: "+error.message,"error");return;}
+ const form=document.getElementById("profile-form");form.elements.display_name.value=data?.display_name||user.user_metadata?.full_name||"";form.elements.country_code.value=data?.country_code||"";
+ if(!data){const {error:insertError}=await supabase.from("profiles").insert({id:user.id,display_name:form.elements.display_name.value||null});if(insertError)message("Account is active; profile setup will retry later: "+insertError.message,"error");}
+ message("Signed in. Your private profile is ready.","success");
 }
-signupTab.addEventListener("click", () => setMode("signup"));
-loginTab.addEventListener("click", () => setMode("login"));
-try {
-  if (!SUPABASE_URL.startsWith("https://") || !SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_")) throw new Error("Supabase public configuration is missing or invalid.");
-  supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  showStatus("Connection initialized. You can create an account or sign in.");
-} catch (error) { showStatus(error.message || "Could not initialize account services.", "error"); }
-signupForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!supabase) return;
-  const data = new FormData(signupForm);
-  const name = String(data.get("name") || "").trim();
-  const email = String(data.get("email") || "").trim();
-  const password = String(data.get("password") || "");
-  if (!name || password.length < 8) return showStatus("Enter your name and a password of at least 8 characters.", "error");
-  const button = signupForm.querySelector('button[type="submit"]'); button.disabled = true; button.textContent = "Creating account…";
-  const { data: result, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name }, emailRedirectTo: location.origin + "/account.html" } });
-  button.disabled = false; button.textContent = "Create Red Planet account";
-  if (error) return showStatus(error.message, "error");
-  showStatus(result.session ? "Account created and signed in successfully." : "Account created. Check your email for a confirmation link before signing in.", "success");
-  signupForm.reset();
-});
-loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!supabase) return;
-  const data = new FormData(loginForm);
-  const button = loginForm.querySelector('button[type="submit"]'); button.disabled = true; button.textContent = "Signing in…";
-  const { data: result, error } = await supabase.auth.signInWithPassword({ email: String(data.get("email") || "").trim(), password: String(data.get("password") || "") });
-  button.disabled = false; button.textContent = "Sign in";
-  if (error) return showStatus(error.message, "error");
-  showStatus("Signed in successfully. Your Red Planet account session is active.", "success");
-  loginForm.reset();
-});
-document.getElementById("reset-password").addEventListener("click", async () => {
-  if (!supabase) return;
-  const email = String(loginForm.elements.email.value || "").trim();
-  if (!email) return showStatus("Enter your email address first, then choose Forgot password.", "error");
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/account.html" });
-  showStatus(error ? error.message : "If an account exists for that email, a password reset link will be sent.", error ? "error" : "success");
-});
-</script>
-<script src="script.js"></script>
-</body></html>
+try{if(!cfg.url?.startsWith("https://")||!cfg.anonKey?.startsWith("sb_publishable_"))throw new Error("Supabase public configuration is missing or invalid.");supabase=createClient(cfg.url,cfg.anonKey);const {data:{session}}=await supabase.auth.getSession();if(session){await loadProfile();}else message("Create an account or sign in to continue.");}
+catch(error){message(error.message||"Account services are unavailable.","error");}
+signupForm.addEventListener("submit",async event=>{event.preventDefault();if(!supabase)return;const d=new FormData(signupForm),name=String(d.get("name")||"").trim(),email=String(d.get("email")||"").trim(),password=String(d.get("password")||"");if(!name||password.length<8)return message("Enter your name and a password of at least 8 characters.","error");const button=signupForm.querySelector("button[type=submit]");button.disabled=true;const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+"/account.html"}});button.disabled=false;if(error)return message(error.message,"error");if(data.session){await loadProfile();message("Account created successfully.","success");}else message("Account created. Check your email to confirm before signing in.","success");signupForm.reset();});
+loginForm.addEventListener("submit",async event=>{event.preventDefault();if(!supabase)return;const d=new FormData(loginForm),button=loginForm.querySelector("button[type=submit]");button.disabled=true;const {error}=await supabase.auth.signInWithPassword({email:String(d.get("email")||"").trim(),password:String(d.get("password")||"")});button.disabled=false;if(error)return message(error.message,"error");loginForm.reset();await loadProfile();});
+document.getElementById("profile-form").addEventListener("submit",async event=>{event.preventDefault();if(!user)return;const d=new FormData(event.currentTarget),payload={id:user.id,display_name:String(d.get("display_name")||"").trim(),country_code:String(d.get("country_code")||"").trim().toUpperCase()||null,updated_at:new Date().toISOString()};const {error}=await supabase.from("profiles").upsert(payload,{onConflict:"id"});message(error?error.message:"Profile saved successfully.",error?"error":"success");});
+document.getElementById("reset-password").addEventListener("click",async()=>{const email=String(loginForm.elements.email.value||"").trim();if(!email)return message("Enter your email address first.","error");const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/account.html"});message(error?error.message:"If an account exists, a password reset link will be sent.",error?"error":"success");});
+document.getElementById("signout").addEventListener("click",async()=>{const {error}=await supabase.auth.signOut();if(error)return message(error.message,"error");profilePanel.classList.add("account-hidden");message("You have been signed out.","success");});
+supabase?.auth.onAuthStateChange((_event,session)=>{if(session?.user){user=session.user;profilePanel.classList.remove("account-hidden");}else{user=null;profilePanel.classList.add("account-hidden");}});
+</script><script src="script.js"></script></body></html>
