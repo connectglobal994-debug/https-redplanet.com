@@ -88,7 +88,7 @@ Deno.serve(async req=>{
   return json({received:true,processed:false,reason:"amount_currency_mismatch"},202);
  }
  // A later denial must never downgrade a payment already confirmed as completed.
- if(payment.status==="completed"&&nextStatus!=="completed"){
+ if(payment.status==="completed"&&nextStatus==="failed"){
   await db.from("payment_webhook_events").update({processing_status:"ignored",processed_at:new Date().toISOString(),error_message:"Ignored a later non-completion event for an already completed payment"}).eq("id",deliveryId);
   return json({received:true,ignored:true});
  }
