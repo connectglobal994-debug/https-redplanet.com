@@ -34,14 +34,16 @@ Deno.serve(async req=>{
   const refund=refundBody?.data;
   const refundStatus=String(refund?.status||"").toLowerCase();
   const transactionId=refund?.transaction_id??refund?.tx_id??data?.charge_id;
-  const amountMinor=toMinor(refund?.amount_refunded??data?.amount_refunded,String(refund?.currency||data?.currency||"KES").toUpperCase());
-  if(refundBody?.status!=="success"||!["completed","completed-bank-transfer","completed-momo","completed-mpgs","completed-offline","completed-preauth","succeeded"].includes(refundStatus)||!Number.isSafeInteger(Number(transactionId))||Number(transactionId)<=0||amountMinor===null||amountMinor<=0n){
+  const rawRefundAmount=refund?.amount_refunded??data?.amount_refunded;
+  if(refundBody?.status!=="success"||!["completed","completed-bank-transfer","completed-momo","completed-mpgs","completed-offline","completed-preauth","succeeded"].includes(refundStatus)||!Number.isSafeInteger(Number(transactionId))||Number(transactionId)<=0){
    return json({received:true,processed:false,reason:"refund_not_final_or_invalid"},202);
   }
   const db=createClient(url,service);
   const {data:payment,error:paymentError}=await db.from("payment_records").select("id,amount_minor,currency,status,membership_id,provider_capture_id").eq("provider","flutterwave").eq("provider_capture_id",String(transactionId)).maybeSingle();
   if(paymentError||!payment)return json({received:true,processed:false,reason:"original_payment_not_found"},202);
   const currency=String(payment.currency).toUpperCase();
+  const amountMinor=toMinor(rawRefundAmount,currency);
+  if(amountMinor===null||amountMinor<=0n)return json({received:true,processed:false,reason:"invalid_refund_amount"},202);
   if(amountMinor>BigInt(payment.amount_minor))return json({received:true,processed:false,reason:"refund_exceeds_payment"},202);
   // Re-query the original charge as well: refund metadata alone is not the authority
   // for the original transaction's currency or reference.
