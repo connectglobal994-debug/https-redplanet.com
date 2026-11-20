@@ -11,7 +11,8 @@ async function init(){
  if(error||!user){gate.innerHTML='Please <a href="account.html">sign in</a> with your Red Planet staff account.';return;}
  const{data:roles,error:roleError}=await db.from("user_roles").select("role").eq("user_id",user.id);
  if(roleError)throw roleError;
- if(!(roles||[]).some(x=>["administrator","moderator","editor"].includes(x.role))){gate.textContent="Access denied. This account does not have music-review permissions.";return;}
+ const roleSet=new Set((roles||[]).map(x=>x.role));if(![...roleSet].some(x=>["administrator","moderator","editor"].includes(x))){gate.textContent="Access denied. This account does not have music-review permissions.";return;}
+ window.rpCanPublish=roleSet.has("administrator")||roleSet.has("editor");
  gate.innerHTML='<strong class="success">Authorized reviewer</strong><p class="muted">'+esc(user.email)+'</p><button id="refresh">Refresh queue</button>';
  document.getElementById("refresh").onclick=loadQueue;await loadQueue();
 }
@@ -24,6 +25,7 @@ async function loadQueue(){
  for(const item of data){
   const el=document.createElement("article");el.className="item";
   el.innerHTML='<div class="row"><span class="status">'+esc(item.status)+'</span><span class="muted">'+esc(item.submission_type)+'</span></div><h2>'+esc(item.title)+'</h2><p>Artist: '+esc(item.artist_profiles?.artist_name)+' · Submitted: '+esc(item.submitted_at||"date unavailable")+'</p><p class="muted">'+esc(item.description||"No additional description")+'</p><p class="muted">Credits: '+esc(JSON.stringify(item.contributor_credits||[]))+'</p><div class="audio muted">Loading private audio preview…</div><div class="field"><label>Approved public audio master (required to publish)</label><input class="delivery-file" type="file" accept="audio/*"></div><div class="row"><button data-action="publish">Publish release</button><button class="secondary" data-action="needs_changes">Request changes</button><button class="secondary" data-action="rejected">Reject</button></div><p class="muted result" aria-live="polite"></p>';
+  const publishButton=el.querySelector('button[data-action="publish"]');if(!window.rpCanPublish)publishButton.hidden=true;
   const audioBox=el.querySelector(".audio");
   const{data:file,error:fileError}=await db.storage.from("rp-music-private").createSignedUrl(item.audio_object_path,300);
   if(fileError)audioBox.textContent="Audio preview unavailable: "+fileError.message;
@@ -41,12 +43,14 @@ async function loadQueue(){
     if(uploadError){result.textContent=uploadError.message;result.className="result error";btn.disabled=false;return;}
     const releaseType=["ep","album"].includes(item.submission_type)?item.submission_type:"single";
     const slug=(item.title+"-"+item.id.slice(0,8)).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-    const{data:release,error:releaseError}=await db.from("releases").insert({submission_id:item.id,artist_profile_id:item.artist_profiles.owner_user_id?item.artist_profile_id:item.artist_profile_id,slug,title:item.title,release_type:releaseType,release_date:new Date().toISOString().slice(0,10),published:true,published_at:new Date().toISOString()}).select("id").single();
-    if(releaseError){result.textContent="Audio uploaded but release creation failed: "+releaseError.message;result.className="result error";btn.disabled=false;return;}
+    const{data:release,error:releaseError}=await db.from("releases").insert({submission_id:item.id,artist_profile_id:item.artist_profile_id,slug,title:item.title,release_type:releaseType,release_date:new Date().toISOString().slice(0,10),published:false}).select("id").single();
+    if(releaseError){await db.storage.from("rp-music-public").remove([deliveryPath]);result.textContent="Release creation failed; uploaded audio was cleaned up: "+releaseError.message;result.className="result error";btn.disabled=false;return;}
     const{error:trackError}=await db.from("tracks").insert({release_id:release.id,title:item.title,track_number:1,audio_delivery_path:deliveryPath});
-    if(trackError){result.textContent="Release record created but track setup failed: "+trackError.message;result.className="result error";btn.disabled=false;return;}
+    if(trackError){await db.from("releases").delete().eq("id",release.id);await db.storage.from("rp-music-public").remove([deliveryPath]);result.textContent="Track setup failed; partial release and audio were cleaned up: "+trackError.message;result.className="result error";btn.disabled=false;return;}
     const{error:markError}=await db.from("music_submissions").update({status:"published",reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);
-    if(markError){result.textContent="Release is public but submission status update failed: "+markError.message;result.className="result error";btn.disabled=false;return;}
+    if(markError){await db.from("tracks").delete().eq("release_id",release.id);await db.from("releases").delete().eq("id",release.id);await db.storage.from("rp-music-public").remove([deliveryPath]);result.textContent="Submission update failed; publication was rolled back: "+markError.message;result.className="result error";btn.disabled=false;return;}
+    const{error:publishError}=await db.from("releases").update({published:true,published_at:new Date().toISOString()}).eq("id",release.id);
+    if(publishError){await db.from("music_submissions").update({status:"approved",reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);await db.from("tracks").delete().eq("release_id",release.id);await db.from("releases").delete().eq("id",release.id);await db.storage.from("rp-music-public").remove([deliveryPath]);result.textContent="Could not publish release; publication was rolled back: "+publishError.message;result.className="result error";btn.disabled=false;return;}
    }else{
     const{error:updateError}=await db.from("music_submissions").update({status:btn.dataset.action,reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq("id",item.id);
     if(updateError){result.textContent=updateError.message;result.className="result error";btn.disabled=false;return;}
