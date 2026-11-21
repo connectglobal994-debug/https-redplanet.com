@@ -36,7 +36,7 @@ const FEATURES: Feature[] = [
   {
     icon: 'ti-bolt',
     title: 'Automation workflows',
-    description: 'Trigger actions — posts, telegram alerts, and trading scripts — automatically when conditions you set are met.',
+    description: 'Plan workflow triggers, draft content and route approvals. External actions remain disabled until their integrations are configured.',
     gradient: 'gradient-violet',
   },
   {
@@ -58,11 +58,11 @@ const INITIAL_MESSAGES: Message[] = [
     id: 'm1',
     role: 'assistant',
     content:
-      "Red Planet Neural Link Active. I am your autonomous AI Command Assistant. I possess full knowledge of our multi-planetary empire, founders Deblaq & Win, RedPlanet.tv broadcasts, algorithmic trading bots (Expert Sniper Pro v2), and independent music rollouts. How may I assist your mission today?",
+      "Welcome to Red Planet AI. I can help with general questions and approved Red Planet knowledge when the backend and provider are configured. I will tell you when a source or integration is unavailable.",
   },
 ];
 
-const AUTOMATIONS: Automation[] = [
+// Illustrative workflow examples only. These cards are not persisted or scheduled jobs.\nconst AUTOMATIONS: Automation[] = [
   { id: 'a1', name: 'Daily news digest', trigger: 'Every day at 8:00 AM', action: 'Summarize top stories in your niche', status: 'active' },
   { id: 'a2', name: 'New upload alert', trigger: 'When a track is uploaded', action: 'Notify the team on Telegram', status: 'active' },
   { id: 'a3', name: 'Engagement follow-up', trigger: 'Post reaches 1,000 views', action: 'Draft a follow-up post for review', status: 'paused' },
@@ -71,7 +71,7 @@ const AUTOMATIONS: Automation[] = [
 const STEPS = [
   { step: '01', title: 'Connect your sources', description: 'Link your content channels, news feeds, and team tools.' },
   { step: '02', title: 'Set your automations', description: 'Define triggers and the actions that should follow them.' },
-  { step: '03', title: 'Let it run', description: 'Red Planet AI monitors continuously and acts within the rules you set.' },
+  { step: '03', title: 'Let it run', description: 'Configured jobs can monitor approved sources and act within defined permissions.' },
   { step: '04', title: 'Review and refine', description: 'Check what it did, approve drafts, and adjust automations over time.' },
 ];
 
@@ -148,12 +148,12 @@ export default function RedPlanetAIPage() {
             </h1>
           </div>
           <p className="text-sm text-neutral-400 mt-1">
-            Autonomous Knowledge Base | Founders: Deblaq & Win | Access: redplanetcodes@gmail.com
+            AI workspace preview | Provider and backend status must be configured before live use
           </p>
         </div>
         <div className="flex items-center gap-3 bg-obsidian border border-white/10 px-4 py-2 rounded-xl text-xs">
           <span className="text-marsRed font-bold">NEURAL STATUS:</span>
-          <span className="text-emerald-400">100% OPERATIONAL (14.2 PFLOPS)</span>
+          <span className="text-amber-300">CONFIGURATION REQUIRED · LIVE STATUS UNVERIFIED</span>
         </div>
       </header>
 
@@ -165,7 +165,7 @@ export default function RedPlanetAIPage() {
           Your own intelligent layer, built into Red Planet
         </h2>
         <p className="text-neutral-400 max-w-xl mx-auto mb-8 relative z-10 text-xs sm:text-sm">
-          A news-aware assistant and automation engine purpose-built for the Red Planet ecosystem — coordinating music distribution, algorithmic trading telemetry, and sovereign infrastructure.
+          An AI workspace for learning, research and approved Red Planet workflows. Live actions require configured integrations and explicit permissions.
         </p>
         <div className="flex items-center justify-center gap-3 relative z-10">
           <a href="#assistant" className="btn btn-primary text-xs uppercase font-bold">
@@ -280,7 +280,7 @@ export default function RedPlanetAIPage() {
 
       {/* Automations Panel */}
       <section id="automations" className="space-y-6 pb-12">
-        <h3 className="text-2xl font-black uppercase tracking-wider text-center font-sans text-white">Automations</h3>
+        <h3 className="text-2xl font-black uppercase tracking-wider text-center font-sans text-white">Automation examples (preview only)</h3>
         <div className="glass-panel divide-y divide-white/10 rounded-3xl border border-white/15 overflow-hidden">
           {automations.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-4 px-6 py-5">
@@ -302,7 +302,7 @@ export default function RedPlanetAIPage() {
             </div>
           ))}
         </div>
-        <button type="button" className="btn btn-secondary w-full py-4 rounded-2xl text-xs uppercase font-bold">
+        <button type="button" disabled className="btn btn-secondary w-full py-4 rounded-2xl text-xs uppercase font-bold opacity-50 cursor-not-allowed">
           <i className="ti ti-plus" /> New automation
         </button>
       </section>
