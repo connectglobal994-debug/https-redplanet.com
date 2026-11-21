@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------
+   Theme tokens — Tailwind v4 CSS Theme Architecture
+--------------------------------------------------------- */
+@theme {
+  /* Core brand */
+  --color-marsRed: #ff3300;
+  --color-marsRed-dark: #cc2900;
+  --color-marsRed-bright: #ff5533;
+  --color-neonCyan: #00f0ff;
+  --color-neonCyan-dark: #00b8c4;
+
+  /* Surfaces */
+  --color-obsidian: #0b0b14;
+  --color-deepSpace: #05050a;
+  --color-spaceCard: #0d0d16;
+  --color-spaceSurface: #141422;
+  --color-spaceSurface-2: #1a1a2c;
+  --color-spaceBorder: #1f1f33;
+  --color-spaceBorder-bright: #2c2c48;
+
+  /* Accent gradient set — pulled from the Apple Music / Tesla / Amazon study */
+  --color-accent-violet: #6a5cff;
+  --color-accent-magenta: #bf5af2;
+  --color-accent-amber: #ff9f0a;
+  --color-accent-gold: #ffd60a;
+  --color-accent-mint: #30d158;
+  --color-accent-sky: #0a84ff;
+  --color-accent-ice: #64d2ff;
+  --color-accent-orange: #ff9900;
+  --color-accent-navy: #131921;
+
+  /* New High-Level Cinematic Expansion Colors */
+  --color-nebula-purple: #8b5cf6;
+  --color-solar-flare: #f59e0b;
+  --color-quantum-emerald: #10b981;
+  --color-deep-void: #020205;
+  --color-plasma-pink: #ec4899;
+
+  /* Text */
+  --color-text-primary: #f5f5f7;
+  --color-text-dim: #9a9aa5;
+  --color-text-faint: #5c5c6b;
+
+  /* Status */
+  --color-success: #30d158;
+  --color-warning: #ff9f0a;
+  --color-danger: #ff3b30;
+
+  /* Type */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-display: var(--font-display), var(--font-sans);
+
+  /* Radius scale */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 34px;
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 5, 5, 10;
+  --background-end-rgb: 11, 11, 20;
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-marsRed) #05050a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------------------------------------------------------
+   Typography scale
+--------------------------------------------------------- */
+.text-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.text-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-marsRed-bright);
+}
+.text-mono-data {
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------
+   Custom Tesla & Apple Grade Scrollbars
+--------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #05050a;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-marsRed);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neonCyan);
+}
+
+/* ---------------------------------------------------------
+   Holographic Glow, Glass & Telemetry Utilities
+--------------------------------------------------------- */
+.glow-mars {
+  box-shadow: 0 0 30px rgba(255, 51, 0, 0.35);
+}
+.glow-mars-lg {
+  box-shadow: 0 0 60px rgba(255, 51, 0, 0.45), 0 0 20px rgba(255, 51, 0, 0.3);
+}
+.glow-cyan {
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.35);
+}
+.glow-cyan-lg {
+  box-shadow: 0 0 60px rgba(0, 240, 255, 0.45), 0 0 20px rgba(0, 240, 255, 0.3);
+}
+.glow-nebula {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.4);
+}
+.glow-solar {
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+}
+
+.glass-panel {
+  background: rgba(11, 11, 20, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+}
+.glass-panel-strong {
+  background: rgba(11, 11, 20, 0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 51, 0, 0.2);
+  border-radius: var(--radius-lg);
+}
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(20, 20, 34, 0.85);
+  border-color: rgba(255, 51, 0, 0.4);
+  box-shadow: 0 0 30px rgba(255, 51, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+/* ---------------------------------------------------------
+   Gradient art tiles & New High-End Color Shaders
+--------------------------------------------------------- */
+.gradient-mars {
+  background: linear-gradient(135deg, var(--color-marsRed) 0%, var(--color-marsRed-bright) 100%);
+}
+.gradient-violet {
+  background: linear-gradient(135deg, var(--color-accent-violet) 0%, var(--color-accent-magenta) 100%);
+}
+.gradient-amber {
+  background: linear-gradient(135deg, var(--color-accent-amber) 0%, var(--color-accent-gold) 100%);
+}
+.gradient-mint {
+  background: linear-gradient(135deg, var(--color-accent-mint) 0%, var(--color-accent-ice) 100%);
+}
+.gradient-sky {
+  background: linear-gradient(135deg, var(--color-accent-sky) 0%, var(--color-accent-ice) 100%);
+}
+.gradient-nebula {
+  background: linear-gradient(135deg, var(--color-nebula-purple) 0%, var(--color-plasma-pink) 100%);
+}
+.gradient-solar {
+  background: linear-gradient(135deg, var(--color-solar-flare) 0%, var(--color-marsRed) 100%);
+}
+.gradient-obsidian-fade {
+  background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ---------------------------------------------------------
+   Buttons — Tesla-minimal primary, Amazon-style secondary
+--------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--color-neonCyan);
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--color-marsRed);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--color-marsRed-bright);
+  box-shadow: 0 0 24px rgba(255, 51, 0, 0.4);
+}
+.btn-secondary {
+  background: var(--color-spaceSurface);
+  color: var(--color-text-primary);
+  border-color: var(--color-spaceBorder-bright);
+}
+.btn-secondary:hover {
+  background: var(--color-spaceSurface-2);
+  border-color: var(--color-marsRed);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-dim);
+}
+.btn-ghost:hover {
+  color: var(--color-text-primary);
+}
+
+/* ---------------------------------------------------------
+   Badges / status pills
+--------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge-live {
+  background: rgba(48, 209, 88, 0.15);
+  color: var(--color-success);
+}
+.badge-live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+}
+.badge-warning {
+  background: rgba(255, 159, 10, 0.15);
+  color: var(--color-warning);
+}
+.badge-danger {
+  background: rgba(255, 59, 48, 0.15);
+  color: var(--color-danger);
+}
+.badge-nebula {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--color-nebula-purple);
+}
+
+/* ---------------------------------------------------------
+   Cards
+--------------------------------------------------------- */
+.card {
+  background: var(--color-spaceCard);
+  border: 1px solid var(--color-spaceBorder);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.card:hover {
+  border-color: rgba(255, 51, 0, 0.35);
+  transform: translateY(-2px);
+}
+.card-tile {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------------------------------------------------------
+   Cinematic Animations & Radar Pulsing
+--------------------------------------------------------- */
+@keyframes radarSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes telemetryFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 51, 0, 0.25); }
+  50% { box-shadow: 0 0 40px rgba(255, 51, 0, 0.5); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.animate-radar {
+  animation: radarSpin 12s linear infinite;
+}
+.animate-telemetry-float {
+  animation: telemetryFloat 6s ease-in-out infinite;
+}
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-spaceSurface) 25%, var(--color-spaceSurface-2) 50%, var(--color-spaceSurface) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Stagger helper — pair with .animate-fade-in-up on list children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ---------------------------------------------------------
+   Accessibility
+--------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--color-neonCyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

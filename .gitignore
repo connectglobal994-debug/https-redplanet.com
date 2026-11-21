@@ -1,0 +1,77 @@
+# ==============================================================================
+# RED PLANET ECOSYSTEM — GITIGNORE SPECIFICATION
+# ==============================================================================
+# Enterprise-Grade Red Planet GitIgnore Configuration (Tesla / Apple / SpaceX Scale)
+# Founders: Deblaq & Win | Core Architecture & Engineering: Deblaq
+# Protects sensitive credentials, environment files, build artifacts, node modules,
+# OS metadata, cloud caches, local media caches, logs, and temporary debug files.
+
+# 1. Environment & Sensitive Credentials (CRITICAL SECURITY)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+credentials/
+
+# 2. Next.js & Build Artifacts
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# 3. Dependencies & Package Managers
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+
+# 4. OS & IDE Metadata Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.iml
+*~
+
+# 5. Vercel Deployment & Cloud Cache
+.vercel/
+.turbo/
+
+# 6. Runtime uploads and mutable local manifests
+# Keep bundled demo/catalog media under public/audio and public/covers in Git.
+# User-generated uploads belong in Vercel Blob (or equivalent object storage).
+data/uploaded-tracks.json
+public/uploads/*
+!public/uploads/.gitkeep
+
+# 7. Logs & Temporary System Files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+.eslintcache
+.stylelintcache
+
+# 8. Testing & Coverage Artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# 9. Admin & Local-Only Config
+# Anything dropped here locally for one-off scripts/testing should never sync.
+*.local.json
+scratch/
+# Never publish environment files from the public asset directory.
+public/.env*

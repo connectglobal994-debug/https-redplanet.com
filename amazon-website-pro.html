@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  :root{
+    --navy:#131921;
+    --navy-light:#232f3e;
+    --orange:#ff9900;
+    --orange-dark:#e88a00;
+    --bg:#eaeded;
+    --card:#ffffff;
+    --text:#0f1111;
+    --text-dim:#565959;
+    --link:#007185;
+    --price:#b12704;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:#0d0d0d;
+    font-family:'Inter',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 16px;
+    display:flex;justify-content:center;
+  }
+  .browser{
+    width:100%;max-width:1160px;
+    background:var(--bg);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 40px 100px rgba(0,0,0,0.5);
+  }
+  .browser-chrome{
+    background:#3a3a3a;padding:12px 16px;display:flex;align-items:center;gap:8px;
+  }
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .d1{background:#ff5f57;} .d2{background:#febc2e;} .d3{background:#28c840;}
+
+  header{background:var(--navy);padding:10px 20px;}
+  .nav-top{display:flex;align-items:center;gap:18px;}
+  .logo{color:#fff;font-size:21px;font-weight:800;letter-spacing:-0.03em;flex-shrink:0;}
+  .logo span{color:var(--orange);}
+  .deliver{color:#fff;font-size:12px;line-height:1.3;flex-shrink:0;cursor:default;}
+  .deliver b{display:block;font-size:13px;}
+  .search-bar{flex:1;display:flex;border-radius:6px;overflow:hidden;height:38px;}
+  .search-cat{background:#f3f3f3;padding:0 10px;display:flex;align-items:center;font-size:12px;color:var(--text-dim);border-right:1px solid #ddd;}
+  .search-input{flex:1;padding:0 12px;font-size:14px;color:#999;display:flex;align-items:center;background:#fff;}
+  .search-go{background:var(--orange);width:44px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:18px;}
+  .nav-account{color:#fff;font-size:12px;line-height:1.3;flex-shrink:0;}
+  .nav-account b{display:block;font-size:13px;}
+  .nav-cart{display:flex;align-items:center;gap:4px;color:#fff;flex-shrink:0;position:relative;}
+  .nav-cart i{font-size:26px;}
+  .cart-badge{position:absolute;top:-4px;left:12px;background:var(--orange);color:var(--navy);font-size:11px;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .cart-label{font-size:13px;font-weight:700;color:#fff;}
+
+  .nav-bottom{
+    display:flex;gap:18px;padding:8px 0 0;
+    font-size:12.5px;color:#fff;
+  }
+  .nav-bottom span{cursor:default;opacity:0.92;}
+  .nav-bottom span:first-child{font-weight:700;}
+
+  main{padding:16px 20px 28px;}
+
+  .hero{
+    background:linear-gradient(180deg,#232f3e 0%,#37475a 55%,var(--bg) 100%);
+    border-radius:6px;
+    padding:30px 30px 60px;
+    color:#fff;
+    margin-bottom:-40px;
+    position:relative;
+  }
+  .hero-eyebrow{font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.08em;}
+  .hero-title{font-size:28px;font-weight:800;margin-top:4px;letter-spacing:-0.01em;}
+  .hero-sub{font-size:14px;color:#c9d1d9;margin-top:4px;}
+
+  .content{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px;}
+
+  .card{background:var(--card);border-radius:8px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+  .card-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:12px;}
+  .prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .prod{}
+  .prod-img{width:100%;height:76px;border-radius:4px;margin-bottom:6px;background:linear-gradient(135deg,#f0f0f0,#e2e2e2);display:flex;align-items:center;justify-content:center;}
+  .prod-img i{font-size:26px;color:#b8b8b8;}
+  .prod-name{font-size:11.5px;color:var(--text);line-height:1.3;}
+  .prod-price{font-size:12.5px;font-weight:700;color:var(--price);margin-top:2px;}
+  .card-link{display:block;font-size:13px;color:var(--link);margin-top:12px;font-weight:500;}
+
+  .card.wide{grid-column:span 2;}
+  .wide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+
+  .deal-strip{
+    grid-column:span 4;
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(90deg,#fff3e0,#ffffff);
+    border:1px solid #ffd9a0;
+  }
+  .deal-strip-text{}
+  .deal-strip-title{font-size:18px;font-weight:800;color:var(--text);}
+  .deal-strip-sub{font-size:13px;color:var(--text-dim);margin-top:2px;}
+  .deal-btn{background:var(--orange);color:var(--navy);font-weight:700;font-size:13px;padding:10px 20px;border-radius:6px;flex-shrink:0;}
+
+  .footer-nav{
+    background:var(--navy-light);color:#fff;text-align:center;
+    padding:16px;font-size:12px;margin-top:8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="browser">
+  <div class="browser-chrome"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>
+
+  <header>
+    <div class="nav-top">
+      <div class="logo">amazon<span>.</span></div>
+      <div class="deliver"><span>Deliver to</span><b><i class="ti ti-map-pin" style="font-size:12px;"></i> Nairobi</b></div>
+      <div class="search-bar">
+        <div class="search-cat">All <i class="ti ti-chevron-down" style="font-size:12px;margin-left:3px;"></i></div>
+        <div class="search-input">Search Amazon</div>
+        <div class="search-go"><i class="ti ti-search"></i></div>
+      </div>
+      <div class="nav-account"><span>Hello, Win</span><b>Account & Lists</b></div>
+      <div class="nav-account"><span>Returns</span><b>& Orders</b></div>
+      <div class="nav-cart"><i class="ti ti-shopping-cart"></i><div class="cart-badge">3</div><span class="cart-label">Cart</span></div>
+    </div>
+    <div class="nav-bottom">
+      <span>All</span><span>Today's Deals</span><span>Electronics</span><span>Fashion</span><span>Home & Kitchen</span><span>Books</span><span>Prime Video</span><span>Gift Cards</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-eyebrow">Limited time</div>
+      <div class="hero-title">Save big on electronics this week</div>
+      <div class="hero-sub">Shop deals across top brands, refreshed daily</div>
+    </div>
+
+    <div class="content">
+
+      <div class="card">
+        <div class="card-title">Deals in electronics</div>
+        <div class="prod-grid">
+          <div class="prod"><div class="prod-img"><i class="ti ti-device-laptop"></i></div><div class="prod-name">Wireless noise-cancelling headphones</div><div class="prod-price">$89.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-speakerphone"></i></div><div class="prod-name">Smart speaker with voice assistant</div><div class="prod-price">$34.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-device-watch"></i></div><div class="prod-name">Fitness tracker watch, black</div><div class="prod-price">$49.00</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-camera"></i></div><div class="prod-name">Compact mirrorless camera</div><div class="prod-price">$412.50</div></div>
+        </div>
+        <a class="card-link">See all deals</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fashion picks for you</div>
+        <div class="prod-grid">
+          <div class="prod"><div class="prod-img"><i class="ti ti-shirt"></i></div><div class="prod-name">Cotton crewneck tee, 3-pack</div><div class="prod-price">$21.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-shoe"></i></div><div class="prod-name">Running shoes, lightweight mesh</div><div class="prod-price">$58.00</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-jacket"></i></div><div class="prod-name">Windbreaker jacket, packable</div><div class="prod-price">$44.75</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-glasses"></i></div><div class="prod-name">Polarized sunglasses</div><div class="prod-price">$16.99</div></div>
+        </div>
+        <a class="card-link">Explore fashion</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Home essentials</div>
+        <div class="prod-grid">
+          <div class="prod"><div class="prod-img"><i class="ti ti-bulb"></i></div><div class="prod-name">Smart LED bulb, 4-pack</div><div class="prod-price">$24.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-toolsKitchen2"></i></div><div class="prod-name">Non-stick cookware set</div><div class="prod-price">$79.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-plant"></i></div><div class="prod-name">Ceramic planter, small</div><div class="prod-price">$12.50</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-bed"></i></div><div class="prod-name">Cooling gel pillow, standard</div><div class="prod-price">$29.00</div></div>
+        </div>
+        <a class="card-link">Shop home & kitchen</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Books & audiobooks</div>
+        <div class="prod-grid">
+          <div class="prod"><div class="prod-img"><i class="ti ti-book"></i></div><div class="prod-name">Business & entrepreneurship bestseller</div><div class="prod-price">$14.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-headphones"></i></div><div class="prod-name">Audiobook: productivity & focus</div><div class="prod-price">$9.99</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-notebook"></i></div><div class="prod-name">Dot-grid planning notebook</div><div class="prod-price">$8.25</div></div>
+          <div class="prod"><div class="prod-img"><i class="ti ti-book-2"></i></div><div class="prod-name">Music production reference guide</div><div class="prod-price">$22.40</div></div>
+        </div>
+        <a class="card-link">Browse books</a>
+      </div>
+
+      <div class="card deal-strip">
+        <div class="deal-strip-text">
+          <div class="deal-strip-title">Prime Day is coming</div>
+          <div class="deal-strip-sub">Early access starts soon for Prime members — save on top categories storewide.</div>
+        </div>
+        <div class="deal-btn">Learn more</div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="footer-nav">Back to top · Get to Know Us · Make Money with Us · Amazon Payment Products · Let Us Help You</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+name: Refresh vulnerable npm dependencies
+
+on:
+  push:
+    branches:
+      - nextjs-portal-migration
+    paths:
+      - .github/workflows/refresh-dependencies.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/nextjs-portal-migration'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: nextjs-portal-migration
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Upgrade patched framework and storage SDK
+        run: |
+          npm install --save-exact next@16.4.6 @vercel/blob@2.9.0
+          npm install --save-dev --save-exact eslint-config-next@16.4.6
+          # Blob 2.9.0 currently resolves an older exact OIDC release. Pin its
+          # OIDC child to the patched 4.x line, which consumes cli-config 0.4.x
+          # with Zod >=4.6.6. CI below validates compatibility before commit.
+          npm pkg set 'overrides.@vercel/blob.@vercel/oidc=4.0.9'
+          npm install
+          npm audit fix
+      - name: Verify lockfile and audit result
+        run: |
+          npm ci
+          npm audit --audit-level=high
+          npm run lint
+          npm run typecheck
+          npm run build
+      - name: Commit dependency updates
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "security: update vulnerable npm dependencies"
+          git push origin HEAD:nextjs-portal-migration

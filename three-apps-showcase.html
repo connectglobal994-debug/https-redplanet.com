@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  :root{
+    --bg:#0d0d0f;
+    --ink:#f5f5f7;
+    --dim:#9a9aa0;
+    --faint:#5c5c62;
+    --accent:#fa233b;
+    --line:rgba(255,255,255,0.08);
+    --g1:linear-gradient(135deg,#fa233b 0%,#ff6482 100%);
+    --g2:linear-gradient(135deg,#5e5ce6 0%,#bf5af2 100%);
+    --g3:linear-gradient(135deg,#ff9f0a 0%,#ffd60a 100%);
+    --g4:linear-gradient(135deg,#30d158 0%,#66d4cf 100%);
+    --g5:linear-gradient(135deg,#0a84ff 0%,#64d2ff 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    font-family:'Inter',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    color:var(--ink);
+    padding:56px 20px 80px;
+  }
+  .wrap{max-width:1280px;margin:0 auto;}
+
+  .masthead{text-align:center;margin-bottom:64px;}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .masthead h1{font-family:'Manrope',sans-serif;font-size:42px;font-weight:800;letter-spacing:-0.02em;}
+  .masthead p{font-size:15px;color:var(--dim);margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;}
+
+  .deck{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;}
+  @media(max-width:1000px){.deck{grid-template-columns:1fr;max-width:390px;margin:0 auto;}}
+
+  .stack{display:flex;flex-direction:column;align-items:center;}
+  .stack-label{font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;margin-bottom:4px;}
+  .stack-sub{font-size:12px;color:var(--faint);margin-bottom:20px;text-align:center;}
+
+  .device{
+    width:100%;max-width:300px;aspect-ratio:390/844;
+    background:#0a0a0c;
+    border-radius:34px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.5),0 0 0 6px #1a1a1c,0 0 0 7px #2c2c2e;
+    overflow:hidden;position:relative;
+  }
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 2px;font-size:11px;font-weight:600;}
+  .screen{padding:4px 14px 60px;height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;}
+  .screen::-webkit-scrollbar{display:none;}
+
+  /* ===== Apple Music panel ===== */
+  .music .screen{background:#0a0a0c;color:#f5f5f7;}
+  .music .greeting{font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.02em;margin-top:8px;}
+  .music h2{font-family:'Manrope',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.02em;margin:2px 0 12px;}
+  .hero-card{position:relative;height:110px;border-radius:14px;overflow:hidden;background:var(--g2);margin-bottom:14px;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;}
+  .hero-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%);}
+  .hero-eyebrow2{position:relative;z-index:1;font-size:8px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.08em;}
+  .hero-title2{position:relative;z-index:1;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;color:#fff;}
+  .sec{font-size:13px;font-weight:800;margin:14px 0 8px;}
+  .row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .row::-webkit-scrollbar{display:none;}
+  .tile{flex-shrink:0;width:76px;}
+  .art{width:76px;height:76px;border-radius:8px;margin-bottom:4px;}
+  .tile-t{font-size:9.5px;font-weight:600;}
+  .tile-s{font-size:8.5px;color:var(--dim);}
+  .mini{position:absolute;left:8px;right:8px;bottom:56px;background:rgba(28,28,32,0.85);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;gap:8px;padding:6px 10px;}
+  .mini-art{width:26px;height:26px;border-radius:5px;background:var(--g1);}
+  .mini-t{font-size:10px;font-weight:600;flex:1;}
+  .tabbar{position:absolute;left:0;right:0;bottom:0;background:rgba(20,20,23,0.9);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 16px;}
+  .tab{color:#5c5c62;font-size:15px;}
+  .tab.active{color:var(--accent);}
+
+  /* ===== Tesla panel ===== */
+  .tesla .screen{background:#fff;color:#171a20;}
+  .t-top{display:flex;justify-content:space-between;align-items:center;padding-top:8px;}
+  .t-name{font-family:'Manrope',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#5c5e62;}
+  .car-stage{display:flex;align-items:center;justify-content:center;margin:20px 0 10px;height:80px;}
+  .car-body{width:150px;height:52px;background:linear-gradient(180deg,#232323,#0d0d0d);border-radius:24px 34px 16px 16px;position:relative;}
+  .car-body::before{content:'';position:absolute;top:-16px;left:34px;width:74px;height:22px;background:linear-gradient(180deg,#2b2b2b,#151515);border-radius:16px 16px 0 0;}
+  .lock-pill{display:flex;align-items:center;justify-content:center;gap:4px;background:#171a20;color:#fff;padding:5px 12px;border-radius:16px;font-size:9px;font-weight:700;width:fit-content;margin:0 auto 14px;}
+  .battery-num{font-family:'Manrope',sans-serif;font-size:26px;font-weight:800;}
+  .battery-sub{font-size:9px;color:#5c5e62;}
+  .status-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;}
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+  .action{background:#f4f4f4;border-radius:10px;padding:8px 2px;text-align:center;}
+  .action i{font-size:13px;}
+  .action-l{font-size:6.5px;font-weight:700;color:#5c5e62;text-transform:uppercase;margin-top:3px;}
+  .t-card{background:#f4f4f4;border-radius:12px;padding:10px;margin-bottom:8px;}
+  .t-card-label{font-size:8px;font-weight:800;color:#5c5e62;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+  .map-block{width:100%;height:50px;background:linear-gradient(135deg,#dcdcdc,#c8c8c8);border-radius:8px;position:relative;}
+  .map-pin{position:absolute;top:38%;left:52%;width:6px;height:6px;background:var(--accent);border-radius:50% 50% 50% 0;transform:rotate(-45deg);}
+  .t-tabbar{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);border-top:1px solid #eee;display:flex;justify-content:space-around;padding:8px 0 16px;}
+  .t-tab{color:#c4c4c6;font-size:14px;}
+  .t-tab.active{color:var(--accent);}
+
+  /* ===== Amazon panel ===== */
+  .amazon .screen{background:#eaeded;color:#0f1111;padding:0;}
+  .amz-header{background:#131921;padding:10px 12px 6px;}
+  .amz-logo{color:#fff;font-size:13px;font-weight:800;margin-bottom:6px;}
+  .amz-logo span{color:#ff9900;}
+  .amz-search{background:#fff;border-radius:5px;height:22px;display:flex;align-items:center;padding:0 8px;font-size:9px;color:#999;margin-bottom:6px;}
+  .amz-nav{display:flex;gap:8px;font-size:8px;color:#fff;opacity:0.9;overflow-x:auto;scrollbar-width:none;}
+  .amz-nav::-webkit-scrollbar{display:none;}
+  .amz-body{padding:10px;}
+  .amz-hero{background:linear-gradient(180deg,#232f3e,#37475a 70%,#eaeded);border-radius:5px;padding:12px 12px 26px;color:#fff;margin-bottom:-16px;}
+  .amz-hero-eyebrow{font-size:7px;font-weight:700;color:#ff9900;text-transform:uppercase;letter-spacing:0.06em;}
+  .amz-hero-title{font-size:12px;font-weight:800;margin-top:2px;}
+  .amz-cards{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;}
+  .amz-card{background:#fff;border-radius:6px;padding:8px;box-shadow:0 1px 2px rgba(0,0,0,0.06);}
+  .amz-card-title{font-size:9px;font-weight:800;margin-bottom:6px;}
+  .amz-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+  .amz-prod-img{width:100%;height:32px;border-radius:3px;background:linear-gradient(135deg,#f0f0f0,#e2e2e2);display:flex;align-items:center;justify-content:center;margin-bottom:3px;}
+  .amz-prod-img i{font-size:11px;color:#b8b8b8;}
+  .amz-prod-name{font-size:6.5px;line-height:1.2;}
+  .amz-prod-price{font-size:7px;font-weight:700;color:#b12704;}
+
+  .caption{text-align:center;font-size:11px;color:var(--faint);margin-top:18px;line-height:1.5;max-width:250px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="eyebrow">Design Deck</div>
+    <h1>Three products, one review</h1>
+    <p>Apple Music, Tesla, and Amazon rebuilt side by side — each keeping its own brand language, staged together for comparison.</p>
+  </div>
+
+  <div class="deck">
+
+    <div class="stack">
+      <div class="stack-label">Apple Music</div>
+      <div class="stack-sub">Dark glass · gradient art · SF-style type</div>
+      <div class="device music">
+        <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i></span></div>
+        <div class="screen">
+          <div class="greeting">Good evening</div>
+          <h2>Listen Now</h2>
+          <div class="hero-card"><div class="hero-eyebrow2">New Album</div><div class="hero-title2">Winlock</div></div>
+          <div class="sec">Recently played</div>
+          <div class="row">
+            <div class="tile"><div class="art" style="background:var(--g1);"></div><div class="tile-t">am i real</div><div class="tile-s">Winston</div></div>
+            <div class="tile"><div class="art" style="background:var(--g5);"></div><div class="tile-t">EVERYTHING</div><div class="tile-s">Winston</div></div>
+            <div class="tile"><div class="art" style="background:var(--g3);"></div><div class="tile-t">Nganja</div><div class="tile-s">Winston</div></div>
+          </div>
+          <div class="sec">Made for you</div>
+          <div class="row">
+            <div class="tile"><div class="art" style="background:var(--g2);"></div><div class="tile-t">Deep Focus</div><div class="tile-s">Playlist</div></div>
+            <div class="tile"><div class="art" style="background:var(--g4);"></div><div class="tile-t">Night Drive</div><div class="tile-s">Playlist</div></div>
+          </div>
+        </div>
+        <div class="mini"><div class="mini-art"></div><div class="mini-t">Track One</div><i class="ti ti-player-pause-filled" style="font-size:14px;"></i></div>
+        <div class="tabbar">
+          <i class="ti ti-home-filled tab active"></i><i class="ti ti-disc tab"></i><i class="ti ti-antenna tab"></i><i class="ti ti-library tab"></i><i class="ti ti-search tab"></i>
+        </div>
+      </div>
+      <div class="caption">Blurred glass mini-player, gradient covers instead of flat placeholders.</div>
+    </div>
+
+    <div class="stack">
+      <div class="stack-label">Tesla</div>
+      <div class="stack-sub">Stark minimalism · single red accent</div>
+      <div class="device tesla">
+        <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i></span></div>
+        <div class="screen">
+          <div class="t-top"><span class="t-name">Model 3 · Long Range</span><i class="ti ti-settings" style="font-size:13px;"></i></div>
+          <div class="car-stage"><div class="car-body"></div></div>
+          <div class="lock-pill"><i class="ti ti-lock" style="font-size:9px;"></i> Locked</div>
+          <div class="status-row">
+            <div><div class="battery-num">72%</div><div class="battery-sub">235 mi range</div></div>
+          </div>
+          <div class="actions">
+            <div class="action"><i class="ti ti-air-conditioning"></i><div class="action-l">Climate</div></div>
+            <div class="action"><i class="ti ti-bolt"></i><div class="action-l">Charge</div></div>
+            <div class="action"><i class="ti ti-briefcase"></i><div class="action-l">Frunk</div></div>
+            <div class="action"><i class="ti ti-steering-wheel"></i><div class="action-l">Vent</div></div>
+          </div>
+          <div class="t-card"><div class="t-card-label">Location</div><div class="map-block"><div class="map-pin"></div></div></div>
+        </div>
+        <div class="t-tabbar">
+          <i class="ti ti-car t-tab active"></i><i class="ti ti-map-2 t-tab"></i><i class="ti ti-shopping-bag t-tab"></i><i class="ti ti-user t-tab"></i>
+        </div>
+      </div>
+      <div class="caption">Huge negative space, geometric sans, red used only for state (locked, pin, active tab).</div>
+    </div>
+
+    <div class="stack">
+      <div class="stack-label">Amazon</div>
+      <div class="stack-sub">Warm dense grid · navy + orange</div>
+      <div class="device amazon">
+        <div class="statusbar" style="background:#131921;color:#fff;"><span>9:41</span><span><i class="ti ti-wifi"></i></span></div>
+        <div class="screen">
+          <div class="amz-header">
+            <div class="amz-logo">amazon<span>.</span></div>
+            <div class="amz-search">Search Amazon</div>
+            <div class="amz-nav"><span>All</span><span>Deals</span><span>Electronics</span><span>Fashion</span><span>Home</span></div>
+          </div>
+          <div class="amz-body">
+            <div class="amz-hero"><div class="amz-hero-eyebrow">Limited time</div><div class="amz-hero-title">Save on electronics</div></div>
+            <div class="amz-cards">
+              <div class="amz-card">
+                <div class="amz-card-title">Deals in electronics</div>
+                <div class="amz-grid">
+                  <div><div class="amz-prod-img"><i class="ti ti-device-laptop"></i></div><div class="amz-prod-name">Noise-cancelling headphones</div><div class="amz-prod-price">$89.99</div></div>
+                  <div><div class="amz-prod-img"><i class="ti ti-speakerphone"></i></div><div class="amz-prod-name">Smart speaker</div><div class="amz-prod-price">$34.99</div></div>
+                </div>
+              </div>
+              <div class="amz-card">
+                <div class="amz-card-title">Fashion picks</div>
+                <div class="amz-grid">
+                  <div><div class="amz-prod-img"><i class="ti ti-shirt"></i></div><div class="amz-prod-name">Cotton tee 3-pack</div><div class="amz-prod-price">$21.99</div></div>
+                  <div><div class="amz-prod-img"><i class="ti ti-shoe"></i></div><div class="amz-prod-name">Running shoes</div><div class="amz-prod-price">$58.00</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="caption">Dense information grid, navy header, orange reserved for CTAs and price cues.</div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
