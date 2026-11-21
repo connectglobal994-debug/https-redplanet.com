@@ -21,6 +21,7 @@ const MAIN_LINKS = [
   { href: '/music', label: 'Music Syndicate', icon: 'ti-disc' },
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
   { href: '/ai', label: 'Neural AI', icon: 'ti-sparkles' },
+  { href: '/growth', label: 'Growth Studio', icon: 'ti-trending-up' },
 ];
 
 const BUSINESS_LINKS = [
