@@ -44,6 +44,20 @@ export default function GrowthPage() {
           {channels.map(([name, description]) => <article key={name} className="rounded-xl border border-white/10 bg-deepSpace/70 p-4"><div className="flex items-center justify-between gap-2"><h3 className="font-bold">{name}</h3><span className="rounded-full border border-amber-400/30 px-2 py-1 font-mono text-[9px] uppercase text-amber-300">Setup required</span></div><p className="mt-3 text-xs leading-5 text-neutral-400">{description}</p></article>)}
         </div>
       </section>
+
+      <section className="space-y-5">
+        <div><p className="font-mono text-xs uppercase tracking-widest text-neonCyan">Pilot offers · USD</p><h2 className="mt-2 text-2xl font-black uppercase">Simple starting plans</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-400">These are proposed pilot prices carried forward from the existing Red Planet implementation roadmap. They are not active checkout prices until the included services, taxes, provider fees, cancellation and refund terms are confirmed.</p></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { name: 'Community', price: 'Free', detail: 'Account access, public catalogue and community updates.' },
+            { name: 'Creator', price: '$5 / month', detail: 'Creator profile, limited project tools and submission tracking.' },
+            { name: 'Artist Plus', price: '$15 / month', detail: 'Expanded artist workspace, release planning and defined support allowance.' },
+            { name: 'Label / Studio', price: 'From $49 / month', detail: 'Multi-member workspace and catalogue administration, scoped by agreement.' },
+            { name: 'Music submission review', price: '$10 one-time', detail: 'One defined review and written feedback; no guarantee of acceptance or promotion.' },
+            { name: 'AI usage', price: 'Usage-based', detail: 'Small included allowance with disclosed top-ups and usage limits.' },
+          ].map((plan) => <article key={plan.name} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><h3 className="font-bold">{plan.name}</h3><p className="mt-3 text-2xl font-black text-white">{plan.price}</p><p className="mt-2 text-xs leading-5 text-neutral-400">{plan.detail}</p></article>)}
+        </div>
+      </section>
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
           <p className="font-mono text-xs uppercase tracking-widest text-neonCyan">Client growth portal</p><h2 className="mt-2 text-2xl font-black uppercase">Your accounts. Your data. Your results.</h2>
