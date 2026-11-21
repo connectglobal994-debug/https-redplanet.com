@@ -42,7 +42,7 @@ Do not create consumer Gmail accounts or mailboxes by bypassing providers. Build
 9. Run migration tests, tenant/RLS tests, API tests, end-to-end tests, accessibility checks and production-like provider sandbox tests before release.
 
 ## Pricing source review
-The uploaded RED.pdf is a documentary/reconstructed operations dossier, not a verified Red Planet service rate card. It includes examples of deceptive coordinated-account activity and associated budgets. Those tactics and figures must not be presented as Red Planet's client pricing. Import a confirmed service pricing sheet only after its source and currency/period are verified.
+The proposed USD pilot prices already documented in docs/RED_PLANET_IMPLEMENTATION_ROADMAP.md are carried forward to the Growth Studio page: Community Free; Creator $5/month; Artist Plus $15/month; Label/Studio from $49/month; music submission review $10 one-off; AI usage metered. These remain proposed pilot prices, not active checkout prices. The uploaded RED.pdf is a documentary/reconstructed operations dossier, not a verified service rate card; its deceptive coordinated-account tactics and associated budgets are excluded from customer pricing and marketing workflows.
 
 ## Current implementation status
 The /growth public service page is a marketing/contact surface, not a claim that social OAuth, publishing, automated inbox, CRM persistence or analytics are live. WhatsApp deep-link uses the existing site's published contact number by default and can be overridden with NEXT_PUBLIC_WHATSAPP_NUMBER. Provider credentials, database workflows and verified deployment are still required.
