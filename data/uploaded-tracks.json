@@ -1,0 +1,38 @@
+[
+  {
+    "id": "pull",
+    "title": "pull",
+    "duration": "3:45",
+    "description": "win sessional",
+    "audioUrl": "/audio/pull-THE PULL FINAL.mp3",
+    "coverUrl": "/covers/pull-everthing.png",
+    "artist": "Red Planet Independent Artist (Incubated by Deblaq & Win)",
+    "genre": "Cinematic / Global Hip Hop",
+    "streamingNodes": [
+      "Tokyo",
+      "Nairobi",
+      "London",
+      "New York",
+      "Mars Relay 08"
+    ],
+    "royaltyLedgerActive": true
+  },
+  {
+    "id": "on-go",
+    "title": "ON GO",
+    "duration": "3:45",
+    "description": "RED PLANET MUSIC",
+    "audioUrl": "/audio/on-go-Win - On Go (1).mp3",
+    "coverUrl": "/covers/on-go-ariana.png",
+    "artist": "Red Planet Independent Artist (Incubated by Deblaq & Win)",
+    "genre": "Cinematic / Global Hip Hop",
+    "streamingNodes": [
+      "Tokyo",
+      "Nairobi",
+      "London",
+      "New York",
+      "Mars Relay 08"
+    ],
+    "royaltyLedgerActive": true
+  }
+]
