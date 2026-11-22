@@ -16,6 +16,7 @@ create table if not exists public.rp_jobs (
   salary_min numeric(14,2),
   salary_max numeric(14,2),
   salary_currency char(3),
+  salary_period text,
   application_url text not null,
   source_name text not null default 'Red Planet',
   source_url text,
