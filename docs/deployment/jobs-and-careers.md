@@ -19,10 +19,18 @@ Set these for the Preview/Development environment first:
 - `SUPABASE_ANON_KEY`: Supabase publishable/anon key (server environment variable; safe to use only as public project key)
 - `SUPABASE_SERVICE_ROLE_KEY`: service-role secret; server-only, never use in browser code
 - `CRON_SECRET`: long random secret used by Vercel Cron
+- `ANTHROPIC_API_KEY`: optional server-side Claude provider key
+- `GEMINI_API_KEY`: optional server-side Gemini provider key
+- `ANTHROPIC_MODEL`: optional model override (default: `claude-sonnet-5-5`)
+- `GEMINI_MODEL`: optional model override (default: `gemini-3.8-flash`)
 
 Existing administrator upload authentication may also require `ADMIN_UPLOAD_PASSWORD` and `ADMIN_SESSION_SECRET`.
 
 Redeploy Preview after setting environment variables. Do not commit any secret values.
+
+## AI provider configuration
+
+The chat route uses the Anthropic Messages API first when `ANTHROPIC_API_KEY` is present, then falls back to Gemini when `GEMINI_API_KEY` is present. Current defaults are `claude-sonnet-5-5` and `gemini-3.8-flash`; use the model override variables if the provider account does not have access. Keep all provider keys server-side. The app cannot guarantee that any model answers every question correctly; use source-grounding and user-visible error states.
 
 ## AI knowledge library
 
