@@ -145,12 +145,20 @@ begin
  if auth.role() <> 'service_role'
    and not public.has_redplanet_role(array['administrator','platform_owner','jobs_reviewer']) then
    if tg_table_name='ai_jobs' then
-     if new.poster_user_id is distinct from old.poster_user_id
+     if tg_op='INSERT' then
+       if new.poster_user_id is distinct from auth.uid() or new.status not in ('draft','pending_review') then
+         raise exception 'New jobs must belong to the signed-in employer and enter review';
+       end if;
+     elsif new.poster_user_id is distinct from old.poster_user_id
        or new.status is distinct from old.status then
        raise exception 'Job ownership and review status are controlled by Red Planet reviewers';
      end if;
    elsif tg_table_name='ai_job_applications' then
-     if new.job_id is distinct from old.job_id
+     if tg_op='INSERT' then
+       if new.applicant_user_id is distinct from auth.uid() or new.status <> 'submitted' then
+         raise exception 'Applications must be submitted by the signed-in applicant';
+       end if;
+     elsif new.job_id is distinct from old.job_id
        or new.applicant_user_id is distinct from old.applicant_user_id
        or new.status is distinct from old.status then
        raise exception 'Application identity and review status are controlled by Red Planet reviewers';
@@ -162,10 +170,10 @@ end;
 $$;
 drop trigger if exists guard_ai_jobs_workflow_state on public.ai_jobs;
 create trigger guard_ai_jobs_workflow_state
- before update on public.ai_jobs for each row execute function public.guard_job_workflow_state();
+ before insert or update on public.ai_jobs for each row execute function public.guard_job_workflow_state();
 drop trigger if exists guard_ai_job_applications_workflow_state on public.ai_job_applications;
 create trigger guard_ai_job_applications_workflow_state
- before update on public.ai_job_applications for each row execute function public.guard_job_workflow_state();
+ before insert or update on public.ai_job_applications for each row execute function public.guard_job_workflow_state();
 
 -- Employer identity is separate from the job posting and can be verified by staff.
 create table if not exists public.job_employer_profiles (
