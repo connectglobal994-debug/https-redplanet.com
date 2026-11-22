@@ -62,7 +62,8 @@ const INITIAL_MESSAGES: Message[] = [
   },
 ];
 
-// Illustrative workflow examples only. These cards are not persisted or scheduled jobs.\nconst AUTOMATIONS: Automation[] = [
+// Illustrative workflow examples only. These cards are not persisted or scheduled jobs.
+const AUTOMATIONS: Automation[] = [
   { id: 'a1', name: 'Daily news digest', trigger: 'Every day at 8:00 AM', action: 'Summarize top stories in your niche', status: 'active' },
   { id: 'a2', name: 'New upload alert', trigger: 'When a track is uploaded', action: 'Notify the team on Telegram', status: 'active' },
   { id: 'a3', name: 'Engagement follow-up', trigger: 'Post reaches 1,000 views', action: 'Draft a follow-up post for review', status: 'paused' },
