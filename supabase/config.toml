@@ -1,0 +1,28 @@
+project_id = "red-planet-development"
+
+[functions.ai-teacher]
+verify_jwt = true
+
+[functions.generate-music]
+verify_jwt = true
+
+[functions.paypal-create-order]
+verify_jwt = true
+
+[functions.paypal-capture-order]
+verify_jwt = true
+
+[functions.paypal-list-plans]
+verify_jwt = false
+
+[functions.paypal-webhook]
+verify_jwt = false
+
+[functions.flutterwave-create-checkout]
+verify_jwt = true
+
+[functions.flutterwave-list-plans]
+verify_jwt = false
+
+[functions.flutterwave-webhook]
+verify_jwt = false
