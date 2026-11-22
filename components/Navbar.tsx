@@ -22,6 +22,7 @@ const MAIN_LINKS = [
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
   { href: '/ai', label: 'Neural AI', icon: 'ti-sparkles' },
   { href: '/growth', label: 'Growth Studio', icon: 'ti-trending-up' },
+  { href: '/platforms', label: 'Platforms', icon: 'ti-apps' },
   { href: '/academy', label: 'AI Academy', icon: 'ti-school' },
   { href: '/team-portal.html', label: 'Team OS', icon: 'ti-users' },
 ];
