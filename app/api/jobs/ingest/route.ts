@@ -15,8 +15,9 @@ type JobicyJob = {
   jobGeo?: string;
   jobExcerpt?: string;
   jobDescription?: string;
-  annualSalaryMin?: number | string;
-  annualSalaryMax?: number | string;
+  salaryMin?: number | string;
+  salaryMax?: number | string;
+  salaryPeriod?: string;
   salaryCurrency?: string;
   pubDate?: string;
 };
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
   const runId = runRows[0]?.id;
 
   try {
-    const response = await fetch('https://jobicy.com/api/v2/remote-jobs?count=50', {
+    const response = await fetch('https://jobicy.com/api/jobs?count=100', {
       headers: { Accept: 'application/json', 'User-Agent': 'RedPlanetJobs/1.0 (+https://redplanet.com/jobs)' },
       signal: AbortSignal.timeout(20000),
       cache: 'no-store',
@@ -66,8 +67,8 @@ export async function GET(request: NextRequest) {
       const jobTypes = Array.isArray(job.jobType) ? job.jobType : [];
       const type = jobTypes.join(' ').toLowerCase();
       const employmentType = type.includes('part') ? 'part_time' : type.includes('contract') ? 'contract' : type.includes('intern') ? 'internship' : 'full_time';
-      const min = job.annualSalaryMin === undefined ? null : Number(job.annualSalaryMin);
-      const max = job.annualSalaryMax === undefined ? null : Number(job.annualSalaryMax);
+      const min = job.salaryMin === undefined ? null : Number(job.salaryMin);
+      const max = job.salaryMax === undefined ? null : Number(job.salaryMax);
       return [{
         title, company_name: company, description,
         category: Array.isArray(job.jobIndustry) ? textValue(job.jobIndustry[0], 80) || 'Other' : 'Other',
@@ -76,6 +77,7 @@ export async function GET(request: NextRequest) {
         salary_min: min !== null && Number.isFinite(min) && min >= 0 ? min : null,
         salary_max: max !== null && Number.isFinite(max) && max >= 0 ? max : null,
         salary_currency: textValue(job.salaryCurrency, 3).toUpperCase() || null,
+        salary_period: textValue(job.salaryPeriod, 20) || null,
         application_url: applyUrl, source_name: 'Jobicy', source_url: applyUrl,
         external_id: String(job.id), status: 'published',
         published_at: job.pubDate && !Number.isNaN(Date.parse(job.pubDate)) ? new Date(job.pubDate).toISOString() : new Date().toISOString(),
