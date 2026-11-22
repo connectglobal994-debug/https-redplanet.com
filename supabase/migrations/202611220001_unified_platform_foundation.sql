@@ -256,6 +256,16 @@ as $$
 $$;
 revoke all on function public.can_access_research_project(uuid,uuid) from public,anon;
 grant execute on function public.can_access_research_project(uuid,uuid) to authenticated;
+create or replace function public.can_edit_research_project(target_project_id uuid,target_user_id uuid)
+returns boolean language sql stable security definer set search_path=''
+as $
+ select exists(select 1 from public.research_projects p where p.id=target_project_id and (
+  p.owner_user_id=target_user_id or exists(select 1 from public.research_project_members m
+   where m.project_id=p.id and m.user_id=target_user_id and m.member_role='editor')
+ ));
+$;
+revoke all on function public.can_edit_research_project(uuid,uuid) from public,anon;
+grant execute on function public.can_edit_research_project(uuid,uuid) to authenticated;
 create policy research_project_owner_read on public.research_projects for select to authenticated
  using(owner_user_id=(select auth.uid()) or public.can_access_research_project(id,(select auth.uid()))
   or public.has_redplanet_role(array['administrator','platform_owner','research_manager']));
@@ -277,16 +287,16 @@ create policy research_sources_member_read on public.research_sources for select
 create policy research_sources_member_create on public.research_sources for insert to authenticated
  with check(added_by=(select auth.uid()) and public.can_access_research_project(project_id,(select auth.uid())));
 create policy research_sources_member_update on public.research_sources for update to authenticated
- using(public.can_access_research_project(project_id,(select auth.uid())))
- with check(public.can_access_research_project(project_id,(select auth.uid())));
+ using(public.can_edit_research_project(project_id,(select auth.uid())))
+ with check(public.can_edit_research_project(project_id,(select auth.uid())));
 create policy research_findings_member_read on public.research_findings for select to authenticated
  using(public.can_access_research_project(project_id,(select auth.uid()))
   or public.has_redplanet_role(array['administrator','platform_owner','research_manager']));
 create policy research_findings_member_create on public.research_findings for insert to authenticated
  with check(created_by=(select auth.uid()) and public.can_access_research_project(project_id,(select auth.uid())));
 create policy research_findings_member_update on public.research_findings for update to authenticated
- using(public.can_access_research_project(project_id,(select auth.uid())))
- with check(public.can_access_research_project(project_id,(select auth.uid())));
+ using(public.can_edit_research_project(project_id,(select auth.uid())))
+ with check(public.can_edit_research_project(project_id,(select auth.uid())));
 
 create index if not exists research_projects_owner_idx on public.research_projects(owner_user_id,updated_at desc);
 create index if not exists research_sources_project_idx on public.research_sources(project_id,created_at desc);
