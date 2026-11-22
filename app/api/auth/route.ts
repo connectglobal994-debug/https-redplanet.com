@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminSession, verifyAdminPassword } from '@/lib/adminAuth';
+import { clearAdminSession, createAdminSession, verifyAdminPassword } from '@/lib/adminAuth';
 
 export const runtime = 'nodejs';
 
@@ -28,5 +28,11 @@ export async function POST(req: NextRequest) {
 
   const response = NextResponse.json({ ok: true });
   createAdminSession(response);
+  return response;
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ ok: true });
+  clearAdminSession(response);
   return response;
 }

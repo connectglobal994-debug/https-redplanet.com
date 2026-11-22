@@ -19,6 +19,9 @@ import { usePathname } from 'next/navigation';
 const MAIN_LINKS = [
   { href: '/', label: 'Command Center', icon: 'ti-bolt' },
   { href: '/music', label: 'Music Syndicate', icon: 'ti-disc' },
+  { href: '/jobs', label: 'Careers & Jobs', icon: 'ti-briefcase' },
+  { href: '/career/profile', label: 'Build Your CV', icon: 'ti-file-cv' },
+  { href: '/account', label: 'Sign In / Account', icon: 'ti-user-circle' },
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
   { href: '/ai', label: 'Neural AI', icon: 'ti-sparkles' },
   { href: '/growth', label: 'Growth Studio', icon: 'ti-trending-up' },
@@ -30,6 +33,7 @@ const MAIN_LINKS = [
 const BUSINESS_LINKS = [
   { href: '/trading', label: 'Trading Bots', icon: 'ti-chart-line' },
   { href: '/invest', label: 'Invest / Partner', icon: 'ti-briefcase' },
+  { href: '/real-estate', label: 'Red Planet Living', icon: 'ti-building-community' },
   { href: '/members', label: 'Members', icon: 'ti-users' },
 ];
 
