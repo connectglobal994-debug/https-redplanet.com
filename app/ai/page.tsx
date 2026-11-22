@@ -71,7 +71,7 @@ const INITIAL_MESSAGES: Message[] = [
 const STEPS = [
   { step: '01', title: 'Connect your sources', description: 'Link your content channels, news feeds, and team tools.' },
   { step: '02', title: 'Set your automations', description: 'Define triggers and the actions that should follow them.' },
-  { step: '03', title: 'Let it run', description: 'Configured jobs can monitor approved sources and act within defined permissions.' },
+  { step: '03', title: 'Run approved workflows', description: 'Once integrations and scheduled workers are configured, jobs can monitor approved sources and act within defined permissions.' },
   { step: '04', title: 'Review and refine', description: 'Check what it did, approve drafts, and adjust automations over time.' },
 ];
 
