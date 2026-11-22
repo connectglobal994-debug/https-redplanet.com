@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
   }
 
   const params = new URLSearchParams();
-  params.set('select', 'id,title,company_name,description,category,employment_type,work_mode,location_text,country_code,salary_min,salary_max,salary_currency,application_url,source_name,source_url,published_at,expires_at');
+  params.set('select', 'id,title,company_name,description,category,employment_type,work_mode,location_text,country_code,salary_min,salary_max,salary_currency,salary_period,application_url,source_name,source_url,published_at,expires_at');
   params.set('status', 'eq.published');
   params.set('and', '(or(expires_at.is.null,expires_at.gt.' + new Date().toISOString() + '))');
   params.set('order', 'published_at.desc.nullslast');
@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
     country_code: clean(body.countryCode, 2).toUpperCase() || null,
     salary_min: salaryMin, salary_max: salaryMax,
     salary_currency: clean(body.salaryCurrency, 3).toUpperCase() || null,
+    salary_period: clean(body.salaryPeriod, 20) || null,
     application_url: applicationUrl,
     source_name: clean(body.sourceName, 100) || 'Red Planet',
     source_url: sourceUrl || null,
