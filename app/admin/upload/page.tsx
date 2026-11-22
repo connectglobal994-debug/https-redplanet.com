@@ -28,6 +28,14 @@ export default function AdminUploadPage() {
 
   const PRIMARY_ADMIN_EMAIL = 'redplanetcodes@gmail.com';
 
+  async function lockSession() {
+    try {
+      await fetch('/api/auth', { method: 'DELETE' });
+    } finally {
+      setIsAuthenticated(false);
+    }
+  }
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     if (!passwordInput.trim() || authenticating) return;
@@ -170,7 +178,7 @@ export default function AdminUploadPage() {
         </div>
         <button
           type="button"
-          onClick={() => setIsAuthenticated(false)}
+          onClick={() => void lockSession()}
           className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-neutral-400 hover:text-white border border-white/10 transition-colors uppercase font-bold"
         >
           Lock Session
