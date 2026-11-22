@@ -86,7 +86,7 @@ export default function JobSearchPage() {
                 <span className="rounded-lg bg-white/5 px-2.5 py-1">Source: {job.source_name}</span>
                 {job.salary_min !== null && <span className="rounded-lg bg-white/5 px-2.5 py-1">{job.salary_currency || ''} {job.salary_min.toLocaleString()} {job.salary_max !== null ? '– ' + job.salary_max.toLocaleString() : '+'}</span>}
               </div>
-              <a href={job.application_url} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex rounded-xl bg-marsRed px-4 py-2.5 text-xs font-semibold text-white hover:opacity-90">View application details ↗</a>
+              <div className="mt-5 flex flex-wrap gap-3"><a href={job.application_url} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white hover:bg-white/5">Original listing ↗</a><a href={`/jobs/${job.id}/apply`} className="inline-flex rounded-xl bg-marsRed px-4 py-2.5 text-xs font-semibold text-white hover:opacity-90">Apply through Red Planet</a></div>
             </article>
           ))}
         </div>
