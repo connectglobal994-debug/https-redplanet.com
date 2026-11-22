@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Red Planet Collaborations</title><meta name="description" content="Artist, label, brand and organization collaboration hub."><style>:root{--bg:#090709;--line:#3a2028;--red:#ef3345;--muted:#b8aeb2;--text:#fff8f8}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#42111d,transparent 38%),var(--bg);color:var(--text);font:15px/1.6 Inter,system-ui,sans-serif}a{color:inherit;text-decoration:none}.nav{padding:20px 5%;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)}nav{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:13px}.wrap{width:min(1100px,92%);margin:auto}.hero{padding:65px 0}.tag{color:#ff6b78;letter-spacing:.2em;font-size:11px}.hero h1{font-size:clamp(40px,7vw,74px);line-height:1;margin:12px 0}.muted,.card p{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin:24px 0}.card{padding:22px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#211219,#100c0f)}.step{color:#ff7580;font-weight:900}.cta{display:inline-block;background:var(--red);padding:13px 19px;border-radius:9px;font-weight:800;margin:12px 0}.notice{padding:15px 18px;background:#1d1117;border-left:3px solid var(--red);border-radius:8px}footer{text-align:center;padding:28px;color:var(--muted)}@media(max-width:650px){.nav{display:block}.nav nav{margin-top:12px}}</style></head><body><header class="nav"><a href="index.html"><b>RED PLANET</b> / COLLABORATIONS</a><nav><a href="index.html">Home</a><a href="music.html">Music</a><a href="ai.html">AI Studio</a><a href="trading.html">Trading</a></nav></header><main class="wrap"><section class="hero"><div class="tag">OPEN NETWORK · CREATIVE PARTNERSHIPS</div><h1>MAKE THE<br>NEXT MOVE TOGETHER.</h1><p class="muted">A home for meaningful partnerships across music, labels, artists, organizations, technology and culture. Red Planet builds relationships through research, respectful outreach and clear proposals.</p><a class="cta" href="mailto:collaborations@redplanet.tv?subject=Red%20Planet%20Collaboration">Start a conversation</a></section><h2>Who we want to work with</h2><section class="grid"><article class="card"><div class="step">01 / MUSIC LABELS</div><h2>Labels & distributors</h2><p>Explore distribution, licensing, publishing and artist-development conversations with major and independent labels, including Sony Music, Universal Music Group, Warner Music Group and regional partners.</p></article><article class="card"><div class="step">02 / ARTISTS</div><h2>Artists & producers</h2><p>Collaborative releases, features, production, remixes, live sessions and cross-promotion with clear rights and credits.</p></article><article class="card"><div class="step">03 / ORGANIZATIONS</div><h2>Brands & institutions</h2><p>Creative campaigns, youth programmes, events, technology partnerships and community initiatives.</p></article><article class="card"><div class="step">04 / BUILDERS</div><h2>Technology partners</h2><p>AI, creator tools, streaming infrastructure, education, automation and product development.</p></article></section><h2>Our collaboration process</h2><section class="grid"><article class="card"><div class="step">01</div><h3>Research</h3><p>Find the right contact, verify the organization and understand fit.</p></article><article class="card"><div class="step">02</div><h3>Prepare</h3><p>Create a tailored proposal, catalogue links and clear value exchange.</p></article><article class="card"><div class="step">03</div><h3>Reach out</h3><p>Send a respectful, personalized introduction with human approval.</p></article><article class="card"><div class="step">04</div><h3>Track</h3><p>Record responses, next steps, rights, deliverables and agreements.</p></article></section>
+<section class="card" id="inquiry" style="margin:32px 0;padding:24px">
+ <h2>Send a collaboration proposal</h2>
+ <p class="muted">Sign in to submit a private proposal and track its review. Your enquiry is visible only to you and authorized Red Planet staff.</p>
+ <p><a class="cta" href="account.html">Sign in / create account</a></p>
+ <form id="collab-form" style="display:grid;gap:12px;max-width:720px">
+  <label>Your name<input required name="contact_name" minlength="2" maxlength="120" style="display:block;width:100%;padding:12px;margin-top:5px"></label>
+  <label>Organization (optional)<input name="organization" maxlength="160" style="display:block;width:100%;padding:12px;margin-top:5px"></label>
+  <label>Contact email<input required name="email" type="email" maxlength="254" style="display:block;width:100%;padding:12px;margin-top:5px"></label>
+  <label>Proposal type<select required name="inquiry_type" style="display:block;width:100%;padding:12px;margin-top:5px"><option value="">Choose one</option><option value="artist">Artist / producer</option><option value="label">Label / distributor</option><option value="brand">Brand / sponsor</option><option value="organization">Organization / institution</option><option value="technology">Technology partner</option><option value="media">Media / press</option><option value="other">Other</option></select></label>
+  <label>Subject<input required name="subject" minlength="3" maxlength="160" style="display:block;width:100%;padding:12px;margin-top:5px"></label>
+  <label>Tell us about the proposal<textarea required name="message" minlength="20" maxlength="5000" rows="6" style="display:block;width:100%;padding:12px;margin-top:5px"></textarea></label>
+  <button class="cta" type="submit">Submit proposal</button><p id="collab-status" class="muted" role="status" aria-live="polite"></p>
+ </form>
+ <h3>Your proposals</h3><div id="my-inquiries" class="muted">Sign in to view your enquiries.</div>
+</section>
+\n<div class="notice"><b>Build status:</b> This is the collaboration hub and process foundation. The partner CRM, verified contact database and outreach automation are future backend features. Listing a company as a prospective partner does not imply endorsement or an existing relationship.</div></main><footer>RED PLANET · Build together, credit clearly, protect the work.</footer><script src="supabase-config.js"></script>
+<script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
+const cfg=window.RP_SUPABASE_CONFIG||{};const db=createClient(cfg.url,cfg.anonKey);
+const form=document.getElementById("collab-form"),status=document.getElementById("collab-status"),list=document.getElementById("my-inquiries");
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function refresh(){
+ const {data:{user}}=await db.auth.getUser();
+ if(!user){list.textContent="Sign in to submit and track proposals.";form.querySelectorAll("input,select,textarea,button").forEach(x=>x.disabled=true);return;}
+ form.querySelectorAll("input,select,textarea,button").forEach(x=>x.disabled=false);
+ const {data,error}=await db.from("collaboration_inquiries").select("id,subject,inquiry_type,status,created_at,staff_notes").order("created_at",{ascending:false}).limit(30);
+ if(error){list.textContent="Proposal history unavailable. Apply the collaboration CRM migration.";return;}
+ if(!data?.length){list.textContent="No proposals submitted yet.";return;}
+ list.innerHTML=data.map(x=>'<article class="card" style="margin:10px 0"><b>'+esc(x.subject)+'</b><p class="muted">'+esc(x.inquiry_type)+' · '+esc(x.status.replace(/_/g," "))+' · '+new Date(x.created_at).toLocaleDateString()+'</p>'+(x.staff_notes?'<p class="muted">Team response: '+esc(x.staff_notes)+'</p>':"")+'</article>').join("");
+}
+form.addEventListener("submit",async e=>{
+ e.preventDefault();status.textContent="";
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError||!user){status.textContent="Please sign in first.";return;}
+ const values=Object.fromEntries(new FormData(form).entries());
+ const button=form.querySelector("button");button.disabled=true;status.textContent="Submitting your proposal…";
+ const {error}=await db.from("collaboration_inquiries").insert({...values,user_id:user.id});
+ if(error)status.textContent="Could not submit: "+error.message;
+ else{status.textContent="Proposal submitted securely. The Red Planet team can now review it.";form.reset();await refresh();}
+ button.disabled=false;
+});
+refresh();
+</script></body></html>
