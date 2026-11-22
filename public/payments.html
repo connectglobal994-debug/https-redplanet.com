@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Red Planet memberships, payment history and billing status."><title>Red Planet | Plans & Billing</title><link rel="stylesheet" href="style.css">
+<style>
+.billing-wrap{width:min(1080px,92%);margin:56px auto 90px}.billing-hero{max-width:760px;margin-bottom:30px}.billing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.billing-card{padding:24px;border:1px solid var(--rp-line);border-radius:18px;background:linear-gradient(145deg,#211319,#111116)}.billing-card h2{margin-top:0}.billing-label{display:inline-block;color:#ff6875;font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.billing-muted{color:var(--rp-muted);font-size:.9rem}.billing-status{padding:14px;border-radius:9px;background:#17151b;color:#d4cbd0;min-height:44px;margin:14px 0}.billing-list{padding-left:18px;color:var(--rp-muted)}.plan-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}.plan-button{border:0;border-radius:8px;padding:11px 16px;background:#ed1b2f;color:#fff;font-weight:800;cursor:pointer}.plan-button:disabled{opacity:.55;cursor:not-allowed}.billing-warning{margin-top:18px;padding:16px;border-left:3px solid #ed1b2f;background:#1a1116;border-radius:8px;color:#c9c2c6}
+</style></head><body>
+<header class="navbar"><a class="logo" href="index.html">RED PLANET</a><button class="menu-toggle" type="button" aria-label="Toggle navigation">☰</button><nav class="nav-links"><a href="index.html">Home</a><a href="music.html">Music</a><a href="account.html">Account</a><a href="trading.html">Trading</a><a href="payments.html" aria-current="page">Plans & Billing</a></nav></header>
+<main class="billing-wrap"><section class="billing-hero"><p class="section-tag">ONE RED PLANET ACCOUNT</p><h1>Plans & Billing</h1><p class="subtext">Review membership and payment records linked to your Red Planet account. Checkout stays disabled until pricing, merchant credentials and verified payment webhooks are configured.</p></section>
+<div id="billing-status" class="billing-status" role="status" aria-live="polite">Checking your account…</div>\n<section class="billing-card" style="margin-bottom:16px"><span class="billing-label">Membership plans</span><h2>Choose a plan</h2><p class="billing-muted">Available plans and prices are loaded from the secure server catalog. Checkout uses a hosted payment page; Red Planet never handles your card PIN or CVV.</p><div id="plans-grid" class="billing-grid"><p class="billing-muted">Sign in to load available plans.</p></div><p id="checkout-status" class="billing-muted" role="status" aria-live="polite"></p></section>
+<section class="billing-grid"><article class="billing-card"><span class="billing-label">Membership</span><h2>Your plan</h2><p id="membership-summary" class="billing-muted">Sign in to view membership status.</p></article><article class="billing-card"><span class="billing-label">Payment history</span><h2>Recent payments</h2><ul id="payment-list" class="billing-list"><li>No records loaded.</li></ul></article></section>
+<section class="billing-card" style="margin-top:16px"><span class="billing-label">Payment methods</span><h2>Ways to pay</h2><p class="billing-muted">These are the payment methods being prepared for Red Planet. A method will appear as available only after its merchant account, server credentials, pricing and transaction verification have passed testing.</p><div class="billing-grid" style="margin-top:18px">
+<article><h3>Flutterwave hosted checkout</h3><p class="billing-muted">Server-side checkout, transaction verification and membership activation are implemented; merchant onboarding and sandbox tests remain.</p><strong>Merchant setup required</strong></article>
+<article><h3>M-Pesa</h3><p class="billing-muted">Available through Flutterwave hosted checkout when enabled for the merchant account.</p><strong>Merchant setup required</strong></article>
+<article><h3>Debit & credit cards</h3><p class="billing-muted">Hosted checkout integration is prepared through Flutterwave.</p><strong>Merchant setup required</strong></article>
+<article><h3>PayPal</h3><p class="billing-muted">Order creation, capture and signed webhook backend prepared.</p><strong>Sandbox and merchant setup required</strong></article>
+<article><h3>Bank transfer</h3><p class="billing-muted">Flutterwave hosted bank-transfer channel where supported; direct bank details remain private.</p><strong>Merchant setup required</strong></article>
+<article><h3>Wise</h3><p class="billing-muted">Business transfer reconciliation, subject to account eligibility.</p><strong>Not connected yet</strong></article>
+<article><h3>International payments</h3><p class="billing-muted">Flutterwave supports international card acceptance in eligible markets; plan currencies still require approval.</p><strong>Currency catalog not approved</strong></article>
+</div></section>
+<p class="billing-warning"><strong>Use only a plan displayed above with an active secure checkout.</strong> Payment availability depends on the provider configuration and the payment channels enabled for Red Planet's merchant account. Red Planet does not collect card numbers, CVV, PINs or bank login details here. Never send these details by chat or email.</p></main>
+<footer class="footer"><p>Red Planet © 2026 · Membership billing is under development.</p></footer>
+<script src="supabase-config.js"></script><script type="module">
+import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const cfg=window.RP_SUPABASE_CONFIG||{},status=document.getElementById("billing-status"),summary=document.getElementById("membership-summary"),list=document.getElementById("payment-list");
+try{if(!cfg.url?.startsWith("https://")||!cfg.anonKey?.startsWith("sb_publishable_"))throw new Error("Account configuration unavailable.");const supabase=createClient(cfg.url,cfg.anonKey),{data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)throw new Error("Sign in to view your private billing records.");
+const params=new URLSearchParams(window.location.search),paypalState=params.get("paypal"),paypalOrder=params.get("token");
+if(paypalState==="return"&&paypalOrder){
+ status.textContent="PayPal approval received. Confirming the order securely…";
+ const {data:captureData,error:captureError}=await supabase.functions.invoke("paypal-capture-order",{body:{order_id:paypalOrder}});
+ if(captureError)throw new Error("PayPal approval was received, but the secure capture step could not be confirmed. Contact support before trying again.");
+ if(captureData?.captured)status.textContent="PayPal capture submitted. Membership activates after the verified provider notification is processed.";
+ else status.textContent="PayPal order received. Waiting for the provider's verified payment confirmation; do not pay again while this is pending.";
+}else if(paypalState==="cancel"){
+ status.textContent="PayPal checkout was cancelled. No membership was activated.";
+}else if(params.get("flutterwave")==="return"){
+ status.textContent="Payment provider returned you to Red Planet. Your membership will update only after the server verifies the transaction.";
+}else status.textContent="Signed in. Your billing records are private to this account.";
+const plansGrid=document.getElementById("plans-grid"),checkoutStatus=document.getElementById("checkout-status");
+const {data:planData,error:planError}=await supabase.functions.invoke("flutterwave-list-plans",{method:"GET"});
+const {data:paypalPlanData,error:paypalPlanError}=await supabase.functions.invoke("paypal-list-plans",{method:"GET"});
+const paypalPlans=new Map((paypalPlanData?.plans||[]).map(p=>[p.code,p]));
+if(planError){plansGrid.textContent="Checkout plans are not available yet. The secure payment catalog still needs configuration.";}
+else if(!planData?.plans?.length){plansGrid.textContent="No approved plans are published yet.";}
+else{
+ plansGrid.replaceChildren();
+ planData.plans.forEach(plan=>{
+  const card=document.createElement("article"),heading=document.createElement("h3"),detail=document.createElement("p"),actions=document.createElement("div"),button=document.createElement("button");
+  card.className="billing-card";heading.textContent=plan.code.replace(/[_-]+/g," ");detail.className="billing-muted";
+  const digits=new Intl.NumberFormat("en",{style:"currency",currency:plan.currency}).resolvedOptions().maximumFractionDigits;
+  detail.textContent=new Intl.NumberFormat(undefined,{style:"currency",currency:plan.currency}).format(Number(plan.amount_minor)/Math.pow(10,digits))+" · "+plan.period_days+" days";
+  actions.className="plan-actions";button.type="button";button.className="plan-button";button.textContent="Pay with M-Pesa / card / bank";
+  const paypalPlan=paypalPlans.get(plan.code);
+  const paypalMatches=paypalPlan&&paypalPlan.amount_minor===plan.amount_minor&&paypalPlan.currency===plan.currency&&paypalPlan.period_days===plan.period_days;
+  const paypalButton=document.createElement("button");paypalButton.type="button";paypalButton.className="plan-button";paypalButton.textContent="Pay with PayPal";paypalButton.hidden=!paypalMatches;
+  paypalButton.addEventListener("click",async()=>{
+   paypalButton.disabled=true;button.disabled=true;checkoutStatus.textContent="Creating your secure PayPal order…";
+   const {data,error}=await supabase.functions.invoke("paypal-create-order",{body:{plan_code:plan.code}});
+   if(error||!data?.approval_url||!data.approval_url.startsWith("https://")){
+    checkoutStatus.textContent="PayPal checkout could not be started. No payment has been taken.";paypalButton.disabled=false;button.disabled=false;return;
+   }
+   window.location.assign(data.approval_url);
+  });
+  button.addEventListener("click",async()=>{
+   button.disabled=true;checkoutStatus.textContent="Creating your secure hosted checkout…";
+   const {data,error}=await supabase.functions.invoke("flutterwave-create-checkout",{body:{plan_code:plan.code}});
+   if(error||!data?.checkout_url||!data.checkout_url.startsWith("https://checkout.flutterwave.com/")){
+    checkoutStatus.textContent="Checkout could not be started. No payment has been taken.";button.disabled=false;return;
+   }
+   window.location.assign(data.checkout_url);
+  });
+  actions.append(button);if(paypalMatches)actions.append(paypalButton);card.append(heading,detail,actions);plansGrid.append(card);
+ });
+}
+const {data:memberships,error:membershipError}=await supabase.from("memberships").select("plan_code,status,provider,current_period_start,current_period_end,created_at").order("created_at",{ascending:false}).limit(5);if(membershipError)throw membershipError;
+summary.textContent=memberships?.length?memberships.map(m=>m.plan_code+" · "+m.status+" · "+m.provider+(m.current_period_end?" · ends "+new Date(m.current_period_end).toLocaleDateString():"")).join(" | "):"No membership is currently recorded for this account.";
+const {data:payments,error:paymentError}=await supabase.from("payment_records").select("currency,amount_minor,status,created_at").order("created_at",{ascending:false}).limit(10);if(paymentError)throw paymentError;list.replaceChildren();if(!payments?.length){const li=document.createElement("li");li.textContent="No payment records found.";list.append(li);}else payments.forEach(p=>{const li=document.createElement("li");const currency=String(p.currency||"USD").toUpperCase();let fractionDigits=2;try{fractionDigits=new Intl.NumberFormat("en",{style:"currency",currency}).resolvedOptions().maximumFractionDigits;}catch{}const amount=Number(p.amount_minor)/Math.pow(10,fractionDigits);const formatted=Number.isFinite(amount)?new Intl.NumberFormat(undefined,{style:"currency",currency}).format(amount):currency+" "+p.amount_minor;li.textContent=formatted+" · "+p.status+" · "+new Date(p.created_at).toLocaleDateString();list.append(li);});
+}catch(error){status.textContent=error.message||"Billing records could not be loaded.";summary.textContent="Unavailable until sign-in and backend access are ready.";}
+</script><script src="script.js"></script></body></html>
