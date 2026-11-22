@@ -180,6 +180,7 @@ export default function AdminUploadPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/admin/jobs" className="px-4 py-2 rounded-xl bg-marsRed/15 hover:bg-marsRed/25 text-xs text-white border border-marsRed/30 transition-colors uppercase font-bold">Manage Jobs</Link>
+          <Link href="/admin/ai-knowledge" className="px-4 py-2 rounded-xl bg-neonCyan/10 hover:bg-neonCyan/20 text-xs text-white border border-neonCyan/30 transition-colors uppercase font-bold">Train AI</Link>
           <button
             type="button"
             onClick={() => void lockSession()}
