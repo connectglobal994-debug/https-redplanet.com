@@ -3,6 +3,17 @@
 -- employer profiles, and stricter state transitions for existing job/social tables.
 -- Apply after 202611210023_payment_refund_ledger.sql in a disposable Supabase project first.
 
+-- Add the operational roles referenced by the new RLS policies.
+alter table public.user_roles drop constraint if exists user_roles_role_check;
+alter table public.user_roles add constraint user_roles_role_check check (
+ role in (
+  'member','artist','producer','label','collaborator','editor','moderator',
+  'finance_operator','administrator','platform_owner','department_manager',
+  'studio_owner','studio_manager','tv_producer','jobs_reviewer','support_agent',
+  'marketing_manager','research_manager','social_manager'
+ )
+);
+
 -- Expand the original provider list without claiming every provider is API-ready.
 alter table public.social_channels drop constraint if exists social_channels_platform_check;
 alter table public.social_channels
