@@ -17,6 +17,7 @@ type JobInput = {
   salaryMin?: unknown;
   salaryMax?: unknown;
   salaryCurrency?: unknown;
+  salaryPeriod?: unknown;
   applicationUrl?: unknown;
   sourceName?: unknown;
   sourceUrl?: unknown;
