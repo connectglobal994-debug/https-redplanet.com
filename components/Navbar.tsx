@@ -33,6 +33,7 @@ const MAIN_LINKS = [
 const BUSINESS_LINKS = [
   { href: '/trading', label: 'Trading Bots', icon: 'ti-chart-line' },
   { href: '/invest', label: 'Invest / Partner', icon: 'ti-briefcase' },
+  { href: '/real-estate', label: 'Red Planet Living', icon: 'ti-building-community' },
   { href: '/members', label: 'Members', icon: 'ti-users' },
 ];
 
