@@ -61,16 +61,42 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get(accessCookie)?.value;
-  if (!token || !baseUrl() || !anonKey()) return NextResponse.json({ authenticated: false }, { status: 200 });
-  try {
-    const upstream = await fetch(`${baseUrl()}/auth/v1/user`, {
-      headers: { apikey: anonKey()!, Authorization: `Bearer ${token}` },
+  const refreshToken = request.cookies.get(refreshCookie)?.value;
+  if (!baseUrl() || !anonKey()) return NextResponse.json({ authenticated: false }, { status: 200 });
+
+  const readUser = async (access: string) => {
+    const response = await fetch(`${baseUrl()}/auth/v1/user`, {
+      headers: { apikey: anonKey()!, Authorization: `Bearer ${access}` },
       cache: 'no-store',
       signal: AbortSignal.timeout(8000),
     });
-    if (!upstream.ok) return NextResponse.json({ authenticated: false }, { status: 200 });
-    const user = await upstream.json() as { id?: string; email?: string };
-    return NextResponse.json({ authenticated: true, user: { id: user.id, email: user.email } });
+    if (!response.ok) return null;
+    return await response.json() as { id?: string; email?: string };
+  };
+
+  try {
+    if (token) {
+      const user = await readUser(token);
+      if (user) return NextResponse.json({ authenticated: true, user: { id: user.id, email: user.email } });
+    }
+    if (refreshToken) {
+      const refreshed = await fetch(`${baseUrl()}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: anonKey()! },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8000),
+      });
+      const data = await refreshed.json() as { access_token?: string; refresh_token?: string; expires_in?: number; user?: { id?: string; email?: string } };
+      if (refreshed.ok && data.access_token && data.refresh_token) {
+        const response = NextResponse.json({ authenticated: true, user: { id: data.user?.id, email: data.user?.email } });
+        setSessionCookies(response, data.access_token, data.refresh_token, data.expires_in ?? 3600);
+        return response;
+      }
+    }
+    const response = NextResponse.json({ authenticated: false }, { status: 200 });
+    clearSessionCookies(response);
+    return response;
   } catch {
     return NextResponse.json({ authenticated: false }, { status: 200 });
   }
