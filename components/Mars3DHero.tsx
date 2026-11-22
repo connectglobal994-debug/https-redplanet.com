@@ -193,18 +193,8 @@ export default function Mars3DHero() {
         <div className="relative aspect-square sm:aspect-video lg:aspect-square rounded-2xl bg-black/60 border border-white/10 overflow-hidden flex items-center justify-center shadow-2xl">
           <canvas ref={canvasRef} className="w-full h-full object-contain" />
           
-          <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-black/70 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 text-[10px] font-mono">
-            <span className="text-emerald-400 flex items-center gap-1.5">
-              <span className={`h-2 w-2 rounded-full ${telemetryActive ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`} />
-              Visual preview · not live telemetry
-            </span>
-            <button
-              type="button"
-              onClick={() => setTelemetryActive(!telemetryActive)}
-              className="text-neutral-400 hover:text-white uppercase font-bold transition-colors"
-            >
-              {telemetryActive ? 'Pause Feed' : 'Resume Feed'}
-            </button>
+          <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 text-[10px] font-mono text-neutral-300">
+            Visual preview · no live telemetry connection
           </div>
         </div>
       </div>
