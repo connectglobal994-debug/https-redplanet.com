@@ -64,3 +64,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Could not save the knowledge item. Apply the AI knowledge migration first.' }, { status: 503 });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  if (!isAdminRequest(request)) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 });
+  if (!hasSupabaseAdminConfig()) return NextResponse.json({ error: 'AI knowledge database is not configured.' }, { status: 503 });
+  let body: { id?: unknown; status?: unknown };
+  try { body = await request.json() as { id?: unknown; status?: unknown }; }
+  catch { return NextResponse.json({ error: 'A valid JSON body is required.' }, { status: 400 }); }
+  const id = clean(body.id, 64);
+  const status = body.status;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ||
+      !['draft','published','archived'].includes(String(status))) {
+    return NextResponse.json({ error: 'A valid item ID and status are required.' }, { status: 400 });
+  }
+  try {
+    const rows = await supabaseAdmin<Record<string, unknown>[]>(`rp_ai_knowledge?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify({ status, updated_at: new Date().toISOString() }),
+    });
+    if (!rows[0]) return NextResponse.json({ error: 'Knowledge item not found.' }, { status: 404 });
+    return NextResponse.json({ ok: true, item: rows[0] });
+  } catch {
+    return NextResponse.json({ error: 'Could not update the knowledge item.' }, { status: 503 });
+  }
+}
