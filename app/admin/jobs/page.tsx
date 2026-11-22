@@ -8,6 +8,7 @@ export default function AdminJobsPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setSaving(true);
     setMessage('');
     const form = new FormData(event.currentTarget);
@@ -20,7 +21,7 @@ export default function AdminJobsPage() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Job could not be saved.');
-      event.currentTarget.reset();
+      formElement.reset();
       setMessage('Job saved successfully.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Job could not be saved.');
