@@ -123,8 +123,8 @@ export async function POST(req: NextRequest) {
             'anthropic-version': '2023-06-01',
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 800,
+            model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
+            max_tokens: 2048,
             system: systemPrompt,
             messages: trimmedMessages,
           }),
@@ -151,10 +151,10 @@ export async function POST(req: NextRequest) {
   if (geminiKey) {
     try {
       const geminiRes = await fetchWithTimeout(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL || 'gemini-3.8-flash'}:generateContent`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
           body: JSON.stringify({
             contents: trimmedMessages.map((m) => ({
               role: m.role === 'assistant' ? 'model' : 'user',
