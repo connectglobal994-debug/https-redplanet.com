@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 const MAIN_LINKS = [
   { href: '/', label: 'Command Center', icon: 'ti-bolt' },
   { href: '/music', label: 'Music Syndicate', icon: 'ti-disc' },
+  { href: '/jobs', label: 'Careers & Jobs', icon: 'ti-briefcase' },
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
   { href: '/ai', label: 'Neural AI', icon: 'ti-sparkles' },
   { href: '/growth', label: 'Growth Studio', icon: 'ti-trending-up' },
