@@ -10,7 +10,7 @@
 
 ## Required setup before sign-in works
 1. Create a Supabase **development** project.
-2. Apply the migration files in the migration branch in filename order, including `202611190001_core_schema.sql`, `202611190002_public_intake_news.sql`, `202611190003_ecosystem_expansion.sql`, `202611200001_harden_ecosystem_rls.sql`, and then `202611210001_team_os.sql`. The original migration sequence was renumbered to avoid timestamp collisions; use the exact filenames from the branch.
+2. Apply the migration files in the migration branch in filename order, including `202611190001_core_schema.sql`, `202611190002_public_intake_news.sql`, `202611190003_ecosystem_expansion.sql`, `202611200001_harden_ecosystem_rls.sql`, then `202611210001_team_os.sql` through `202611210023_payment_refund_ledger.sql`, and finally `202611220001_unified_platform_foundation.sql`. The original migration sequence was renumbered to avoid timestamp collisions; use the exact filenames from the branch.
 3. In Supabase Authentication settings, configure the site URL and email redirect URLs for the deployed domain and local development.
 4. Copy the Project URL and publishable/anon key from Supabase Project Settings → API into `supabase-config.js` (`url` and `anonKey`).
 5. Never put the service-role key, database password, PayPal secret or AI provider keys in this file or any browser code.
@@ -21,8 +21,8 @@
 ## Current limits (do not represent as finished)
 - The original Team OS and AI Teacher source are restored into the migration branch. The `/academy` page links to the original Supabase-backed team portal. The Edge Function is source code only until deployed to the verified development project and supplied with an `OPENAI_API_KEY` secret.
 - Manager assignment, team-wide task creation, admin member management, hiring pipeline, interview scorecards, software inventory, notifications and daily-update persistence are not yet implemented.
-- This static GitHub Pages front end cannot securely store secrets or run privileged operations. Use Supabase Edge Functions for those.
-- The public browser config contains only the original Supabase URL and publishable key. The Supabase project reference must be confirmed with the owner before applying migrations or deploying functions. No database migration or Edge Function is live merely because these files are committed.
+- The unified frontend combines the Next.js application with selected legacy HTML portals served from `public/`. Netlify's deploy preview is not proof that Supabase functions or database migrations are deployed. Browser pages must never store provider secrets or run privileged operations; use authenticated Supabase Edge Functions or server routes for those.
+- The public browser config contains only the original Supabase URL and publishable key. The Supabase project reference must be confirmed with the owner before applying migrations or deploying functions. The current foundation migration adds a platform registry, secure social-account write boundaries, research projects/sources/findings, employer profiles and workflow-state guards for jobs and publishing. These are schema definitions only until tested and applied. No database migration or Edge Function is live merely because these files are committed.
 
 
 ## AI Teacher setup
