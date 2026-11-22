@@ -15,6 +15,14 @@ export default function AIKnowledgeAdminPage(){
     else setStatus(data.error||'Could not load the knowledge library.');
   }
   useEffect(()=>{void load();},[]);
+  async function changeStatus(item:Item){
+    const nextStatus=item.status==='published'?'archived':'published';
+    const response=await fetch('/api/ai/knowledge',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:item.id,status:nextStatus})});
+    const data=await response.json();
+    if(!response.ok){setStatus(data.error||'Could not update knowledge item.');return;}
+    setStatus(nextStatus==='published'?'Knowledge item published for AI retrieval.':'Knowledge item archived.');
+    await load();
+  }
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setBusy(true);setStatus('');
     try{
@@ -43,6 +51,6 @@ export default function AIKnowledgeAdminPage(){
       <label className="flex items-center gap-2 text-xs text-neutral-300"><input type="checkbox" checked={publish} onChange={e=>setPublish(e.target.checked)}/> Publish for AI retrieval</label>
       <div className="md:col-span-2 flex flex-wrap items-center gap-4"><button disabled={busy} className="rounded-xl bg-marsRed px-5 py-3 text-sm font-semibold disabled:opacity-50">{busy?'Saving…':'Save knowledge item'}</button><p role="status" className="text-sm text-neutral-400">{status}</p></div>
     </form>
-    <section className="mt-10"><h2 className="text-xl font-semibold">Saved knowledge</h2><div className="mt-4 space-y-3">{items.map(item=><article key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 p-4"><div><h3 className="text-sm font-semibold">{item.title}</h3><p className="mt-1 text-xs text-neutral-500">{item.category} · {item.source_name||'Red Planet'} · {new Date(item.updated_at).toLocaleDateString()}</p></div><span className="rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase">{item.status}</span></article>)}{items.length===0&&<p className="text-sm text-neutral-500">No knowledge items found, or administrator access is not configured.</p>}</div></section>
+    <section className="mt-10"><h2 className="text-xl font-semibold">Saved knowledge</h2><div className="mt-4 space-y-3">{items.map(item=><article key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 p-4"><div><h3 className="text-sm font-semibold">{item.title}</h3><p className="mt-1 text-xs text-neutral-500">{item.category} · {item.source_name||'Red Planet'} · {new Date(item.updated_at).toLocaleDateString()}</p></div><div className="flex items-center gap-2"><span className="rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase">{item.status}</span><button type="button" onClick={()=>void changeStatus(item)} className="rounded-lg border border-white/15 px-3 py-1.5 text-[10px]">{item.status==='published'?'Archive':'Publish'}</button></div></article>)}{items.length===0&&<p className="text-sm text-neutral-500">No knowledge items found, or administrator access is not configured.</p>}</div></section>
   </section></main>;
 }
