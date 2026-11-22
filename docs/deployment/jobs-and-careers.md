@@ -7,6 +7,7 @@ Apply to the **development** Supabase project using SQL Editor, in this order:
 1. `supabase/migrations/202611190001_core_schema.sql` (only if not already applied)
 2. `supabase/migrations/202611220001_jobs_platform.sql`
 3. `supabase/migrations/202611220002_candidate_careers.sql`
+4. `supabase/migrations/202611220003_ai_knowledge.sql`
 
 Do not re-run the core schema blindly on production. Confirm the migration history first. The Jobs and Careers migrations use `public.has_redplanet_role(text[])` from the core schema.
 
@@ -22,6 +23,10 @@ Set these for the Preview/Development environment first:
 Existing administrator upload authentication may also require `ADMIN_UPLOAD_PASSWORD` and `ADMIN_SESSION_SECRET`.
 
 Redeploy Preview after setting environment variables. Do not commit any secret values.
+
+## AI knowledge library
+
+The AI knowledge migration creates `rp_ai_knowledge`. The Admin Studio link **Train AI** opens `/admin/ai-knowledge`. Only the existing administrator session can add or view entries. Add only original, licensed, public-domain or otherwise authorized material and record its rights basis. Publish reviewed entries to make them available to retrieval at chat time. This is retrieval-augmented generation, not fine-tuning or autonomous model retraining. The chat API will use relevant published entries as reference context when Supabase is configured.
 
 ## Supabase Auth
 
@@ -44,7 +49,8 @@ In Supabase Authentication settings:
 8. Confirm ordinary users cannot publish jobs (HTTP 403 from the admin-only publishing endpoint).
 9. Confirm the Jobicy importer rejects requests without the correct cron secret.
 10. Confirm Vercel Cron invokes `/api/jobs/ingest` and ingestion history is recorded.
-11. Run `npm ci`, `npm run lint`, `npm run typecheck`, and `npm run build` in CI before merging.
+11. Add one authorized AI knowledge item, publish it, and verify relevant chat prompts receive its content as reference context. Verify draft entries are never retrieved.
+12. Run `npm ci`, `npm run lint`, `npm run typecheck`, and `npm run build` in CI before merging.
 
 ## Important scope notes
 
