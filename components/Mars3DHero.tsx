@@ -22,29 +22,29 @@ const MISSION_STAGES: MissionStage[] = [
   {
     phase: 'PHASE 01',
     title: 'Foundation & Core Architecture',
-    description: 'Establish autonomous infrastructure, lossless audio catalogs, Vercel Blob cloud storage, and daily operational rhythms.',
-    date: 'ACTIVE NOW',
+    description: 'Unify the original Red Planet website with the Next.js platform, restore core portals, and establish secure shared backend services.',
+    date: 'IN PROGRESS',
     tone: 'marsRed'
   },
   {
     phase: 'PHASE 02',
     title: 'Audience & Syndicate Reach',
-    description: 'Scale multi-channel reach toward 400K+ across YouTube, Instagram, and RedPlanet.tv as one coordinated signal.',
-    date: 'Q3 2026',
+    description: 'Connect approved social accounts and build consent-based publishing, inbox and analytics workflows.',
+    date: 'NEXT',
     tone: 'cyan'
   },
   {
     phase: 'PHASE 03',
     title: 'Platform & Independent Incubation',
-    description: 'Open Red Planet distribution infrastructure to emerging artists across all genres with automated marketing support.',
-    date: 'Q4 2026',
+    description: 'Complete artist, research, jobs and collaboration workflows with secure accounts and saved records.',
+    date: 'UPCOMING',
     tone: 'amber'
   },
   {
     phase: 'PHASE 04',
     title: 'Multi-Planetary Ecosystem',
-    description: 'Integrate AI telemetry, algorithmic finance bots, and global media into an autonomous permanent settlement machine.',
-    date: 'SOL 08 // 2027+',
+    description: 'Expand original media, creator services and approved automations as provider integrations become available.',
+    date: 'FUTURE',
     tone: 'marsRed'
   }
 ];
@@ -52,7 +52,7 @@ const MISSION_STAGES: MissionStage[] = [
 export default function Mars3DHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [stageIndex, setStageIndex] = useState(0);
-  const [telemetryActive, setTelemetryActive] = useState(true);
+  
 
   // Three.js Procedural Mars Canvas Animation Loop
   useEffect(() => {
@@ -162,15 +162,15 @@ export default function Mars3DHero() {
         <div className="space-y-6 relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-marsRed/20 border border-marsRed/40 text-marsRed text-xs font-mono uppercase tracking-widest shadow-lg">
             <span className="h-2.5 w-2.5 rounded-full bg-marsRed animate-ping" />
-            [ORBITAL RELAY NODE 08 // ACTIVE]
+            [RED PLANET PLATFORM // BUILD IN PROGRESS]
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-wider text-white font-sans leading-none">
-            Architecting <span className="text-marsRed">Mars</span> Settlement
+            Music. Media. <span className="text-marsRed">Intelligence.</span>
           </h1>
 
           <p className="text-neutral-300 text-xs sm:text-sm font-mono leading-relaxed">
-            Co-founded by Deblaq &amp; Win. Red Planet is building the sovereign soundtrack, autonomous financial infrastructure, and digital arteries for multi-planetary human existence.
+            Red Planet brings together music, independent artists, TV and media, AI tools, research, collaboration, marketing services and team operations in one connected platform.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -178,13 +178,13 @@ export default function Mars3DHero() {
               href="/music"
               className="px-6 py-3.5 rounded-xl bg-marsRed hover:bg-marsRed/80 text-white text-xs uppercase font-bold tracking-widest transition-all shadow-mars text-center"
             >
-              Stream Music Catalog ▶
+              Explore Red Planet Music
             </Link>
             <Link
               href="/tv"
               className="px-6 py-3.5 rounded-xl bg-obsidian border border-white/20 text-white text-xs uppercase font-bold tracking-widest hover:border-marsRed transition-all text-center"
             >
-              Watch RedPlanet.tv 📺
+              Explore Red Planet TV
             </Link>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function Mars3DHero() {
           <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-black/70 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10 text-[10px] font-mono">
             <span className="text-emerald-400 flex items-center gap-1.5">
               <span className={`h-2 w-2 rounded-full ${telemetryActive ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`} />
-              Telemetry: Nominal
+              Visual preview · not live telemetry
             </span>
             <button
               type="button"
@@ -213,8 +213,8 @@ export default function Mars3DHero() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div className="space-y-1">
-            <span className="text-xs text-marsRed font-bold uppercase tracking-widest">STRATEGIC BLUEPRINT // THE PUSH TO SETTLEMENT</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white uppercase font-sans">Mission Execution Roadmap</h2>
+            <span className="text-xs text-marsRed font-bold uppercase tracking-widest">RED PLANET // PLATFORM ROADMAP</span>
+            <h2 className="text-2xl sm:text-4xl font-black text-white uppercase font-sans">Build the connected platform</h2>
           </div>
           <div className="flex items-center gap-2 bg-obsidian p-1.5 rounded-2xl border border-white/10">
             {MISSION_STAGES.map((st, idx) => (
