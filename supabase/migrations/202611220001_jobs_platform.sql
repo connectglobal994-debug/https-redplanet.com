@@ -34,8 +34,7 @@ create table if not exists public.rp_jobs (
 );
 
 create unique index if not exists rp_jobs_source_external_uidx
-  on public.rp_jobs(source_name, external_id)
-  where external_id is not null;
+  on public.rp_jobs(source_name, external_id);
 create index if not exists rp_jobs_public_listing_idx
   on public.rp_jobs(status, published_at desc, expires_at);
 create index if not exists rp_jobs_location_idx
