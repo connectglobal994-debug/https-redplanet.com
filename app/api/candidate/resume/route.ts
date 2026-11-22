@@ -99,26 +99,25 @@ export async function PUT(request: NextRequest) {
     const profile = profiles[0];
     if (!profile?.id) throw new Error('Profile was not returned after save.');
 
-    const resumeRows = await supabaseAdmin<Record<string, unknown>[]>('rp_resumes?on_conflict=candidate_profile_id&is_primary=eq.true', {
-      method: 'POST',
-      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify({
-        candidate_profile_id: profile.id,
-        title: clean(body.resumeTitle, 120) || 'My CV',
-        content: resume,
-        is_primary: true,
-        updated_at: new Date().toISOString(),
-      }),
-    }).catch(async () => {
-      const existing = await supabaseAdmin<Record<string, unknown>[]>(`rp_resumes?candidate_profile_id=eq.${profile.id}&is_primary=eq.true&select=id&limit=1`);
-      if (!existing[0]?.id) throw new Error('Could not save CV. Check the CV database migration.');
-      const updated = await supabaseAdmin<Record<string, unknown>[]>(`rp_resumes?id=eq.${existing[0].id}`, {
-        method: 'PATCH',
-        headers: { Prefer: 'return=representation' },
-        body: JSON.stringify({ title: clean(body.resumeTitle, 120) || 'My CV', content: resume, updated_at: new Date().toISOString() }),
-      });
-      return updated;
-    });
+    const existingResumes = await supabaseAdmin<Record<string, unknown>[]>(`rp_resumes?candidate_profile_id=eq.${profile.id}&is_primary=eq.true&select=id&limit=1`);
+    const resumePayload = {
+      candidate_profile_id: profile.id,
+      title: clean(body.resumeTitle, 120) || 'My CV',
+      content: resume,
+      is_primary: true,
+      updated_at: new Date().toISOString(),
+    };
+    const resumeRows = existingResumes[0]?.id
+      ? await supabaseAdmin<Record<string, unknown>[]>(`rp_resumes?id=eq.${existingResumes[0].id}`, {
+          method: 'PATCH',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify(resumePayload),
+        })
+      : await supabaseAdmin<Record<string, unknown>[]>('rp_resumes', {
+          method: 'POST',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify(resumePayload),
+        });
 
     return NextResponse.json({ ok: true, profile, resume: resumeRows[0] ?? null });
   } catch (error) {
