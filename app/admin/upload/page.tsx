@@ -31,6 +31,8 @@ export default function AdminUploadPage() {
   async function lockSession() {
     try {
       await fetch('/api/auth', { method: 'DELETE' });
+    } catch {
+      // The local UI still locks; the server cookie expires naturally if the request cannot complete.
     } finally {
       setIsAuthenticated(false);
     }
@@ -176,13 +178,16 @@ export default function AdminUploadPage() {
             Direct audio injection for <Link href="/music" className="text-neonCyan underline">/music</Link> stream network. Managed by Deblaq & Win.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void lockSession()}
-          className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-neutral-400 hover:text-white border border-white/10 transition-colors uppercase font-bold"
-        >
-          Lock Session
-        </button>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/jobs" className="px-4 py-2 rounded-xl bg-marsRed/15 hover:bg-marsRed/25 text-xs text-white border border-marsRed/30 transition-colors uppercase font-bold">Manage Jobs</Link>
+          <button
+            type="button"
+            onClick={() => void lockSession()}
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-neutral-400 hover:text-white border border-white/10 transition-colors uppercase font-bold"
+          >
+            Lock Session
+          </button>
+        </div>
       </header>
 
       {/* Upload Form Container */}
