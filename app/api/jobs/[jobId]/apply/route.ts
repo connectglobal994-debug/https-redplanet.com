@@ -44,7 +44,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ jo
     });
     return NextResponse.json({ ok: true, application: rows[0] }, { status: 201 });
   } catch (error) {
-    console.error('Job application failed:', error instanceof Error ? error.message : 'unknown error');
+    const detail = error instanceof Error ? error.message : 'unknown error';
+    if (detail.includes('23505') || detail.toLowerCase().includes('duplicate key')) {
+      return NextResponse.json({ error: 'You have already applied for this job.' }, { status: 409 });
+    }
+    console.error('Job application failed:', detail);
     return NextResponse.json({ error: 'Your application could not be submitted. Please try again.' }, { status: 503 });
   }
 }
