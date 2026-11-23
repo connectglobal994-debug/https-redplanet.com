@@ -37,9 +37,9 @@ export default function AdminJobsPage() {
         <h1 className="mt-3 text-3xl font-semibold">Publish a job</h1>
         <p className="mt-3 text-sm text-neutral-400">Only an authenticated Red Planet administrator can submit a listing. All fields are validated by the server.</p>
         <form onSubmit={submit} className="mt-8 grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 md:grid-cols-2">
-          {[
+          {([
             ['title','Job title','text'],['companyName','Company / employer','text'],['category','Category','text'],['location','Location','text'],['countryCode','Country code (optional)','text'],['applicationUrl','Application URL','url'],['sourceName','Source name','text'],['sourceUrl','Original source URL (optional)','url'],['salaryMin','Minimum salary','number'],['salaryMax','Maximum salary','number'],['salaryCurrency','Currency (e.g. USD)','text'],['salaryPeriod','Salary period (e.g. monthly)','text'],['expiresAt','Expiry date (optional)','date'],
-          ].map(([name, label, type]) => (
+          ] as const).map(([name, label, type]) => (
             <label key={name} className="text-xs text-neutral-400">{label}
               <input name={name} type={type} required={['title','companyName','applicationUrl'].includes(name)} className="mt-2 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-3 text-sm text-white outline-none focus:border-neonCyan" />
             </label>
