@@ -21,6 +21,7 @@ const MAIN_LINKS = [
   { href: '/music', label: 'Music Syndicate', icon: 'ti-disc' },
   { href: '/jobs', label: 'Careers & Jobs', icon: 'ti-briefcase' },
   { href: '/career/profile', label: 'Build Your CV', icon: 'ti-file-cv' },
+  { href: '/career/applications', label: 'My Applications', icon: 'ti-clipboard-list' },
   { href: '/research', label: 'Research OS', icon: 'ti-search' },
   { href: '/account', label: 'Sign In / Account', icon: 'ti-user-circle' },
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
