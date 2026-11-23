@@ -26,7 +26,7 @@ const nativePlatforms = [
   ['AI Academy','Team learning and approved training resources','/academy'],
   ['Research Portal','Saved research projects, sources and evidence','/platforms'],
   ['Jobs Portal','Employer profiles, listings and applications','/platforms'],
-];
+] as const;
 
 export default function PlatformsPage() {
   return (
