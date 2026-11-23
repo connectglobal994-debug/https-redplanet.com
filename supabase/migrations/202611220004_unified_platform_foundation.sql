@@ -274,7 +274,7 @@ as $$
   p.owner_user_id=target_user_id or exists(select 1 from public.research_project_members m
    where m.project_id=p.id and m.user_id=target_user_id and m.member_role='editor')
  ));
-$;
+$$;
 revoke all on function public.can_edit_research_project(uuid,uuid) from public,anon;
 grant execute on function public.can_edit_research_project(uuid,uuid) to authenticated;
 create policy research_project_owner_read on public.research_projects for select to authenticated
