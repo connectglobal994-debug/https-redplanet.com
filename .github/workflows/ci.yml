@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, nextjs-portal-migration, feature/jobs-platform-foundation, feature/research-workspace-foundation]
   push:
-    branches: [main, nextjs-portal-migration, feature/jobs-platform-foundation]
+    branches: [main, nextjs-portal-migration, feature/jobs-platform-foundation, feature/research-workspace-foundation]
 
 permissions:
   contents: read
