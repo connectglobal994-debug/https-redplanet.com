@@ -21,10 +21,13 @@ const MAIN_LINKS = [
   { href: '/music', label: 'Music Syndicate', icon: 'ti-disc' },
   { href: '/jobs', label: 'Careers & Jobs', icon: 'ti-briefcase' },
   { href: '/career/profile', label: 'Build Your CV', icon: 'ti-file-cv' },
+  { href: '/career/applications', label: 'My Applications', icon: 'ti-clipboard-list' },
+  { href: '/research', label: 'Research OS', icon: 'ti-search' },
   { href: '/account', label: 'Sign In / Account', icon: 'ti-user-circle' },
   { href: '/tv', label: 'RedPlanet.tv', icon: 'ti-broadcast' },
   { href: '/ai', label: 'Neural AI', icon: 'ti-sparkles' },
   { href: '/growth', label: 'Growth Studio', icon: 'ti-trending-up' },
+  { href: '/growth/connections', label: 'Social Command Desk', icon: 'ti-share' },
   { href: '/platforms', label: 'Platforms', icon: 'ti-apps' },
   { href: '/academy', label: 'AI Academy', icon: 'ti-school' },
   { href: '/team-portal.html', label: 'Team OS', icon: 'ti-users' },
@@ -34,6 +37,7 @@ const BUSINESS_LINKS = [
   { href: '/trading', label: 'Trading Bots', icon: 'ti-chart-line' },
   { href: '/invest', label: 'Invest / Partner', icon: 'ti-briefcase' },
   { href: '/real-estate', label: 'Red Planet Living', icon: 'ti-building-community' },
+  { href: '/admin/jobs', label: 'Jobs Admin', icon: 'ti-clipboard-check' },
   { href: '/members', label: 'Members', icon: 'ti-users' },
 ];
 

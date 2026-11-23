@@ -1,7 +1,7 @@
 -- Red Planet unified platform foundation.
 -- Adds a platform registry, secure social-account workflow, research workspace,
 -- employer profiles, and stricter state transitions for existing job/social tables.
--- Apply after 202611210023_payment_refund_ledger.sql in a disposable Supabase project first.
+-- Apply after 202611220003_ai_knowledge.sql in the development project first.
 
 -- Add the operational roles referenced by the new RLS policies.
 alter table public.user_roles drop constraint if exists user_roles_role_check;
@@ -269,12 +269,12 @@ revoke all on function public.can_access_research_project(uuid,uuid) from public
 grant execute on function public.can_access_research_project(uuid,uuid) to authenticated;
 create or replace function public.can_edit_research_project(target_project_id uuid,target_user_id uuid)
 returns boolean language sql stable security definer set search_path=''
-as $
+as $$
  select exists(select 1 from public.research_projects p where p.id=target_project_id and (
   p.owner_user_id=target_user_id or exists(select 1 from public.research_project_members m
    where m.project_id=p.id and m.user_id=target_user_id and m.member_role='editor')
  ));
-$;
+$$;
 revoke all on function public.can_edit_research_project(uuid,uuid) from public,anon;
 grant execute on function public.can_edit_research_project(uuid,uuid) to authenticated;
 create policy research_project_owner_read on public.research_projects for select to authenticated
@@ -308,6 +308,11 @@ create policy research_findings_member_create on public.research_findings for in
 create policy research_findings_member_update on public.research_findings for update to authenticated
  using(public.can_edit_research_project(project_id,(select auth.uid())))
  with check(public.can_edit_research_project(project_id,(select auth.uid())));
+
+grant select,insert,update,delete on public.research_projects to authenticated;
+grant select,insert,update,delete on public.research_project_members to authenticated;
+grant select,insert,update,delete on public.research_sources to authenticated;
+grant select,insert,update,delete on public.research_findings to authenticated;
 
 create index if not exists research_projects_owner_idx on public.research_projects(owner_user_id,updated_at desc);
 create index if not exists research_sources_project_idx on public.research_sources(project_id,created_at desc);
