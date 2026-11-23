@@ -23,7 +23,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
     const access = await getResearchProjectAccess(projectId, userId);
     if (!access) return NextResponse.json({ error: 'Project not found or access denied.' }, { status: 404 });
     if (!access.canEdit) return NextResponse.json({ error: 'Editor access is required to add findings.' }, { status: 403 });
-    const sourceIds = Array.isArray(body.sourceIds) ? body.sourceIds.filter((id): id is string => typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)).slice(0, 50) : [];
+    const requestedSourceIds = Array.isArray(body.sourceIds) ? [...new Set(body.sourceIds.filter((id): id is string => typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(id)))].slice(0, 50) : [];
+    const matchingSources = requestedSourceIds.length
+      ? await supabaseAdmin<Record<string, unknown>[]>(`research_sources?project_id=eq.${projectId}&id=in.(${requestedSourceIds.join(',')})&select=id`)
+      : [];
+    const sourceIds = matchingSources.map((source) => String(source.id));
     const rows = await supabaseAdmin<Record<string, unknown>[]>('research_findings', {
       method: 'POST',
       headers: { Prefer: 'return=representation' },
