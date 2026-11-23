@@ -2,7 +2,7 @@ name: Red Planet CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, nextjs-portal-migration, feature/jobs-platform-foundation, feature/research-workspace-foundation]
   push:
     branches: [main, nextjs-portal-migration, feature/jobs-platform-foundation]
 
